@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import "./App.css";
+import FormPage from "./FormPage";
+import logopng from "./assets/logopng.png"
 
 // Ícones simples em SVG
 const Icons = {
@@ -114,7 +116,7 @@ const Icons = {
 };
 
 // Componente Navbar
-function Navbar() {
+function Navbar({ onStartCreating }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -130,8 +132,7 @@ function Navbar() {
     <nav className={`navbar ${isScrolled ? "scrolled" : ""}`}>
       <div className="navbar-container">
         <div className="logo">
-          <span className="logo-icon">🚀</span>
-          <span className="logo-text">MeuSiteJá</span>
+          <img src={logopng} alt="Logo do MeuSiteJá." style={{height: "13rem", cursor: "pointer"}} onClick={() => window.location.href = "/"}/>
         </div>
         
         <div className={`nav-links ${isMobileMenuOpen ? "open" : ""}`}>
@@ -139,7 +140,7 @@ function Navbar() {
           <a href="#templates">Templates</a>
           <a href="#beneficios">Benefícios</a>
           <a href="#sobre">Sobre</a>
-          <button className="btn btn-primary btn-nav">Comece a Criar</button>
+          <button className="btn btn-primary btn-nav" onClick={onStartCreating}>Comece a Criar</button>
         </div>
 
         <button 
@@ -154,16 +155,50 @@ function Navbar() {
 }
 
 // Componente Hero Section
-function HeroSection() {
-  const [currentWord, setCurrentWord] = useState(0);
+function HeroSection({ onStartCreating }) {
+  const [displayText, setDisplayText] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [wordIndex, setWordIndex] = useState(0);
+  const [isWaiting, setIsWaiting] = useState(false);
+  const [isTyping, setIsTyping] = useState(true);
+  
   const words = ["Portfólio", "Negócio", "Serviço"];
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentWord((prev) => (prev + 1) % words.length);
-    }, 2500);
-    return () => clearInterval(interval);
-  }, []);
+    const currentWord = words[wordIndex];
+    
+    let timeout;
+    
+    if (isWaiting) {
+      setIsTyping(false);
+      timeout = setTimeout(() => {
+        setIsWaiting(false);
+        setIsDeleting(true);
+        setIsTyping(true);
+      }, 5000);
+    } else if (isDeleting) {
+      if (displayText.length > 0) {
+        const deleteSpeed = 500 / currentWord.length;
+        timeout = setTimeout(() => {
+          setDisplayText(displayText.slice(0, -1));
+        }, deleteSpeed);
+      } else {
+        setIsDeleting(false);
+        setWordIndex((prev) => (prev + 1) % words.length);
+      }
+    } else {
+      if (displayText.length < currentWord.length) {
+        const typeSpeed = 2000 / currentWord.length;
+        timeout = setTimeout(() => {
+          setDisplayText(currentWord.slice(0, displayText.length + 1));
+        }, typeSpeed);
+      } else {
+        setIsWaiting(true);
+      }
+    }
+
+    return () => clearTimeout(timeout);
+  }, [displayText, isDeleting, wordIndex, isWaiting]);
 
   return (
     <section className="hero">
@@ -182,7 +217,24 @@ function HeroSection() {
         <h1 className="hero-title">
           Crie seu site <br />
           <span className="highlight">
-            de <span className="rotating-word">{words[currentWord]}</span>
+            de{" "}
+            <span className={`typewriter-container ${isDeleting ? 'deleting' : ''}`}>
+              <span className="typewriter-word-wrapper">
+                <span className="typewriter-word">
+                  {displayText}
+                  {}
+                  {displayText.length === 0 && '\u200B'}
+                </span>
+                {}
+                <span 
+                  className="typewriter-underline"
+                  style={{ 
+                    transform: `scaleX(${displayText.length > 0 ? 1 : 0})`,
+                  }}
+                ></span>
+              </span>
+              <span className={`typewriter-cursor ${isWaiting ? 'blink' : ''} ${isTyping ? 'typing' : ''}`}>|</span>
+            </span>
           </span>
           <br />
           em poucos cliques
@@ -195,7 +247,7 @@ function HeroSection() {
         </p>
 
         <div className="hero-cta">
-          <button className="btn btn-primary btn-large">
+          <button className="btn btn-primary btn-large" onClick={onStartCreating}>
             Comece a Criar
             <Icons.ArrowRight />
           </button>
@@ -387,7 +439,7 @@ function HowItWorksSection() {
 }
 
 // Componente de Templates
-function TemplatesSection() {
+function TemplatesSection({ onStartCreating }) {
   const templates = [
     {
       title: "Portfólio Profissional",
@@ -441,7 +493,7 @@ function TemplatesSection() {
                   </li>
                 ))}
               </ul>
-              <button className="btn btn-template">
+              <button className="btn btn-template" onClick={onStartCreating}>
                 Usar este template
                 <Icons.ArrowRight />
               </button>
@@ -454,7 +506,7 @@ function TemplatesSection() {
 }
 
 // Componente Para Quem É
-function TargetAudienceSection() {
+function TargetAudienceSection({ onStartCreating }) {
   const audiences = [
     {
       emoji: "👴👵",
@@ -503,7 +555,7 @@ function TargetAudienceSection() {
 
         <div className="audience-cta">
           <p>Se identificou? Então o MeuSiteJá é para você!</p>
-          <button className="btn btn-primary btn-large">
+          <button className="btn btn-primary btn-large" onClick={onStartCreating}>
             Comece a Criar Agora
             <Icons.ArrowRight />
           </button>
@@ -573,7 +625,7 @@ function TestimonialsSection() {
 }
 
 // Componente CTA Final
-function FinalCTASection() {
+function FinalCTASection({ onStartCreating }) {
   return (
     <section className="final-cta">
       <div className="cta-background">
@@ -588,7 +640,7 @@ function FinalCTASection() {
             Junte-se a centenas de pessoas que já criaram seus sites com o MeuSiteJá.
             É grátis, rápido e fácil. Comece agora mesmo!
           </p>
-          <button className="btn btn-primary btn-xlarge">
+          <button className="btn btn-primary btn-xlarge" onClick={onStartCreating}>
             <Icons.Rocket />
             Comece a Criar Gratuitamente
           </button>
@@ -609,8 +661,7 @@ function Footer() {
         <div className="footer-main">
           <div className="footer-brand">
             <div className="logo">
-              <span className="logo-icon">🚀</span>
-              <span className="logo-text">MeuSiteJá</span>
+              <img src={logopng} alt="Logo do MeuSiteJá." style={{height: "13rem", cursor: "pointer", marginTop: "-3rem"}} onClick={() => window.location.href = "/"}/>
             </div>
             <p className="footer-tagline">
               Transformando ideias em sites profissionais, sem complicação.
@@ -641,7 +692,7 @@ function Footer() {
         <div className="footer-bottom">
           <p>&copy; 2024 MeuSiteJá. Todos os direitos reservados.</p>
           <p className="footer-tech">
-            Desenvolvido com ❤️ usando React, Firebase e IA
+            Desenvolvido para o Projeto Integrador
           </p>
         </div>
       </div>
@@ -651,16 +702,30 @@ function Footer() {
 
 // Componente Principal
 export default function App() {
+  const [currentPage, setCurrentPage] = useState("home");
+
+  const handleStartCreating = () => {
+    setCurrentPage("form");
+  };
+
+  const handleBackToHome = () => {
+    setCurrentPage("home");
+  };
+
+  if (currentPage === "form") {
+    return <FormPage onBack={handleBackToHome} />;
+  }
+
   return (
     <div className="app">
-      <Navbar />
-      <HeroSection />
+      <Navbar onStartCreating={handleStartCreating} />
+      <HeroSection onStartCreating={handleStartCreating} />
       <FeaturesSection />
       <HowItWorksSection />
-      <TemplatesSection />
-      <TargetAudienceSection />
+      <TemplatesSection onStartCreating={handleStartCreating} />
+      <TargetAudienceSection onStartCreating={handleStartCreating} />
       <TestimonialsSection />
-      <FinalCTASection />
+      <FinalCTASection onStartCreating={handleStartCreating} />
       <Footer />
     </div>
   );

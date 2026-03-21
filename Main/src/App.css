@@ -60,6 +60,7 @@
         }
 
         .navbar-container {
+          height: 6rem;
           max-width: 1280px;
           margin: 0 auto;
           display: flex;
@@ -194,7 +195,7 @@
           min-height: 100vh;
           display: flex;
           align-items: center;
-          padding: 8rem 2rem 4rem 15rem;
+          padding: 8rem 2rem 4rem 4rem;
           position: relative;
           overflow: hidden;
         }
@@ -326,7 +327,7 @@
 
         .hero-visual {
           position: absolute;
-          right: 15%; 
+          right: 7%; 
           top: 50%;
           transform: translateY(-50%);
           z-index: 1;
@@ -1129,4 +1130,155 @@
             width: 100%;
           }
         }
- 
+
+        .typewriter-container {
+          display: inline-flex;
+          align-items: center;
+          position: relative;
+          vertical-align: baseline;
+        }
+
+        /* Wrapper that contains word + underline, sized to content */
+        .typewriter-word-wrapper {
+          display: inline-flex;
+          flex-direction: column;
+          align-items: flex-start;
+          position: relative;
+          vertical-align: baseline;
+        }
+
+        /* The actual typed word */
+        .typewriter-word {
+          display: inline-block;
+          background: var(--gradient-1);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          white-space: pre; /* Preserve spacing */
+          min-height: 1.1em; /* Prevent collapse when empty */
+          line-height: inherit;
+        }
+
+        /* Dynamic underline that follows text width */
+        .typewriter-underline {
+          position: absolute;
+          bottom: -6px;
+          left: 0;
+          width: 100%;
+          height: 3px;
+          background: var(--gradient-1);
+          border-radius: 2px;
+          transform-origin: left center;
+          transition: transform 0.1s ease-out;
+        }
+
+        /* Cursor Styles */
+        .typewriter-cursor {
+          display: inline-block;
+          width: 3px;
+          height: 1.1em;
+          background: var(--primary-light);
+          margin-left: 2px;
+          border-radius: 2px;
+          vertical-align: baseline;
+          position: relative;
+          flex-shrink: 0;
+        }
+
+        /* Blinking animation when waiting */
+        .typewriter-cursor.blink {
+          animation: cursor-blink 0.8s ease-in-out infinite;
+        }
+
+        /* Solid cursor while typing */
+        .typewriter-cursor.typing {
+          animation: cursor-pulse 0.15s ease-in-out infinite;
+        }
+
+        @keyframes cursor-blink {
+          0%, 45% {
+            opacity: 1;
+          }
+          50%, 95% {
+            opacity: 0;
+          }
+          100% {
+            opacity: 1;
+          }
+        }
+
+        @keyframes cursor-pulse {
+          0%, 100% {
+            opacity: 1;
+            transform: scaleY(1);
+          }
+          50% {
+            opacity: 0.8;
+            transform: scaleY(0.95);
+          }
+        }
+
+        /* Glow effect on cursor */
+        .typewriter-cursor {
+          box-shadow: 0 0 10px var(--primary-light),
+                      0 0 20px rgba(99, 102, 241, 0.5),
+                      0 0 30px rgba(99, 102, 241, 0.3);
+        }
+
+        /* Deleting state - red tint for cursor */
+        .typewriter-container.deleting .typewriter-cursor {
+          background: #f87171;
+          box-shadow: 0 0 10px #f87171,
+                      0 0 20px rgba(248, 113, 113, 0.5);
+        }
+
+        /* Deleting state - fade underline to red */
+        .typewriter-container.deleting .typewriter-underline {
+          background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+        }
+
+        /* Optional: Add typing sound effect visual */
+        .typewriter-cursor.typing::before {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 20px;
+          height: 20px;
+          background: var(--primary-light);
+          border-radius: 50%;
+          transform: translate(-50%, -50%) scale(0);
+          opacity: 0;
+          animation: cursor-ripple 0.3s ease-out;
+        }
+
+        @keyframes cursor-ripple {
+          0% {
+            transform: translate(-50%, -50%) scale(0);
+            opacity: 0.5;
+          }
+          100% {
+            transform: translate(-50%, -50%) scale(2);
+            opacity: 0;
+          }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+          .typewriter-cursor {
+            width: 2px;
+            margin-left: 1px;
+          }
+          
+          .typewriter-underline {
+            height: 2px;
+            bottom: -4px;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .typewriter-underline {
+            height: 2px;
+            bottom: -3px;
+          }
+        }
