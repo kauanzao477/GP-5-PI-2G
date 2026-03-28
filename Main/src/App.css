@@ -126,7 +126,7 @@
           font-weight: 600;
           font-size: 0.95rem;
           cursor: pointer;
-          transition: all 0.2s ease;
+          transition: all 0.5s ease;
           border: none;
           text-decoration: none;
         }
@@ -173,6 +173,7 @@
           background: rgba(255, 255, 255, 0.1);
           color: var(--text);
           margin-top: auto;
+          transition: all 0.3s ease;
         }
 
         .btn-template:hover {

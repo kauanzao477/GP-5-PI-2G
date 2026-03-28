@@ -175,7 +175,7 @@ function HeroSection({ onStartCreating }) {
         setIsWaiting(false);
         setIsDeleting(true);
         setIsTyping(true);
-      }, 5000);
+      }, 3000);
     } else if (isDeleting) {
       if (displayText.length > 0) {
         const deleteSpeed = 500 / currentWord.length;
@@ -251,7 +251,7 @@ function HeroSection({ onStartCreating }) {
             Comece a Criar
             <Icons.ArrowRight />
           </button>
-          <button className="btn btn-secondary btn-large">
+          <button className="btn btn-secondary btn-large" onClick={() => window.location.href = "#como-funciona"}>
             <Icons.Play />
             Veja como funciona
           </button>

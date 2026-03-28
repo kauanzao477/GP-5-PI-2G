@@ -91,19 +91,125 @@ const FormIcons = {
       <polyline points="6 9 12 15 18 9"/>
     </svg>
   ),
+  Palette: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="icon">
+      <circle cx="13.5" cy="6.5" r="0.5" fill="currentColor"/>
+      <circle cx="17.5" cy="10.5" r="0.5" fill="currentColor"/>
+      <circle cx="8.5" cy="7.5" r="0.5" fill="currentColor"/>
+      <circle cx="6.5" cy="12.5" r="0.5" fill="currentColor"/>
+      <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.555C21.965 6.012 17.461 2 12 2z"/>
+    </svg>
+  ),
 };
 
-// Step definitions based on template
-const getSteps = (template) => {
-  const commonStart = [
-    { id: "login", title: "Acesse sua conta", subtitle: "Entre com seu e-mail e senha para continuar", icon: "🔐" },
-    { id: "template", title: "Escolha seu template", subtitle: "Selecione o tipo de site que melhor representa você", icon: "🎨" },
-  ];
+// Color Palettes for each template
+const colorPalettes = {
+  portfolio: [
+    {
+      id: "portfolio-modern",
+      name: "Moderno",
+      colors: ["#1a1a2e", "#4a4e69", "#9a8c98", "#c9ada7"],
+      description: "Elegante e sofisticado"
+    },
+    {
+      id: "portfolio-tech",
+      name: "Tech",
+      colors: ["#0f0e17", "#ff8906", "#f25f4c", "#e53170"],
+      description: "Vibrante e tecnológico"
+    },
+    {
+      id: "portfolio-minimal",
+      name: "Minimalista",
+      colors: ["#fafafa", "#232323", "#6c757d", "#adb5bd"],
+      description: "Limpo e profissional"
+    },
+    {
+      id: "portfolio-creative",
+      name: "Criativo",
+      colors: ["#2d3047", "#419d78", "#e0a458", "#ffdbb5"],
+      description: "Artístico e expressivo"
+    },
+    {
+      id: "portfolio-corporate",
+      name: "Corporativo",
+      colors: ["#1b263b", "#415a77", "#778da9", "#e0e1dd"],
+      description: "Formal e confiável"
+    },
+  ],
+  business: [
+    {
+      id: "business-warm",
+      name: "Acolhedor",
+      colors: ["#2c1810", "#854442", "#be9b7b", "#fff4e6"],
+      description: "Quente e convidativo"
+    },
+    {
+      id: "business-fresh",
+      name: "Fresco",
+      colors: ["#1b4332", "#40916c", "#95d5b2", "#d8f3dc"],
+      description: "Natural e saudável"
+    },
+    {
+      id: "business-elegant",
+      name: "Elegante",
+      colors: ["#14213d", "#fca311", "#e5e5e5", "#ffffff"],
+      description: "Sofisticado e premium"
+    },
+    {
+      id: "business-vibrant",
+      name: "Vibrante",
+      colors: ["#d00000", "#ffba08", "#3f88c5", "#032b43"],
+      description: "Energético e marcante"
+    },
+    {
+      id: "business-classic",
+      name: "Clássico",
+      colors: ["#3d405b", "#81b29a", "#f2cc8f", "#f4f1de"],
+      description: "Tradicional e atemporal"
+    },
+  ],
+  service: [
+    {
+      id: "service-trust",
+      name: "Confiança",
+      colors: ["#03045e", "#0077b6", "#00b4d8", "#90e0ef"],
+      description: "Seguro e profissional"
+    },
+    {
+      id: "service-energy",
+      name: "Energia",
+      colors: ["#ff4800", "#ff6d00", "#ff8500", "#ffaa00"],
+      description: "Dinâmico e ativo"
+    },
+    {
+      id: "service-nature",
+      name: "Natureza",
+      colors: ["#284b63", "#3c6e71", "#d9d9d9", "#ffffff"],
+      description: "Orgânico e sustentável"
+    },
+    {
+      id: "service-bold",
+      name: "Marcante",
+      colors: ["#10002b", "#5a189a", "#9d4edd", "#e0aaff"],
+      description: "Ousado e memorável"
+    },
+    {
+      id: "service-clean",
+      name: "Limpo",
+      colors: ["#212529", "#495057", "#adb5bd", "#f8f9fa"],
+      description: "Simples e eficiente"
+    },
+  ],
+};
 
-  const commonEnd = [
-    { id: "subdomain", title: "Escolha seu link", subtitle: "Defina o endereço único do seu site na internet", icon: "🌐" },
-  ];
+// Phase 1 Steps (same for all)
+const phase1Steps = [
+  { id: "auth", title: "Acesse sua conta", subtitle: "Entre ou cadastre-se para continuar", icon: "🔐" },
+  { id: "template", title: "Escolha seu template", subtitle: "Selecione o tipo de site que melhor representa você", icon: "🎨" },
+];
 
+// Phase 2 Steps based on template
+const getPhase2Steps = (template) => {
   const portfolioSteps = [
     { id: "basic-info", title: "Informações básicas", subtitle: "Conte-nos sobre você e sua carreira profissional", icon: "👤" },
     { id: "about", title: "Sobre você", subtitle: "Descreva quem você é e suas principais características", icon: "✨" },
@@ -112,6 +218,8 @@ const getSteps = (template) => {
     { id: "skills", title: "Habilidades", subtitle: "Avalie suas competências técnicas e pessoais", icon: "🚀" },
     { id: "contact", title: "Informações de contato", subtitle: "Como as pessoas podem te encontrar", icon: "📱" },
     { id: "photo", title: "Foto profissional", subtitle: "Adicione uma foto para seu perfil", icon: "📸" },
+    { id: "colors", title: "Paleta de cores", subtitle: "Escolha as cores do seu site", icon: "🎨" },
+    { id: "subdomain", title: "Escolha seu link", subtitle: "Defina o endereço único do seu site na internet", icon: "🌐" },
   ];
 
   const businessSteps = [
@@ -122,6 +230,8 @@ const getSteps = (template) => {
     { id: "location", title: "Localização", subtitle: "Onde seu negócio está localizado", icon: "📍" },
     { id: "hours", title: "Horário de funcionamento", subtitle: "Quando seu negócio está aberto", icon: "🕐" },
     { id: "contact-business", title: "Contato e redes sociais", subtitle: "Formas de entrar em contato", icon: "📞" },
+    { id: "colors", title: "Paleta de cores", subtitle: "Escolha as cores do seu site", icon: "🎨" },
+    { id: "subdomain", title: "Escolha seu link", subtitle: "Defina o endereço único do seu site na internet", icon: "🌐" },
   ];
 
   const serviceSteps = [
@@ -132,32 +242,31 @@ const getSteps = (template) => {
     { id: "regions", title: "Regiões atendidas", subtitle: "Onde você oferece seus serviços", icon: "🗺️" },
     { id: "provider-hours", title: "Horários de atendimento", subtitle: "Quando você está disponível", icon: "⏰" },
     { id: "contact-provider", title: "Informações de contato", subtitle: "Como clientes podem te contatar", icon: "💬" },
+    { id: "colors", title: "Paleta de cores", subtitle: "Escolha as cores do seu site", icon: "🎨" },
+    { id: "subdomain", title: "Escolha seu link", subtitle: "Defina o endereço único do seu site na internet", icon: "🌐" },
   ];
 
-  let templateSteps = [];
   switch (template) {
     case "portfolio":
-      templateSteps = portfolioSteps;
-      break;
+      return portfolioSteps;
     case "business":
-      templateSteps = businessSteps;
-      break;
+      return businessSteps;
     case "service":
-      templateSteps = serviceSteps;
-      break;
+      return serviceSteps;
     default:
-      templateSteps = [];
+      return [];
   }
-
-  return [...commonStart, ...templateSteps, ...commonEnd];
 };
 
 // Progress Bar Component
-function ProgressBar({ current, total }) {
+function ProgressBar({ current, total, phase, phaseLabel }) {
   return (
     <div className="progress-container">
       <div className="progress-info">
-        <span className="progress-label">Progresso</span>
+        <div className="progress-phase">
+          <span className="phase-badge">Fase {phase}</span>
+          <span className="phase-label">{phaseLabel}</span>
+        </div>
         <div className="progress-text">
           <span className="progress-current">{current}</span>
           <span className="progress-separator">de</span>
@@ -196,6 +305,124 @@ function TemplateCard({ icon, title, description, selected, onClick, color }) {
         <FormIcons.Check />
       </div>
     </button>
+  );
+}
+
+// Color Palette Selector Component
+function ColorPaletteSelector({ template, selectedPalette, customPalette, onSelectPalette, onCustomPaletteChange, useCustom, onToggleCustom }) {
+  const palettes = colorPalettes[template] || [];
+
+  return (
+    <div className="color-palette-selector">
+      <div className="palette-section">
+        <h4 className="palette-section-title">
+          <FormIcons.Sparkles />
+          Paletas sugeridas
+        </h4>
+        <div className="palettes-grid">
+          {palettes.map((palette) => (
+            <button
+              key={palette.id}
+              type="button"
+              className={`palette-card ${selectedPalette === palette.id && !useCustom ? "selected" : ""}`}
+              onClick={() => {
+                onSelectPalette(palette.id);
+                onToggleCustom(false);
+              }}
+            >
+              <div className="palette-colors">
+                {palette.colors.map((color, index) => (
+                  <div
+                    key={index}
+                    className="palette-color"
+                    style={{ backgroundColor: color }}
+                  />
+                ))}
+              </div>
+              <div className="palette-info">
+                <span className="palette-name">{palette.name}</span>
+                <span className="palette-description">{palette.description}</span>
+              </div>
+              {selectedPalette === palette.id && !useCustom && (
+                <div className="palette-check">
+                  <FormIcons.Check />
+                </div>
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="palette-divider">
+        <span>ou</span>
+      </div>
+
+      <div className="palette-section">
+        <button
+          type="button"
+          className={`custom-palette-toggle ${useCustom ? "active" : ""}`}
+          onClick={() => onToggleCustom(!useCustom)}
+        >
+          <FormIcons.Palette />
+          <span>Criar minha própria paleta</span>
+          <div className={`toggle-indicator ${useCustom ? "active" : ""}`}>
+            <div className="toggle-dot"></div>
+          </div>
+        </button>
+
+        {useCustom && (
+          <div className="custom-palette-editor">
+            <p className="custom-palette-hint">Escolha 4 cores para sua paleta personalizada:</p>
+            <div className="custom-colors-grid">
+              {[0, 1, 2, 3].map((index) => (
+                <div key={index} className="custom-color-item">
+                  <label className="custom-color-label">Cor {index + 1}</label>
+                  <div className="custom-color-input-wrapper">
+                    <input
+                      type="color"
+                      value={customPalette[index] || "#6366f1"}
+                      onChange={(e) => {
+                        const newPalette = [...customPalette];
+                        newPalette[index] = e.target.value;
+                        onCustomPaletteChange(newPalette);
+                      }}
+                      className="custom-color-input"
+                    />
+                    <div
+                      className="custom-color-preview"
+                      style={{ backgroundColor: customPalette[index] || "#6366f1" }}
+                    />
+                    <input
+                      type="text"
+                      value={customPalette[index] || "#6366f1"}
+                      onChange={(e) => {
+                        const newPalette = [...customPalette];
+                        newPalette[index] = e.target.value;
+                        onCustomPaletteChange(newPalette);
+                      }}
+                      className="custom-color-hex"
+                      placeholder="#000000"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="custom-palette-preview">
+              <span className="preview-label">Pré-visualização:</span>
+              <div className="preview-colors">
+                {customPalette.map((color, index) => (
+                  <div
+                    key={index}
+                    className="preview-color"
+                    style={{ backgroundColor: color || "#6366f1" }}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -592,14 +819,21 @@ function SubdomainSuggestions({ suggestions, selected, onSelect }) {
 
 // Main Form Page Component
 export default function FormPage({ onBack }) {
+  const [phase, setPhase] = useState(1);
   const [currentStep, setCurrentStep] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isLoginMode, setIsLoginMode] = useState(false);
   const [formData, setFormData] = useState({
-    // Login
+    // Auth
     email: "",
     password: "",
+    confirmPassword: "",
     // Template
     template: "",
+    // Color Palette
+    selectedPalette: "",
+    customPalette: ["#6366f1", "#8b5cf6", "#a855f7", "#d946ef"],
+    useCustomPalette: false,
     // Portfolio
     name: "",
     profession: "",
@@ -642,15 +876,33 @@ export default function FormPage({ onBack }) {
     subdomain: "",
   });
 
-  const steps = useMemo(() => getSteps(formData.template), [formData.template]);
-  const totalSteps = steps.length;
+  const phase2Steps = useMemo(() => getPhase2Steps(formData.template), [formData.template]);
+  
+  const currentPhaseSteps = phase === 1 ? phase1Steps : phase2Steps;
+  const totalSteps = currentPhaseSteps.length;
+  const currentStepData = currentPhaseSteps[currentStep];
 
   const updateFormData = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleNext = () => {
-    if (currentStep < totalSteps - 1 && !isAnimating) {
+    if (isAnimating) return;
+
+    // Check if we're at the end of phase 1
+    if (phase === 1 && currentStep === phase1Steps.length - 1) {
+      // Move to phase 2
+      setIsAnimating(true);
+      setTimeout(() => {
+        setPhase(2);
+        setCurrentStep(0);
+        setIsAnimating(false);
+      }, 300);
+      return;
+    }
+
+    // Normal next step
+    if (currentStep < totalSteps - 1) {
       setIsAnimating(true);
       setTimeout(() => {
         setCurrentStep((prev) => prev + 1);
@@ -660,7 +912,22 @@ export default function FormPage({ onBack }) {
   };
 
   const handlePrev = () => {
-    if (currentStep > 0 && !isAnimating) {
+    if (isAnimating) return;
+
+    // Check if we're at the start of phase 2
+    if (phase === 2 && currentStep === 0) {
+      // Go back to phase 1
+      setIsAnimating(true);
+      setTimeout(() => {
+        setPhase(1);
+        setCurrentStep(phase1Steps.length - 1);
+        setIsAnimating(false);
+      }, 300);
+      return;
+    }
+
+    // Normal previous step
+    if (currentStep > 0) {
       setIsAnimating(true);
       setTimeout(() => {
         setCurrentStep((prev) => prev - 1);
@@ -718,14 +985,30 @@ export default function FormPage({ onBack }) {
 
   // Render step content
   const renderStepContent = () => {
-    const step = steps[currentStep];
-    if (!step) return null;
+    if (!currentStepData) return null;
 
-    switch (step.id) {
-      case "login":
+    switch (currentStepData.id) {
+      case "auth":
         return (
-          <div className="form-fields">
-            <div className="form-field">
+          <div className="form-fields auth-fields">
+            <div className="auth-mode-toggle">
+              <button
+                type="button"
+                className={`auth-mode-btn ${!isLoginMode ? "active" : ""}`}
+                onClick={() => setIsLoginMode(false)}
+              >
+                Cadastrar
+              </button>
+              <button
+                type="button"
+                className={`auth-mode-btn ${isLoginMode ? "active" : ""}`}
+                onClick={() => setIsLoginMode(true)}
+              >
+                Entrar
+              </button>
+            </div>
+
+            <div className="form-field full-width">
               <label>E-mail</label>
               <input
                 type="email"
@@ -734,7 +1017,7 @@ export default function FormPage({ onBack }) {
                 placeholder="seu@email.com"
               />
             </div>
-            <div className="form-field">
+            <div className="form-field full-width">
               <label>Senha</label>
               <input
                 type="password"
@@ -743,8 +1026,25 @@ export default function FormPage({ onBack }) {
                 placeholder="••••••••"
               />
             </div>
-            <div className="form-hint-box">
-              <p>Não tem uma conta? <a href="#">Cadastre-se gratuitamente</a></p>
+            
+            {!isLoginMode && (
+              <div className="form-field full-width">
+                <label>Confirmar senha</label>
+                <input
+                  type="password"
+                  value={formData.confirmPassword}
+                  onChange={(e) => updateFormData("confirmPassword", e.target.value)}
+                  placeholder="••••••••"
+                />
+              </div>
+            )}
+
+            <div className="auth-hint-box">
+              {isLoginMode ? (
+                <p>Não tem uma conta? <button type="button" onClick={() => setIsLoginMode(false)}>Cadastre-se gratuitamente</button></p>
+              ) : (
+                <p>Já tem uma conta? <button type="button" onClick={() => setIsLoginMode(true)}>Acesse aqui</button></p>
+              )}
             </div>
           </div>
         );
@@ -777,6 +1077,19 @@ export default function FormPage({ onBack }) {
               color="green"
             />
           </div>
+        );
+
+      case "colors":
+        return (
+          <ColorPaletteSelector
+            template={formData.template}
+            selectedPalette={formData.selectedPalette}
+            customPalette={formData.customPalette}
+            onSelectPalette={(id) => updateFormData("selectedPalette", id)}
+            onCustomPaletteChange={(palette) => updateFormData("customPalette", palette)}
+            useCustom={formData.useCustomPalette}
+            onToggleCustom={(value) => updateFormData("useCustomPalette", value)}
+          />
         );
 
       // PORTFOLIO STEPS
@@ -1506,21 +1819,32 @@ export default function FormPage({ onBack }) {
     }
   };
 
-  const isLastStep = currentStep === totalSteps - 1;
-  const canProceed = () => {
-    const step = steps[currentStep];
-    if (!step) return false;
+  const isLastStep = phase === 2 && currentStep === phase2Steps.length - 1;
+  const isFirstStep = phase === 1 && currentStep === 0;
 
-    switch (step.id) {
-      case "login":
-        return formData.email && formData.password;
+  const canProceed = () => {
+    if (!currentStepData) return false;
+
+    switch (currentStepData.id) {
+      case "auth":
+        if (isLoginMode) {
+          return formData.email && formData.password;
+        }
+        return formData.email && formData.password && formData.password === formData.confirmPassword;
       case "template":
         return formData.template !== "";
       case "subdomain":
         return formData.subdomain.length >= 3;
+      case "colors":
+        return formData.useCustomPalette || formData.selectedPalette !== "";
       default:
         return true;
     }
+  };
+
+  const getPhaseLabel = () => {
+    if (phase === 1) return "Configuração da conta";
+    return "Informações do site";
   };
 
   return (
@@ -1530,7 +1854,6 @@ export default function FormPage({ onBack }) {
         <div className="gradient-orb form-orb-1"></div>
         <div className="gradient-orb form-orb-2"></div>
         <div className="gradient-orb form-orb-3"></div>
-        <div className="grid-pattern"></div>
       </div>
 
       {/* Header */}
@@ -1540,7 +1863,7 @@ export default function FormPage({ onBack }) {
           <span>Voltar ao início</span>
         </button>
         <div className="form-logo">
-            <img src={logopng} alt="Logo do MeuSiteJá." style={{height: "13rem", cursor: "pointer"}} onClick={() => window.location.href = "/"}/>
+          <img src={logopng} alt="Logo do MeuSiteJá." style={{height: "13rem", cursor: "pointer"}} onClick={() => window.location.href = "/"}/>
         </div>
         <div className="header-spacer"></div>
       </header>
@@ -1548,17 +1871,22 @@ export default function FormPage({ onBack }) {
       {/* Main Content */}
       <main className="form-main">
         <div className="form-wrapper">
-          <ProgressBar current={currentStep + 1} total={totalSteps} />
+          <ProgressBar 
+            current={currentStep + 1} 
+            total={totalSteps} 
+            phase={phase}
+            phaseLabel={getPhaseLabel()}
+          />
 
           <div className={`form-container ${isAnimating ? "animating" : ""}`}>
             <div className="form-container-glow"></div>
             
             <div className="form-left">
               <div className="step-indicator">
-                <span className="step-icon">{steps[currentStep]?.icon}</span>
+                <span className="step-icon">{currentStepData?.icon}</span>
               </div>
-              <h2 className="form-title">{steps[currentStep]?.title}</h2>
-              <p className="form-subtitle">{steps[currentStep]?.subtitle}</p>
+              <h2 className="form-title">{currentStepData?.title}</h2>
+              <p className="form-subtitle">{currentStepData?.subtitle}</p>
             </div>
 
             <div className="form-divider"></div>
@@ -1575,7 +1903,7 @@ export default function FormPage({ onBack }) {
             <button
               className="btn btn-secondary btn-nav-prev"
               onClick={handlePrev}
-              disabled={currentStep === 0}
+              disabled={isFirstStep}
             >
               <FormIcons.ArrowLeft />
               <span>Anterior</span>
