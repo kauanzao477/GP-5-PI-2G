@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import "./FormPage.css";
 import logopng from "./assets/logopng.png"
 
@@ -258,6 +258,21 @@ const getPhase2Steps = (template) => {
   }
 };
 
+// Error Message Component
+function ErrorMessage({ message }) {
+  if (!message) return null;
+  return (
+    <span className="error-message">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="error-icon">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      {message}
+    </span>
+  );
+}
+
 // Progress Bar Component
 function ProgressBar({ current, total, phase, phaseLabel }) {
   return (
@@ -308,8 +323,197 @@ function TemplateCard({ icon, title, description, selected, onClick, color }) {
   );
 }
 
+// Custom Color Picker Component
+function CustomColorPicker({ color, onChange, onClose }) {
+  const [hue, setHue] = useState(0);
+  const [saturation, setSaturation] = useState(100);
+  const [lightness, setLightness] = useState(50);
+  const [inputValue, setInputValue] = useState(color);
+
+  const hexToRgb = (hex) => {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    } : null;
+  };
+
+  const rgbToHsl = (r, g, b) => {
+    r /= 255; g /= 255; b /= 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    let h, s, l = (max + min) / 2;
+
+    if (max === min) {
+      h = s = 0;
+    } else {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+        case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+        case g: h = ((b - r) / d + 2) / 6; break;
+        case b: h = ((r - g) / d + 4) / 6; break;
+        default: h = 0;
+      }
+    }
+    return { h: Math.round(h * 360), s: Math.round(s * 100), l: Math.round(l * 100) };
+  };
+
+  const hslToHex = (h, s, l) => {
+    s /= 100; l /= 100;
+    const a = s * Math.min(l, 1 - l);
+    const f = n => {
+      const k = (n + h / 30) % 12;
+      const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+      return Math.round(255 * color).toString(16).padStart(2, '0');
+    };
+    return `#${f(0)}${f(8)}${f(4)}`;
+  };
+
+  useEffect(() => {
+    const rgb = hexToRgb(color);
+    if (rgb) {
+      const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+      setHue(hsl.h);
+      setSaturation(hsl.s);
+      setLightness(hsl.l);
+    }
+    setInputValue(color);
+  }, [color]);
+
+  const handleColorChange = (newHue, newSat, newLight) => {
+    const h = newHue ?? hue;
+    const s = newSat ?? saturation;
+    const l = newLight ?? lightness;
+    if (newHue !== undefined) setHue(h);
+    if (newSat !== undefined) setSaturation(s);
+    if (newLight !== undefined) setLightness(l);
+    const hex = hslToHex(h, s, l);
+    setInputValue(hex);
+    onChange(hex);
+  };
+
+  const handleInputChange = (value) => {
+    setInputValue(value);
+    if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
+      onChange(value);
+      const rgb = hexToRgb(value);
+      if (rgb) {
+        const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+        setHue(hsl.h);
+        setSaturation(hsl.s);
+        setLightness(hsl.l);
+      }
+    }
+  };
+
+  const presetColors = [
+    "#ef4444", "#f97316", "#f59e0b", "#eab308", "#84cc16",
+    "#22c55e", "#10b981", "#14b8a6", "#06b6d4", "#0ea5e9",
+    "#3b82f6", "#6366f1", "#8b5cf6", "#a855f7", "#d946ef",
+    "#ec4899", "#f43f5e", "#ffffff", "#6b7280", "#000000"
+  ];
+
+  return (
+    <div className="color-picker-overlay" onClick={onClose}>
+      <div className="color-picker-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="color-picker-header">
+          <h4>Escolher cor</h4>
+          <button className="color-picker-close" onClick={onClose}>×</button>
+        </div>
+        
+        <div className="color-picker-preview-large" style={{ backgroundColor: inputValue }} />
+        
+        <div className="color-picker-sliders">
+          <div className="color-slider-group">
+            <label>Matiz</label>
+            <div className="slider-wrapper hue-slider">
+              <input
+                type="range"
+                min="0"
+                max="360"
+                value={hue}
+                onChange={(e) => handleColorChange(parseInt(e.target.value), undefined, undefined)}
+              />
+            </div>
+          </div>
+          
+          <div className="color-slider-group">
+            <label>Saturação</label>
+            <div className="slider-wrapper" style={{
+              background: `linear-gradient(to right, hsl(${hue}, 0%, ${lightness}%), hsl(${hue}, 100%, ${lightness}%))`
+            }}>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={saturation}
+                onChange={(e) => handleColorChange(undefined, parseInt(e.target.value), undefined)}
+              />
+            </div>
+          </div>
+          
+          <div className="color-slider-group">
+            <label>Luminosidade</label>
+            <div className="slider-wrapper" style={{
+              background: `linear-gradient(to right, #000, hsl(${hue}, ${saturation}%, 50%), #fff)`
+            }}>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={lightness}
+                onChange={(e) => handleColorChange(undefined, undefined, parseInt(e.target.value))}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="color-picker-input-group">
+          <label>Hex</label>
+          <input
+            type="text"
+            value={inputValue}
+            onChange={(e) => handleInputChange(e.target.value)}
+            placeholder="#000000"
+            maxLength={7}
+          />
+        </div>
+
+        <div className="color-picker-presets">
+          <label>Cores rápidas</label>
+          <div className="preset-colors-grid">
+            {presetColors.map((presetColor, index) => (
+              <button
+                key={index}
+                className={`preset-color ${inputValue.toLowerCase() === presetColor ? 'selected' : ''}`}
+                style={{ backgroundColor: presetColor }}
+                onClick={() => {
+                  setInputValue(presetColor);
+                  onChange(presetColor);
+                  const rgb = hexToRgb(presetColor);
+                  if (rgb) {
+                    const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+                    setHue(hsl.h);
+                    setSaturation(hsl.s);
+                    setLightness(hsl.l);
+                  }
+                }}
+              />
+            ))}
+          </div>
+        </div>
+
+        <button className="color-picker-confirm" onClick={onClose}>
+          Confirmar
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // Color Palette Selector Component
-function ColorPaletteSelector({ template, selectedPalette, customPalette, onSelectPalette, onCustomPaletteChange, useCustom, onToggleCustom }) {
+function ColorPaletteSelector({ template, selectedPalette, customPalette, onSelectPalette, onCustomPaletteChange, useCustom, onToggleCustom, showColorPicker, setShowColorPicker }) {
   const palettes = colorPalettes[template] || [];
 
   return (
@@ -378,19 +582,10 @@ function ColorPaletteSelector({ template, selectedPalette, customPalette, onSele
                 <div key={index} className="custom-color-item">
                   <label className="custom-color-label">Cor {index + 1}</label>
                   <div className="custom-color-input-wrapper">
-                    <input
-                      type="color"
-                      value={customPalette[index] || "#6366f1"}
-                      onChange={(e) => {
-                        const newPalette = [...customPalette];
-                        newPalette[index] = e.target.value;
-                        onCustomPaletteChange(newPalette);
-                      }}
-                      className="custom-color-input"
-                    />
                     <div
                       className="custom-color-preview"
                       style={{ backgroundColor: customPalette[index] || "#6366f1" }}
+                      onClick={() => setShowColorPicker(index)}
                     />
                     <input
                       type="text"
@@ -404,6 +599,17 @@ function ColorPaletteSelector({ template, selectedPalette, customPalette, onSele
                       placeholder="#000000"
                     />
                   </div>
+                  {showColorPicker === index && (
+                    <CustomColorPicker
+                      color={customPalette[index] || "#6366f1"}
+                      onChange={(newColor) => {
+                        const newPalette = [...customPalette];
+                        newPalette[index] = newColor;
+                        onCustomPaletteChange(newPalette);
+                      }}
+                      onClose={() => setShowColorPicker(null)}
+                    />
+                  )}
                 </div>
               ))}
             </div>
@@ -427,7 +633,7 @@ function ColorPaletteSelector({ template, selectedPalette, customPalette, onSele
 }
 
 // Dynamic List Component
-function DynamicList({ items, onAdd, onRemove, onUpdate, fields, title, minItems = 0 }) {
+function DynamicList({ items, onAdd, onRemove, onUpdate, fields, title, minItems = 0, errors = {} }) {
   return (
     <div className="dynamic-list">
       {items.map((item, index) => (
@@ -445,51 +651,59 @@ function DynamicList({ items, onAdd, onRemove, onUpdate, fields, title, minItems
             )}
           </div>
           <div className="dynamic-list-fields">
-            {fields.map((field) => (
-              <div key={field.name} className={`form-field ${field.fullWidth ? "full-width" : ""}`}>
-                <label>{field.label}</label>
-                {field.type === "textarea" ? (
-                  <textarea
-                    value={item[field.name] || ""}
-                    onChange={(e) => onUpdate(index, field.name, e.target.value)}
-                    placeholder={field.placeholder}
-                    rows={3}
-                  />
-                ) : field.type === "select" ? (
-                  <div className="select-wrapper">
-                    <select
+            {fields.map((field) => {
+              const errorKey = `${title}_${index}_${field.name}`;
+              const hasError = errors[errorKey];
+              return (
+                <div key={field.name} className={`form-field ${field.fullWidth ? "full-width" : ""} ${hasError ? "has-error" : ""}`}>
+                  <label>{field.label} {field.required !== false && "*"}</label>
+                  {field.type === "textarea" ? (
+                    <textarea
                       value={item[field.name] || ""}
                       onChange={(e) => onUpdate(index, field.name, e.target.value)}
-                    >
-                      <option value="">Selecione...</option>
-                      {field.options.map((opt) => (
-                        <option key={opt.value} value={opt.value}>
-                          {opt.label}
-                        </option>
-                      ))}
-                    </select>
-                    <FormIcons.ChevronDown />
-                  </div>
-                ) : field.type === "checkbox" ? (
-                  <label className="checkbox-label">
-                    <input
-                      type="checkbox"
-                      checked={item[field.name] || false}
-                      onChange={(e) => onUpdate(index, field.name, e.target.checked)}
+                      placeholder={field.placeholder}
+                      rows={3}
+                      className={hasError ? "input-error" : ""}
                     />
-                    <span className="checkbox-custom"></span>
-                    <span className="checkbox-text">{field.checkboxLabel}</span>
-                  </label>
-                ) : (
-                  <input
-                    type={field.type || "text"}
-                    value={item[field.name] || ""}
-                    onChange={(e) => onUpdate(index, field.name, e.target.value)}
-                    placeholder={field.placeholder}
-                  />
-                )}
-              </div>
-            ))}
+                  ) : field.type === "select" ? (
+                    <div className="select-wrapper">
+                      <select
+                        value={item[field.name] || ""}
+                        onChange={(e) => onUpdate(index, field.name, e.target.value)}
+                        className={hasError ? "input-error" : ""}
+                      >
+                        <option value="">Selecione...</option>
+                        {field.options.map((opt) => (
+                          <option key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </option>
+                        ))}
+                      </select>
+                      <FormIcons.ChevronDown />
+                    </div>
+                  ) : field.type === "checkbox" ? (
+                    <label className="checkbox-label">
+                      <input
+                        type="checkbox"
+                        checked={item[field.name] || false}
+                        onChange={(e) => onUpdate(index, field.name, e.target.checked)}
+                      />
+                      <span className="checkbox-custom"></span>
+                      <span className="checkbox-text">{field.checkboxLabel}</span>
+                    </label>
+                  ) : (
+                    <input
+                      type={field.type || "text"}
+                      value={item[field.name] || ""}
+                      onChange={(e) => onUpdate(index, field.name, e.target.value)}
+                      placeholder={field.placeholder}
+                      className={hasError ? "input-error" : ""}
+                    />
+                  )}
+                  {hasError && <ErrorMessage message={hasError} />}
+                </div>
+              );
+            })}
           </div>
         </div>
       ))}
@@ -504,42 +718,47 @@ function DynamicList({ items, onAdd, onRemove, onUpdate, fields, title, minItems
 }
 
 // Skill Rating Component
-function SkillRating({ skills, onAdd, onRemove, onUpdate }) {
+function SkillRating({ skills, onAdd, onRemove, onUpdate, errors = {} }) {
   return (
     <div className="skills-list">
-      {skills.map((skill, index) => (
-        <div key={index} className="skill-item" style={{ animationDelay: `${index * 0.1}s` }}>
-          <input
-            type="text"
-            value={skill.name}
-            onChange={(e) => onUpdate(index, "name", e.target.value)}
-            placeholder="Nome da habilidade"
-            className="skill-name"
-          />
-          <div className="skill-rating">
-            {[1, 2, 3, 4, 5].map((rating) => (
-              <button
-                key={rating}
-                type="button"
-                className={`rating-dot ${skill.rating >= rating ? "active" : ""}`}
-                onClick={() => onUpdate(index, "rating", rating)}
-              >
-                <span className="rating-dot-inner"></span>
-              </button>
-            ))}
-            <span className="skill-rating-label">
-              {skill.rating > 0 ? `${skill.rating}/5` : ""}
-            </span>
+      {errors.skills && <ErrorMessage message={errors.skills} />}
+      {skills.map((skill, index) => {
+        const ratingError = errors[`skill_${index}_rating`];
+        return (
+          <div key={index} className={`skill-item ${ratingError ? "has-error" : ""}`} style={{ animationDelay: `${index * 0.1}s` }}>
+            <input
+              type="text"
+              value={skill.name}
+              onChange={(e) => onUpdate(index, "name", e.target.value)}
+              placeholder="Nome da habilidade *"
+              className="skill-name"
+            />
+            <div className="skill-rating">
+              {[1, 2, 3, 4, 5].map((rating) => (
+                <button
+                  key={rating}
+                  type="button"
+                  className={`rating-dot ${skill.rating >= rating ? "active" : ""}`}
+                  onClick={() => onUpdate(index, "rating", rating)}
+                >
+                  <span className="rating-dot-inner"></span>
+                </button>
+              ))}
+              <span className="skill-rating-label">
+                {skill.rating > 0 ? `${skill.rating}/5` : ""}
+              </span>
+            </div>
+            <button
+              type="button"
+              className="btn-icon btn-remove"
+              onClick={() => onRemove(index)}
+            >
+              <FormIcons.Trash />
+            </button>
+            {ratingError && <div className="skill-error"><ErrorMessage message={ratingError} /></div>}
           </div>
-          <button
-            type="button"
-            className="btn-icon btn-remove"
-            onClick={() => onRemove(index)}
-          >
-            <FormIcons.Trash />
-          </button>
-        </div>
-      ))}
+        );
+      })}
       <button type="button" className="btn-add-item" onClick={onAdd}>
         <div className="btn-add-icon">
           <FormIcons.Plus />
@@ -551,7 +770,7 @@ function SkillRating({ skills, onAdd, onRemove, onUpdate }) {
 }
 
 // Photo Upload Component
-function PhotoUpload({ photos, onAdd, onRemove, maxPhotos = 10, minPhotos = 1, label = "Adicionar foto" }) {
+function PhotoUpload({ photos, onAdd, onRemove, maxPhotos = 10, minPhotos = 1, label = "Adicionar foto", error }) {
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
     files.forEach((file) => {
@@ -567,6 +786,7 @@ function PhotoUpload({ photos, onAdd, onRemove, maxPhotos = 10, minPhotos = 1, l
 
   return (
     <div className="photo-upload">
+      {error && <ErrorMessage message={error} />}
       <div className="photo-grid">
         {photos.map((photo, index) => (
           <div key={index} className="photo-item" style={{ animationDelay: `${index * 0.1}s` }}>
@@ -583,7 +803,7 @@ function PhotoUpload({ photos, onAdd, onRemove, maxPhotos = 10, minPhotos = 1, l
           </div>
         ))}
         {photos.length < maxPhotos && (
-          <label className="photo-add">
+          <label className={`photo-add ${error ? "upload-error" : ""}`}>
             <input
               type="file"
               accept="image/*"
@@ -613,7 +833,7 @@ function PhotoUpload({ photos, onAdd, onRemove, maxPhotos = 10, minPhotos = 1, l
 }
 
 // Before/After Photo Component
-function BeforeAfterUpload({ items, onAdd, onRemove, onUpdate }) {
+function BeforeAfterUpload({ items, onAdd, onRemove, onUpdate, error }) {
   const handleFileChange = (index, field, e) => {
     const file = e.target.files[0];
     if (file) {
@@ -627,6 +847,7 @@ function BeforeAfterUpload({ items, onAdd, onRemove, onUpdate }) {
 
   return (
     <div className="before-after-list">
+      {error && <ErrorMessage message={error} />}
       {items.map((item, index) => (
         <div key={index} className="before-after-item" style={{ animationDelay: `${index * 0.1}s` }}>
           <div className="before-after-header">
@@ -707,7 +928,7 @@ function BeforeAfterUpload({ items, onAdd, onRemove, onUpdate }) {
           </div>
           <div className="ba-fields">
             <div className="form-field">
-              <label>Título do trabalho</label>
+              <label>Título do trabalho *</label>
               <input
                 type="text"
                 value={item.title || ""}
@@ -738,7 +959,7 @@ function BeforeAfterUpload({ items, onAdd, onRemove, onUpdate }) {
 }
 
 // Hours Schedule Component
-function HoursSchedule({ hours, onUpdate }) {
+function HoursSchedule({ hours, onUpdate, error }) {
   const days = [
     { id: "monday", label: "Segunda-feira", short: "Seg" },
     { id: "tuesday", label: "Terça-feira", short: "Ter" },
@@ -751,6 +972,7 @@ function HoursSchedule({ hours, onUpdate }) {
 
   return (
     <div className="hours-schedule">
+      {error && <ErrorMessage message={error} />}
       {days.map((day, index) => (
         <div 
           key={day.id} 
@@ -823,6 +1045,8 @@ export default function FormPage({ onBack }) {
   const [currentStep, setCurrentStep] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [isLoginMode, setIsLoginMode] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [showColorPicker, setShowColorPicker] = useState(null);
   const [formData, setFormData] = useState({
     // Auth
     email: "",
@@ -886,16 +1110,185 @@ export default function FormPage({ onBack }) {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  // Função de validação
+  const validateStep = () => {
+    const newErrors = {};
+    
+    if (!currentStepData) return true;
+
+    switch (currentStepData.id) {
+      case "auth":
+        if (!formData.email) newErrors.email = "E-mail é obrigatório";
+        else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "E-mail inválido";
+        if (!formData.password) newErrors.password = "Senha é obrigatória";
+        else if (formData.password.length < 6) newErrors.password = "Senha deve ter no mínimo 6 caracteres";
+        if (!isLoginMode) {
+          if (!formData.confirmPassword) newErrors.confirmPassword = "Confirme sua senha";
+          else if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = "As senhas não coincidem";
+        }
+        break;
+
+      case "template":
+        if (!formData.template) newErrors.template = "Selecione um template";
+        break;
+
+      case "basic-info":
+        if (!formData.name?.trim()) newErrors.name = "Nome é obrigatório";
+        if (!formData.profession?.trim()) newErrors.profession = "Profissão é obrigatória";
+        if (!formData.experience?.trim()) newErrors.experience = "Tempo de experiência é obrigatório";
+        break;
+
+      case "provider-info":
+        if (!formData.name?.trim()) newErrors.name = "Nome é obrigatório";
+        if (!formData.profession?.trim()) newErrors.profession = "Profissão é obrigatória";
+        if (!formData.experience?.trim()) newErrors.experience = "Tempo de experiência é obrigatório";
+        if (!formData.clientsServed?.trim()) newErrors.clientsServed = "Informe a quantidade de clientes atendidos";
+        break;
+
+      case "about":
+        if (!formData.aboutMe?.trim()) newErrors.aboutMe = "Conte sobre você";
+        if (formData.tags.length === 0) newErrors.tags = "Adicione pelo menos uma tag";
+        break;
+
+      case "experience":
+        formData.companies.forEach((company, index) => {
+          if (!company.name?.trim()) newErrors[`company_${index}_name`] = "Nome da empresa é obrigatório";
+          if (!company.role?.trim()) newErrors[`company_${index}_role`] = "Função é obrigatória";
+        });
+        break;
+
+      case "education":
+        formData.education.forEach((edu, index) => {
+          if (!edu.institution?.trim()) newErrors[`edu_${index}_institution`] = "Instituição é obrigatória";
+          if (!edu.type) newErrors[`edu_${index}_type`] = "Tipo de formação é obrigatório";
+        });
+        break;
+
+      case "skills":
+        if (formData.skills.length === 0 || !formData.skills.some(s => s.name?.trim())) {
+          newErrors.skills = "Adicione pelo menos uma habilidade";
+        }
+        formData.skills.forEach((skill, index) => {
+          if (skill.name?.trim() && skill.rating === 0) {
+            newErrors[`skill_${index}_rating`] = "Avalie a habilidade";
+          }
+        });
+        break;
+
+      case "contact":
+        if (!formData.contact.whatsapp?.trim() && !formData.contact.phone?.trim() && !formData.contact.email?.trim()) {
+          newErrors.contact = "Informe pelo menos uma forma de contato";
+        }
+        break;
+
+      case "photo":
+        if (!formData.photo) newErrors.photo = "Adicione uma foto profissional";
+        break;
+
+      case "business-info":
+        if (!formData.businessName?.trim()) newErrors.businessName = "Nome do negócio é obrigatório";
+        if (!formData.businessTime?.trim()) newErrors.businessTime = "Tempo de atividade é obrigatório";
+        break;
+
+      case "history":
+        if (!formData.history?.trim()) newErrors.history = "Conte a história do seu negócio";
+        break;
+
+      case "services":
+        if (formData.services.length === 0) {
+          newErrors.services = "Adicione pelo menos um serviço";
+        }
+        formData.services.forEach((service, index) => {
+          if (!service.name?.trim()) newErrors[`service_${index}_name`] = "Nome do serviço é obrigatório";
+        });
+        break;
+
+      case "photos":
+        if (formData.photos.length < 6) newErrors.photos = "Adicione no mínimo 6 fotos";
+        break;
+
+      case "location":
+        if (!formData.cep?.trim()) newErrors.cep = "CEP é obrigatório";
+        break;
+
+      case "hours":
+        const hasOpenDayBusiness = Object.values(formData.hours).some(day => day?.open);
+        if (!hasOpenDayBusiness) newErrors.hours = "Selecione pelo menos um dia de funcionamento";
+        break;
+
+      case "provider-hours":
+        const hasOpenDayProvider = Object.values(formData.providerHours).some(day => day?.open);
+        if (!hasOpenDayProvider) newErrors.hours = "Selecione pelo menos um dia de funcionamento";
+        break;
+
+      case "contact-business":
+        if (!formData.businessContact.whatsapp?.trim() && !formData.businessContact.phone?.trim()) {
+          newErrors.businessContact = "Informe WhatsApp ou telefone";
+        }
+        break;
+
+      case "provider-services":
+        const validServices = formData.providerServices.filter(s => s.name?.trim());
+        if (validServices.length < 3) {
+          newErrors.providerServices = "Adicione no mínimo 3 serviços";
+        }
+        break;
+
+      case "trust":
+        if (!formData.trustParagraph?.trim()) newErrors.trustParagraph = "Escreva o parágrafo de confiança";
+        break;
+
+      case "portfolio-photos":
+        if (formData.beforeAfter.length === 0) {
+          newErrors.beforeAfter = "Adicione pelo menos um trabalho";
+        }
+        break;
+
+      case "regions":
+        const validRegions = formData.regions.filter(r => r?.trim());
+        if (validRegions.length === 0) newErrors.regions = "Informe pelo menos uma região";
+        break;
+
+      case "contact-provider":
+        if (!formData.providerContact.whatsapp?.trim() && !formData.providerContact.phone?.trim()) {
+          newErrors.providerContact = "Informe WhatsApp ou telefone";
+        }
+        break;
+
+      case "colors":
+        if (!formData.useCustomPalette && !formData.selectedPalette) {
+          newErrors.colors = "Selecione uma paleta de cores";
+        }
+        break;
+
+      case "subdomain":
+        if (!formData.subdomain?.trim()) newErrors.subdomain = "Escolha um link para seu site";
+        else if (formData.subdomain.length < 3) newErrors.subdomain = "O link deve ter no mínimo 3 caracteres";
+        break;
+
+      default:
+        break;
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleNext = () => {
     if (isAnimating) return;
 
+    // Validar step atual
+    if (!validateStep()) {
+      return;
+    }
+
     // Check if we're at the end of phase 1
     if (phase === 1 && currentStep === phase1Steps.length - 1) {
-      // Move to phase 2
       setIsAnimating(true);
       setTimeout(() => {
         setPhase(2);
         setCurrentStep(0);
+        setErrors({});
         setIsAnimating(false);
       }, 300);
       return;
@@ -906,6 +1299,7 @@ export default function FormPage({ onBack }) {
       setIsAnimating(true);
       setTimeout(() => {
         setCurrentStep((prev) => prev + 1);
+        setErrors({});
         setIsAnimating(false);
       }, 300);
     }
@@ -921,6 +1315,7 @@ export default function FormPage({ onBack }) {
       setTimeout(() => {
         setPhase(1);
         setCurrentStep(phase1Steps.length - 1);
+        setErrors({});
         setIsAnimating(false);
       }, 300);
       return;
@@ -931,12 +1326,16 @@ export default function FormPage({ onBack }) {
       setIsAnimating(true);
       setTimeout(() => {
         setCurrentStep((prev) => prev - 1);
+        setErrors({});
         setIsAnimating(false);
       }, 300);
     }
   };
 
   const handleSubmit = () => {
+    if (!validateStep()) {
+      return;
+    }
     console.log("Form submitted:", formData);
     alert("🎉 Site criado com sucesso! Você será redirecionado em breve.");
   };
@@ -1008,34 +1407,40 @@ export default function FormPage({ onBack }) {
               </button>
             </div>
 
-            <div className="form-field full-width">
-              <label>E-mail</label>
+            <div className={`form-field full-width ${errors.email ? 'has-error' : ''}`}>
+              <label>E-mail *</label>
               <input
                 type="email"
                 value={formData.email}
                 onChange={(e) => updateFormData("email", e.target.value)}
                 placeholder="seu@email.com"
+                className={errors.email ? 'input-error' : ''}
               />
+              <ErrorMessage message={errors.email} />
             </div>
-            <div className="form-field full-width">
-              <label>Senha</label>
+            <div className={`form-field full-width ${errors.password ? 'has-error' : ''}`}>
+              <label>Senha *</label>
               <input
                 type="password"
                 value={formData.password}
                 onChange={(e) => updateFormData("password", e.target.value)}
                 placeholder="••••••••"
+                className={errors.password ? 'input-error' : ''}
               />
+              <ErrorMessage message={errors.password} />
             </div>
             
             {!isLoginMode && (
-              <div className="form-field full-width">
-                <label>Confirmar senha</label>
+              <div className={`form-field full-width ${errors.confirmPassword ? 'has-error' : ''}`}>
+                <label>Confirmar senha *</label>
                 <input
                   type="password"
                   value={formData.confirmPassword}
                   onChange={(e) => updateFormData("confirmPassword", e.target.value)}
                   placeholder="••••••••"
+                  className={errors.confirmPassword ? 'input-error' : ''}
                 />
+                <ErrorMessage message={errors.confirmPassword} />
               </div>
             )}
 
@@ -1052,6 +1457,7 @@ export default function FormPage({ onBack }) {
       case "template":
         return (
           <div className="template-options">
+            {errors.template && <ErrorMessage message={errors.template} />}
             <TemplateCard
               icon={<FormIcons.Briefcase />}
               title="Portfólio Profissional"
@@ -1081,47 +1487,58 @@ export default function FormPage({ onBack }) {
 
       case "colors":
         return (
-          <ColorPaletteSelector
-            template={formData.template}
-            selectedPalette={formData.selectedPalette}
-            customPalette={formData.customPalette}
-            onSelectPalette={(id) => updateFormData("selectedPalette", id)}
-            onCustomPaletteChange={(palette) => updateFormData("customPalette", palette)}
-            useCustom={formData.useCustomPalette}
-            onToggleCustom={(value) => updateFormData("useCustomPalette", value)}
-          />
+          <>
+            {errors.colors && <ErrorMessage message={errors.colors} />}
+            <ColorPaletteSelector
+              template={formData.template}
+              selectedPalette={formData.selectedPalette}
+              customPalette={formData.customPalette}
+              onSelectPalette={(id) => updateFormData("selectedPalette", id)}
+              onCustomPaletteChange={(palette) => updateFormData("customPalette", palette)}
+              useCustom={formData.useCustomPalette}
+              onToggleCustom={(value) => updateFormData("useCustomPalette", value)}
+              showColorPicker={showColorPicker}
+              setShowColorPicker={setShowColorPicker}
+            />
+          </>
         );
 
       // PORTFOLIO STEPS
       case "basic-info":
         return (
           <div className="form-fields">
-            <div className="form-field">
-              <label>Nome completo</label>
+            <div className={`form-field ${errors.name ? 'has-error' : ''}`}>
+              <label>Nome completo *</label>
               <input
                 type="text"
                 value={formData.name}
                 onChange={(e) => updateFormData("name", e.target.value)}
                 placeholder="João da Silva"
+                className={errors.name ? 'input-error' : ''}
               />
+              <ErrorMessage message={errors.name} />
             </div>
-            <div className="form-field">
-              <label>Profissão atual</label>
+            <div className={`form-field ${errors.profession ? 'has-error' : ''}`}>
+              <label>Profissão atual *</label>
               <input
                 type="text"
                 value={formData.profession}
                 onChange={(e) => updateFormData("profession", e.target.value)}
                 placeholder="Desenvolvedor de Software"
+                className={errors.profession ? 'input-error' : ''}
               />
+              <ErrorMessage message={errors.profession} />
             </div>
-            <div className="form-field full-width">
-              <label>Tempo de experiência</label>
+            <div className={`form-field full-width ${errors.experience ? 'has-error' : ''}`}>
+              <label>Tempo de experiência *</label>
               <input
                 type="text"
                 value={formData.experience}
                 onChange={(e) => updateFormData("experience", e.target.value)}
                 placeholder="5 anos"
+                className={errors.experience ? 'input-error' : ''}
               />
+              <ErrorMessage message={errors.experience} />
             </div>
           </div>
         );
@@ -1129,18 +1546,20 @@ export default function FormPage({ onBack }) {
       case "about":
         return (
           <div className="form-fields">
-            <div className="form-field full-width">
-              <label>Sobre mim</label>
+            <div className={`form-field full-width ${errors.aboutMe ? 'has-error' : ''}`}>
+              <label>Sobre mim *</label>
               <textarea
                 value={formData.aboutMe}
                 onChange={(e) => updateFormData("aboutMe", e.target.value)}
                 placeholder="Conte um pouco sobre você, sua trajetória e objetivos profissionais..."
                 rows={5}
+                className={errors.aboutMe ? 'input-error' : ''}
               />
+              <ErrorMessage message={errors.aboutMe} />
             </div>
-            <div className="form-field full-width">
-              <label>Tags sobre mim</label>
-              <div className="tags-input">
+            <div className={`form-field full-width ${errors.tags ? 'has-error' : ''}`}>
+              <label>Tags sobre mim *</label>
+              <div className={`tags-input ${errors.tags ? 'input-error' : ''}`}>
                 <div className="tags-list">
                   {formData.tags.map((tag, index) => (
                     <span key={index} className="tag" style={{ animationDelay: `${index * 0.05}s` }}>
@@ -1155,6 +1574,7 @@ export default function FormPage({ onBack }) {
                   onKeyDown={handleTagInput}
                 />
               </div>
+              <ErrorMessage message={errors.tags} />
               <p className="field-hint">Ex: Proativo, Criativo, Trabalho em equipe, Liderança</p>
             </div>
           </div>
@@ -1184,10 +1604,11 @@ export default function FormPage({ onBack }) {
             fields={[
               { name: "name", label: "Empresa", placeholder: "Nome da empresa" },
               { name: "role", label: "Função", placeholder: "Seu cargo" },
-              { name: "duration", label: "Período", placeholder: "Ex: 2020 - 2023" },
-              { name: "description", label: "Descrição das atividades", placeholder: "Descreva suas responsabilidades e conquistas", type: "textarea", fullWidth: true },
+              { name: "duration", label: "Período", placeholder: "Ex: 2020 - 2023", required: false },
+              { name: "description", label: "Descrição das atividades", placeholder: "Descreva suas responsabilidades e conquistas", type: "textarea", fullWidth: true, required: false },
             ]}
             title="empresa"
+            errors={errors}
           />
         );
 
@@ -1222,10 +1643,11 @@ export default function FormPage({ onBack }) {
                 { value: "technical", label: "Técnico" },
                 { value: "course", label: "Curso Livre" },
               ]},
-              { name: "date", label: "Ano de conclusão", placeholder: "2020" },
-              { name: "current", label: "", type: "checkbox", checkboxLabel: "Cursando atualmente", fullWidth: true },
+              { name: "date", label: "Ano de conclusão", placeholder: "2020", required: false },
+              { name: "current", label: "", type: "checkbox", checkboxLabel: "Cursando atualmente", fullWidth: true, required: false },
             ]}
             title="formação"
+            errors={errors}
           />
         );
 
@@ -1247,12 +1669,18 @@ export default function FormPage({ onBack }) {
               updated[index][field] = value;
               updateFormData("skills", updated);
             }}
+            errors={errors}
           />
         );
 
       case "contact":
         return (
           <div className="form-fields">
+            {errors.contact && (
+              <div className="full-width">
+                <ErrorMessage message={errors.contact} />
+              </div>
+            )}
             <div className="form-field">
               <label>WhatsApp</label>
               <input
@@ -1297,12 +1725,14 @@ export default function FormPage({ onBack }) {
                 placeholder="São Paulo, SP"
               />
             </div>
+            <p className="field-hint full-width">* Preencha pelo menos uma forma de contato</p>
           </div>
         );
 
       case "photo":
         return (
           <div className="photo-upload-single">
+            {errors.photo && <ErrorMessage message={errors.photo} />}
             {formData.photo ? (
               <div className="photo-preview-single">
                 <div className="photo-frame">
@@ -1318,7 +1748,7 @@ export default function FormPage({ onBack }) {
                 </button>
               </div>
             ) : (
-              <label className="photo-upload-area">
+              <label className={`photo-upload-area ${errors.photo ? 'upload-error' : ''}`}>
                 <input
                   type="file"
                   accept="image/*"
@@ -1337,7 +1767,7 @@ export default function FormPage({ onBack }) {
                   <div className="upload-icon">
                     <FormIcons.Upload />
                   </div>
-                  <span className="upload-text">Clique para enviar sua foto</span>
+                  <span className="upload-text">Clique para enviar sua foto *</span>
                   <p className="upload-hint">Recomendamos uma foto profissional com fundo neutro</p>
                 </div>
               </label>
@@ -1349,23 +1779,27 @@ export default function FormPage({ onBack }) {
       case "business-info":
         return (
           <div className="form-fields">
-            <div className="form-field full-width">
-              <label>Nome do negócio</label>
+            <div className={`form-field full-width ${errors.businessName ? 'has-error' : ''}`}>
+              <label>Nome do negócio *</label>
               <input
                 type="text"
                 value={formData.businessName}
                 onChange={(e) => updateFormData("businessName", e.target.value)}
                 placeholder="Restaurante da Maria"
+                className={errors.businessName ? 'input-error' : ''}
               />
+              <ErrorMessage message={errors.businessName} />
             </div>
-            <div className="form-field full-width">
-              <label>Tempo de atividade</label>
+            <div className={`form-field full-width ${errors.businessTime ? 'has-error' : ''}`}>
+              <label>Tempo de atividade *</label>
               <input
                 type="text"
                 value={formData.businessTime}
                 onChange={(e) => updateFormData("businessTime", e.target.value)}
                 placeholder="5 anos"
+                className={errors.businessTime ? 'input-error' : ''}
               />
+              <ErrorMessage message={errors.businessTime} />
             </div>
           </div>
         );
@@ -1373,46 +1807,52 @@ export default function FormPage({ onBack }) {
       case "history":
         return (
           <div className="form-fields">
-            <div className="form-field full-width">
-              <label>História do negócio</label>
+            <div className={`form-field full-width ${errors.history ? 'has-error' : ''}`}>
+              <label>História do negócio *</label>
               <textarea
                 value={formData.history}
                 onChange={(e) => updateFormData("history", e.target.value)}
                 placeholder="Conte a história do seu negócio, como começou, sua missão e valores..."
                 rows={8}
+                className={errors.history ? 'input-error' : ''}
               />
+              <ErrorMessage message={errors.history} />
             </div>
           </div>
         );
 
       case "services":
         return (
-          <DynamicList
-            items={formData.services}
-            onAdd={() =>
-              updateFormData("services", [
-                ...formData.services,
-                { name: "", price: "", description: "" },
-              ])
-            }
-            onRemove={(index) =>
-              updateFormData(
-                "services",
-                formData.services.filter((_, i) => i !== index)
-              )
-            }
-            onUpdate={(index, field, value) => {
-              const updated = [...formData.services];
-              updated[index][field] = value;
-              updateFormData("services", updated);
-            }}
-            fields={[
-              { name: "name", label: "Nome do serviço/produto", placeholder: "Corte de cabelo" },
-              { name: "price", label: "Preço", placeholder: "R$ 50,00" },
-              { name: "description", label: "Descrição", placeholder: "Descrição detalhada do serviço", type: "textarea", fullWidth: true },
-            ]}
-            title="serviço"
-          />
+          <>
+            {errors.services && <ErrorMessage message={errors.services} />}
+            <DynamicList
+              items={formData.services}
+              onAdd={() =>
+                updateFormData("services", [
+                  ...formData.services,
+                  { name: "", price: "", description: "" },
+                ])
+              }
+              onRemove={(index) =>
+                updateFormData(
+                  "services",
+                  formData.services.filter((_, i) => i !== index)
+                )
+              }
+              onUpdate={(index, field, value) => {
+                const updated = [...formData.services];
+                updated[index][field] = value;
+                updateFormData("services", updated);
+              }}
+              fields={[
+                { name: "name", label: "Nome do serviço/produto", placeholder: "Corte de cabelo" },
+                { name: "price", label: "Preço", placeholder: "R$ 50,00", required: false },
+                { name: "description", label: "Descrição", placeholder: "Descrição detalhada do serviço", type: "textarea", fullWidth: true, required: false },
+              ]}
+              title="serviço"
+              errors={errors}
+            />
+          </>
         );
 
       case "photos":
@@ -1429,20 +1869,23 @@ export default function FormPage({ onBack }) {
             maxPhotos={10}
             minPhotos={6}
             label="Adicionar foto"
+            error={errors.photos}
           />
         );
 
       case "location":
         return (
           <div className="form-fields">
-            <div className="form-field">
-              <label>CEP</label>
+            <div className={`form-field ${errors.cep ? 'has-error' : ''}`}>
+              <label>CEP *</label>
               <input
                 type="text"
                 value={formData.cep}
                 onChange={(e) => updateFormData("cep", e.target.value)}
                 placeholder="00000-000"
+                className={errors.cep ? 'input-error' : ''}
               />
+              <ErrorMessage message={errors.cep} />
             </div>
             <div className="form-field full-width">
               <label>Ponto de referência</label>
@@ -1463,12 +1906,18 @@ export default function FormPage({ onBack }) {
             onUpdate={(day, value) =>
               updateFormData("hours", { ...formData.hours, [day]: value })
             }
+            error={errors.hours}
           />
         );
 
       case "contact-business":
         return (
           <div className="form-fields">
+            {errors.businessContact && (
+              <div className="full-width">
+                <ErrorMessage message={errors.businessContact} />
+              </div>
+            )}
             <div className="form-field">
               <label>WhatsApp</label>
               <input
@@ -1581,6 +2030,7 @@ export default function FormPage({ onBack }) {
                 placeholder="youtube.com/@seucanal"
               />
             </div>
+            <p className="field-hint full-width">* Preencha pelo menos WhatsApp ou telefone</p>
           </div>
         );
 
@@ -1588,86 +2038,100 @@ export default function FormPage({ onBack }) {
       case "provider-info":
         return (
           <div className="form-fields">
-            <div className="form-field">
-              <label>Nome completo</label>
+            <div className={`form-field ${errors.name ? 'has-error' : ''}`}>
+              <label>Nome completo *</label>
               <input
                 type="text"
                 value={formData.name}
                 onChange={(e) => updateFormData("name", e.target.value)}
                 placeholder="José da Silva"
+                className={errors.name ? 'input-error' : ''}
               />
+              <ErrorMessage message={errors.name} />
             </div>
-            <div className="form-field">
-              <label>Profissão atual</label>
+            <div className={`form-field ${errors.profession ? 'has-error' : ''}`}>
+              <label>Profissão atual *</label>
               <input
                 type="text"
                 value={formData.profession}
                 onChange={(e) => updateFormData("profession", e.target.value)}
                 placeholder="Eletricista"
+                className={errors.profession ? 'input-error' : ''}
               />
+              <ErrorMessage message={errors.profession} />
             </div>
-            <div className="form-field">
-              <label>Tempo de experiência</label>
+            <div className={`form-field ${errors.experience ? 'has-error' : ''}`}>
+              <label>Tempo de experiência *</label>
               <input
                 type="text"
                 value={formData.experience}
                 onChange={(e) => updateFormData("experience", e.target.value)}
                 placeholder="10 anos"
+                className={errors.experience ? 'input-error' : ''}
               />
+              <ErrorMessage message={errors.experience} />
             </div>
-            <div className="form-field">
-              <label>Clientes atendidos</label>
+            <div className={`form-field ${errors.clientsServed ? 'has-error' : ''}`}>
+              <label>Clientes atendidos *</label>
               <input
                 type="text"
                 value={formData.clientsServed}
                 onChange={(e) => updateFormData("clientsServed", e.target.value)}
                 placeholder="+500 clientes"
+                className={errors.clientsServed ? 'input-error' : ''}
               />
+              <ErrorMessage message={errors.clientsServed} />
             </div>
           </div>
         );
 
       case "provider-services":
         return (
-          <DynamicList
-            items={formData.providerServices}
-            onAdd={() =>
-              updateFormData("providerServices", [
-                ...formData.providerServices,
-                { name: "", description: "" },
-              ])
-            }
-            onRemove={(index) =>
-              updateFormData(
-                "providerServices",
-                formData.providerServices.filter((_, i) => i !== index)
-              )
-            }
-            onUpdate={(index, field, value) => {
-              const updated = [...formData.providerServices];
-              updated[index][field] = value;
-              updateFormData("providerServices", updated);
-            }}
-            fields={[
-              { name: "name", label: "Nome do serviço", placeholder: "Instalação elétrica" },
-              { name: "description", label: "Descrição", placeholder: "Descreva o serviço oferecido", type: "textarea", fullWidth: true },
-            ]}
-            title="serviço"
-            minItems={3}
-          />
+          <>
+            {errors.providerServices && <ErrorMessage message={errors.providerServices} />}
+            <DynamicList
+              items={formData.providerServices}
+              onAdd={() =>
+                updateFormData("providerServices", [
+                  ...formData.providerServices,
+                  { name: "", description: "" },
+                ])
+              }
+              onRemove={(index) =>
+                updateFormData(
+                  "providerServices",
+                  formData.providerServices.filter((_, i) => i !== index)
+                )
+              }
+              onUpdate={(index, field, value) => {
+                const updated = [...formData.providerServices];
+                updated[index][field] = value;
+                updateFormData("providerServices", updated);
+              }}
+              fields={[
+                { name: "name", label: "Nome do serviço", placeholder: "Instalação elétrica" },
+                { name: "description", label: "Descrição", placeholder: "Descreva o serviço oferecido", type: "textarea", fullWidth: true, required: false },
+              ]}
+              title="serviço"
+              minItems={3}
+              errors={errors}
+            />
+          </>
         );
 
       case "trust":
         return (
           <div className="form-fields">
-            <div className="form-field full-width">
-              <label>Parágrafo de confiança</label>
+            <div className={`form-field full-width ${errors.trustParagraph ? 'has-error' : ''}`}>
+              <label>Parágrafo de confiança *</label>
               <textarea
                 value={formData.trustParagraph}
                 onChange={(e) => updateFormData("trustParagraph", e.target.value)}
                 placeholder="Explique por que os clientes devem confiar em você. Fale sobre sua experiência, compromisso com qualidade, garantias oferecidas, diferenciais do seu trabalho..."
                 rows={6}
+                className={errors.trustParagraph ? 'input-error' : ''}
               />
+              <ErrorMessage message={errors.trustParagraph} />
               <p className="field-hint">
                 💡 Este texto aparecerá em destaque no seu site para gerar confiança nos clientes
               </p>
@@ -1696,16 +2160,22 @@ export default function FormPage({ onBack }) {
               updated[index][field] = value;
               updateFormData("beforeAfter", updated);
             }}
+            error={errors.beforeAfter}
           />
         );
 
       case "regions":
         return (
           <div className="form-fields regions-grid">
-            <p className="form-intro">Informe até 5 regiões onde você atende:</p>
+            {errors.regions && (
+              <div className="full-width">
+                <ErrorMessage message={errors.regions} />
+              </div>
+            )}
+            <p className="form-intro">Informe até 5 regiões onde você atende (mínimo 1):</p>
             {formData.regions.map((region, index) => (
               <div key={index} className="form-field" style={{ animationDelay: `${index * 0.1}s` }}>
-                <label>Região {index + 1}</label>
+                <label>Região {index + 1} {index === 0 ? "*" : ""}</label>
                 <input
                   type="text"
                   value={region}
@@ -1728,12 +2198,18 @@ export default function FormPage({ onBack }) {
             onUpdate={(day, value) =>
               updateFormData("providerHours", { ...formData.providerHours, [day]: value })
             }
+            error={errors.hours}
           />
         );
 
       case "contact-provider":
         return (
           <div className="form-fields">
+            {errors.providerContact && (
+              <div className="full-width">
+                <ErrorMessage message={errors.providerContact} />
+              </div>
+            )}
             <div className="form-field">
               <label>WhatsApp</label>
               <input
@@ -1776,6 +2252,7 @@ export default function FormPage({ onBack }) {
                 placeholder="contato@email.com"
               />
             </div>
+            <p className="field-hint full-width">* Preencha pelo menos WhatsApp ou telefone</p>
           </div>
         );
 
@@ -1784,7 +2261,7 @@ export default function FormPage({ onBack }) {
         return (
           <div className="subdomain-step">
             <div className="subdomain-preview">
-              <div className="subdomain-url">
+              <div className={`subdomain-url ${errors.subdomain ? 'subdomain-error' : ''}`}>
                 <span className="subdomain-base">meusiteja.com/usuarios/</span>
                 <input
                   type="text"
@@ -1799,7 +2276,8 @@ export default function FormPage({ onBack }) {
                   className="subdomain-input"
                 />
               </div>
-              {formData.subdomain && (
+              {errors.subdomain && <ErrorMessage message={errors.subdomain} />}
+              {formData.subdomain && formData.subdomain.length >= 3 && !errors.subdomain && (
                 <div className="subdomain-availability available">
                   <FormIcons.Check />
                   <span>Disponível!</span>
@@ -1821,26 +2299,6 @@ export default function FormPage({ onBack }) {
 
   const isLastStep = phase === 2 && currentStep === phase2Steps.length - 1;
   const isFirstStep = phase === 1 && currentStep === 0;
-
-  const canProceed = () => {
-    if (!currentStepData) return false;
-
-    switch (currentStepData.id) {
-      case "auth":
-        if (isLoginMode) {
-          return formData.email && formData.password;
-        }
-        return formData.email && formData.password && formData.password === formData.confirmPassword;
-      case "template":
-        return formData.template !== "";
-      case "subdomain":
-        return formData.subdomain.length >= 3;
-      case "colors":
-        return formData.useCustomPalette || formData.selectedPalette !== "";
-      default:
-        return true;
-    }
-  };
 
   const getPhaseLabel = () => {
     if (phase === 1) return "Configuração da conta";
@@ -1913,7 +2371,6 @@ export default function FormPage({ onBack }) {
               <button
                 className="btn btn-success btn-nav-next"
                 onClick={handleSubmit}
-                disabled={!canProceed()}
               >
                 <FormIcons.Rocket />
                 <span>Criar meu site</span>
@@ -1922,7 +2379,6 @@ export default function FormPage({ onBack }) {
               <button
                 className="btn btn-primary btn-nav-next"
                 onClick={handleNext}
-                disabled={!canProceed()}
               >
                 <span>Próximo</span>
                 <FormIcons.ArrowRight />
