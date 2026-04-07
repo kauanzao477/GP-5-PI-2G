@@ -658,24 +658,24 @@ function AboutUsSection() {
   const teamMembers = [
     {
       name: "Breno Biazus Farina",
-      role: "Cargo / Função",
-      description: "Breve descrição sobre o membro, sua experiência e contribuição para o projeto.",
-      skills: ["Skill 1", "Skill 2", "Skill 3"],
+      role: "Programador",
+      description: "Faço o curso de informatica no IFC, sou bom em programar, na criação de ideias e me comunico bem.  ",
+      skills: ["Programção", "Comunicação", "Criação de ideias"],
       social: {
-        Instagram: "#",
+        Instagram: "https://www.instagram.com/breno_farina/?hl=en",
         github: "#",
-        email: "email@exemplo.com"
+        email: "brenkgpt@gmail.com"
       }
     },
     {
       name: "Kauan Henrique Balestrin",
-      role: "Cargo / Função",
-      description: "Breve descrição sobre o membro, sua experiência e contribuição para o projeto.",
+      role: "Comunicador e Programador",
+      description: "Eu sou o Kauan estudante do curso tecnico de informática do IFC, sou bom em criacão de ideias , na parte de comunicação e também ajudo na parte de marketing.",
       skills: ["Comunicação", "Marketing", "Programação"],
       social: {
-        Instagram: "#",
+        Instagram: "https://www.instagram.com/kauanhrsb/",
         github: "https://github.com/kauanzao477",
-        email: "kauanhenriquesilvabalestrin@gmail.com"
+        Email: "mailto:kauanhenriquesilvabalestrin@gmail.com"
       }
     },
     {
@@ -691,19 +691,19 @@ function AboutUsSection() {
     },
     {
       name: "Lorenzo Biazus Farina",
-      role: "Cargo / Função",
-      description: "Breve descrição sobre o membro, sua experiência e contribuição para o projeto.",
-      skills: ["Skill 1", "Skill 2", "Skill 3"],
+      role: "Designer",
+      description: "Estudo no IFC e curso técnico de informática, sou bem completo, mas me considero melhor com programação e criação de sites",
+      skills: ["Web Design", "Progamação", "Comunicação"],
       social: {
-        Instagram: "#",
+        Instagram: "https://www.instagram.com/lorenzobfarina/",
         github: "https://github.com/lorenz1o",
-        email: "email@exemplo.com"
+        email: "kauanicolorenzo@gmail.com"
       }
     },
     {
       name: "Miguel Gasperini Klidzio",
       role: "Designer",
-      description: "Breve descrição sobre o membro, sua experiência e contribuição para o projeto.",
+      description: "Me chamo Miguel, curso informática para internet no Instituto Federal Catarinense, sou bom em design, criação de ideias, e comunicação",
       skills: ["Comunicação", "Geração de Ideias", "Design"],
       social: {
         Instagram: "https://www.instagram.com/miguel_.mgk/",
