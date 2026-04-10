@@ -2,8 +2,6 @@ import { useState, useMemo, useEffect } from "react";
 import "./FormPage.css";
 import logopng from "./assets/logopng.png"
 
-
-
 // Icons
 const FormIcons = {
   ArrowLeft: () => (
@@ -423,9 +421,9 @@ function CustomColorPicker({ color, onChange, onClose }) {
           <h4>Escolher cor</h4>
           <button className="color-picker-close" onClick={onClose}>×</button>
         </div>
-        
+
         <div className="color-picker-preview-large" style={{ backgroundColor: inputValue }} />
-        
+
         <div className="color-picker-sliders">
           <div className="color-slider-group">
             <label>Matiz</label>
@@ -439,7 +437,7 @@ function CustomColorPicker({ color, onChange, onClose }) {
               />
             </div>
           </div>
-          
+
           <div className="color-slider-group">
             <label>Saturação</label>
             <div className="slider-wrapper" style={{
@@ -454,7 +452,7 @@ function CustomColorPicker({ color, onChange, onClose }) {
               />
             </div>
           </div>
-          
+
           <div className="color-slider-group">
             <label>Luminosidade</label>
             <div className="slider-wrapper" style={{
@@ -976,8 +974,8 @@ function HoursSchedule({ hours, onUpdate, error }) {
     <div className="hours-schedule">
       {error && <ErrorMessage message={error} />}
       {days.map((day, index) => (
-        <div 
-          key={day.id} 
+        <div
+          key={day.id}
           className={`hours-day ${hours[day.id]?.open ? "open" : ""}`}
           style={{ animationDelay: `${index * 0.05}s` }}
         >
@@ -1103,7 +1101,7 @@ export default function FormPage({ onBack }) {
   });
 
   const phase2Steps = useMemo(() => getPhase2Steps(formData.template), [formData.template]);
-  
+
   const currentPhaseSteps = phase === 1 ? phase1Steps : phase2Steps;
   const totalSteps = currentPhaseSteps.length;
   const currentStepData = currentPhaseSteps[currentStep];
@@ -1115,7 +1113,7 @@ export default function FormPage({ onBack }) {
   // Função de validação
   const validateStep = () => {
     const newErrors = {};
-    
+
     if (!currentStepData) return true;
 
     switch (currentStepData.id) {
@@ -1334,12 +1332,23 @@ export default function FormPage({ onBack }) {
     }
   };
 
-  const handleSubmit = () => {
-    if (!validateStep()) {
-      return;
-    }
-    console.log("Form submitted:", formData);
-    alert("🎉 Site criado com sucesso! Você será redirecionado em breve.");
+  const handleSubmit = async () => {
+    if (!validateStep()) return;
+
+    const res = await fetch("http://localhost:3000/api/site/create", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+
+    const data = await res.json();
+
+    console.log(data);
+
+    const newWindow = window.open();
+    newWindow.document.write(data.html);
   };
 
   // Generate subdomain suggestions
@@ -1347,24 +1356,24 @@ export default function FormPage({ onBack }) {
     const suggestions = [];
     const name = formData.name || formData.businessName || "";
     const cleanName = name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
-    
+
     if (cleanName) {
       suggestions.push(cleanName);
       if (formData.template) {
         suggestions.push(`${cleanName}-${formData.template}`);
       }
     }
-    
+
     if (formData.profession) {
       const cleanProfession = formData.profession.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
       if (cleanName) {
         suggestions.push(`${cleanName}-${cleanProfession}`);
       }
     }
-    
+
     suggestions.push(`meu-${formData.template || "site"}`);
     suggestions.push(`${formData.template || "site"}-${Date.now().toString().slice(-4)}`);
-    
+
     return suggestions.filter((s, i, arr) => s && arr.indexOf(s) === i).slice(0, 5);
   };
 
@@ -1431,7 +1440,7 @@ export default function FormPage({ onBack }) {
               />
               <ErrorMessage message={errors.password} />
             </div>
-            
+
             {!isLoginMode && (
               <div className={`form-field full-width ${errors.confirmPassword ? 'has-error' : ''}`}>
                 <label>Confirmar senha *</label>
@@ -2331,16 +2340,16 @@ export default function FormPage({ onBack }) {
       {/* Main Content */}
       <main className="form-main">
         <div className="form-wrapper">
-          <ProgressBar 
-            current={currentStep + 1} 
-            total={totalSteps} 
+          <ProgressBar
+            current={currentStep + 1}
+            total={totalSteps}
             phase={phase}
             phaseLabel={getPhaseLabel()}
           />
 
           <div className={`form-container ${isAnimating ? "animating" : ""}`}>
             <div className="form-container-glow"></div>
-            
+
             <div className="form-left">
               <div className="step-indicator">
                 <span className="step-icon">{currentStepData?.icon}</span>
