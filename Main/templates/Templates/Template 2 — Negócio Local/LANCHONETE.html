@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BurguerNight — Lanchonete</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+
+    /* ══════════════════════════════════════════
+       VARIÁVEIS — edite aqui para mudar as cores
+    ══════════════════════════════════════════ */
+    :root {
+      --amarelo:       #F5C518;
+      --amarelo-esc:   #D4A800;
+      --vermelho:      #D93025;
+      --vermelho-cl:   #FFF0EF;
+      --fundo:         #FBF8F3;
+      --fundo-escuro:  #1A120B;
+      --card:          #FFFFFF;
+      --texto:         #1A120B;
+      --texto-sub:     #6B5744;
+      --borda:         #E8DDD4;
+      --wpp:           #25D366;
+      --fonte:         'DM Sans', sans-serif;
+      --fonte-titulo:  'Barlow Condensed', Impact, sans-serif;
+      --raio:          12px;
+      --sombra:        0 4px 24px rgba(26,18,11,.10);
+    }
+
+    /* ══════════════ RESET ══════════════ */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { font-family:var(--fonte); background:var(--fundo); color:var(--texto); line-height:1.6; overflow-x:hidden; }
+    img  { max-width:100%; display:block; }
+    a    { text-decoration:none; color:inherit; }
+    .container { max-width:1100px; margin:0 auto; padding:0 24px; }
+
+    /* ══════════════ NAVBAR ══════════════ */
+    .nav {
+      position:fixed; top:0; left:0; right:0; z-index:100;
+      background:rgba(26,18,11,.97); backdrop-filter:blur(12px);
+      padding:12px 24px;
+      display:flex; align-items:center; justify-content:space-between; gap:16px;
+      border-bottom:2px solid rgba(245,197,24,.15);
+    }
+    .nav-marca { display:flex; align-items:center; gap:12px; }
+    .nav-icone {
+      width:44px; height:44px; border-radius:10px;
+      background:var(--amarelo); display:flex; align-items:center;
+      justify-content:center; font-size:1.4rem;
+    }
+    .nav-nome { font-family:var(--fonte-titulo); font-size:1.3rem; color:#fff; letter-spacing:.5px; line-height:1; }
+    .nav-tipo { font-size:.62rem; color:var(--amarelo); text-transform:uppercase; letter-spacing:2px; font-weight:700; }
+    .nav-links { display:flex; gap:4px; }
+    .nav-links a {
+      color:rgba(255,255,255,.55); font-size:.82rem; font-weight:700;
+      padding:8px 14px; border-radius:50px; transition:.2s;
+      letter-spacing:.3px;
+    }
+    .nav-links a:hover { color:#fff; background:rgba(255,255,255,.08); }
+    .nav-btn {
+      display:flex; align-items:center; gap:8px;
+      background:var(--amarelo); color:var(--fundo-escuro);
+      padding:10px 22px; border-radius:50px;
+      font-weight:700; font-size:.82rem; transition:.25s;
+      white-space:nowrap; letter-spacing:.3px;
+    }
+    .nav-btn:hover { background:var(--amarelo-esc); transform:scale(1.04); }
+
+    /* ══════════════ HERO ══════════════ */
+    .hero {
+      min-height:100vh; display:flex; align-items:center;
+      background: var(--fundo-escuro);
+      padding:110px 24px 72px;
+      position:relative; overflow:hidden;
+    }
+    /* Grade de pontos de fundo */
+    .hero::before {
+      content:''; position:absolute; inset:0;
+      background-image: radial-gradient(circle, rgba(245,197,24,.18) 1px, transparent 1px);
+      background-size: 32px 32px;
+      pointer-events:none;
+    }
+    .hero::after {
+      content:''; position:absolute; inset:0;
+      background:
+        radial-gradient(ellipse at 70% 50%, rgba(217,48,37,.12) 0%, transparent 60%),
+        radial-gradient(ellipse at 15% 80%, rgba(245,197,24,.10) 0%, transparent 50%);
+      pointer-events:none;
+    }
+    .hero-inner {
+      max-width:1100px; margin:0 auto; width:100%;
+      display:grid; grid-template-columns:1fr 1fr; gap:60px;
+      align-items:center; position:relative; z-index:1;
+    }
+
+    /* conteúdo esquerdo */
+    .hero-tag {
+      display:inline-flex; align-items:center; gap:8px;
+      background:rgba(245,197,24,.12); border:1px solid rgba(245,197,24,.3);
+      color:var(--amarelo); padding:7px 18px; border-radius:50px;
+      font-size:.68rem; font-weight:700; text-transform:uppercase; letter-spacing:2.5px;
+      margin-bottom:20px;
+    }
+    .hero-tag-dot { width:6px; height:6px; background:var(--vermelho); border-radius:50%; animation:pisca 1.8s infinite; }
+    @keyframes pisca { 0%,100%{opacity:1} 50%{opacity:.1} }
+
+    .hero h1 {
+      font-family:var(--fonte-titulo); font-size:5.5rem; font-weight:900;
+      color:#fff; line-height:.95; margin-bottom:20px;
+      text-transform:uppercase; letter-spacing:-1px;
+    }
+    .hero h1 em { color:var(--amarelo); font-style:italic; display:block; }
+    .hero h1 span { color:var(--vermelho); }
+    .hero-sub { font-size:1rem; color:rgba(255,255,255,.6); margin-bottom:36px; max-width:420px; line-height:1.75; }
+
+    .hero-botoes { display:flex; gap:12px; flex-wrap:wrap; }
+    .btn-wpp {
+      display:inline-flex; align-items:center; gap:9px;
+      background:var(--wpp); color:#fff;
+      padding:16px 32px; border-radius:50px;
+      font-weight:700; font-size:.95rem; transition:.25s;
+      box-shadow:0 6px 24px rgba(37,211,102,.35);
+    }
+    .btn-wpp:hover { background:#1ebe57; transform:translateY(-3px); }
+    .btn-ghost {
+      display:inline-flex; align-items:center; gap:9px;
+      background:transparent; color:#fff;
+      padding:16px 30px; border-radius:50px;
+      font-weight:700; font-size:.9rem;
+      border:2px solid rgba(255,255,255,.18); transition:.25s;
+    }
+    .btn-ghost:hover { border-color:var(--amarelo); color:var(--amarelo); }
+
+    /* stats */
+    .hero-stats { display:flex; gap:32px; margin-top:40px; }
+    .hero-stat-n { font-family:var(--fonte-titulo); font-size:2.2rem; color:var(--amarelo); line-height:1; letter-spacing:-1px; }
+    .hero-stat-l { font-size:.65rem; color:rgba(255,255,255,.35); text-transform:uppercase; letter-spacing:1.5px; font-weight:700; margin-top:3px; }
+
+    /* visual direito — moldura de foto */
+    .hero-visual {
+      position:relative;
+    }
+    .hero-img-box {
+      width:100%; aspect-ratio:3/4; border-radius:20px; overflow:hidden;
+      background:rgba(245,197,24,.08);
+      border:2px solid rgba(245,197,24,.2);
+      box-shadow:0 32px 80px rgba(0,0,0,.6);
+      display:flex; align-items:center; justify-content:center;
+      flex-direction:column; gap:12px;
+      color:rgba(255,255,255,.2); font-size:.75rem; font-weight:700;
+      text-transform:uppercase; letter-spacing:1.5px;
+    }
+    .hero-img-box img { width:100%; height:100%; object-fit:cover; }
+    .hero-img-box span { font-size:5rem; }
+
+    /* tag flutuante decorativa */
+    .hero-badge {
+      position:absolute; top:-18px; right:-18px;
+      background:var(--vermelho); color:#fff;
+      width:90px; height:90px; border-radius:50%;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      font-family:var(--fonte-titulo); font-size:.9rem; font-weight:900; text-align:center;
+      text-transform:uppercase; letter-spacing:.5px; line-height:1.15;
+      box-shadow:0 8px 28px rgba(217,48,37,.5);
+      animation:girinha 8s linear infinite;
+      border:3px solid rgba(255,255,255,.15);
+    }
+    @keyframes girinha { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+    .hero-badge em { font-size:.6rem; font-style:normal; opacity:.75; display:block; }
+
+    /* ══════════════ SEÇÕES GENÉRICAS ══════════════ */
+    .secao     { padding:80px 24px; }
+    .secao-alt { background:#F2EDE6; }
+    .secao-dark{ background:var(--fundo-escuro); }
+
+    .secao-topo { text-align:center; margin-bottom:52px; }
+    .tag-label {
+      display:inline-block;
+      background:var(--amarelo); color:var(--fundo-escuro);
+      font-size:.65rem; font-weight:700; text-transform:uppercase; letter-spacing:2.5px;
+      padding:5px 16px; border-radius:50px; margin-bottom:12px;
+    }
+    .tag-label-dark {
+      display:inline-block;
+      background:rgba(245,197,24,.15); color:var(--amarelo);
+      font-size:.65rem; font-weight:700; text-transform:uppercase; letter-spacing:2.5px;
+      padding:5px 16px; border-radius:50px; margin-bottom:12px;
+      border:1px solid rgba(245,197,24,.25);
+    }
+    .secao-topo h2 {
+      font-family:var(--fonte-titulo); font-size:2.8rem; font-weight:900;
+      color:var(--texto); text-transform:uppercase; letter-spacing:-1px;
+    }
+    .secao-topo h2.claro { color:#fff; }
+    .secao-topo p { font-size:.95rem; color:var(--texto-sub); margin-top:10px; max-width:480px; margin-inline:auto; }
+    .secao-topo p.claro { color:rgba(255,255,255,.5); }
+
+    /* ══════════════ SOBRE ══════════════ */
+    .sobre-grid { display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:center; }
+    .sobre-img {
+      aspect-ratio:4/5; border-radius:20px; overflow:hidden;
+      background:linear-gradient(135deg, #F2EDE6, #E8DDD4);
+      display:flex; align-items:center; justify-content:center;
+      flex-direction:column; gap:10px; color:var(--texto-sub);
+      font-size:.8rem; font-weight:700;
+      box-shadow:var(--sombra);
+    }
+    .sobre-img span { font-size:4rem; opacity:.3; }
+    .sobre-img img  { width:100%; height:100%; object-fit:cover; }
+
+    .sobre-texto h2  { font-family:var(--fonte-titulo); font-size:2.6rem; font-weight:900; text-transform:uppercase; letter-spacing:-1px; margin-bottom:6px; }
+    .sobre-sub-label { color:var(--vermelho); font-weight:700; margin-bottom:18px; font-size:.95rem; }
+    .sobre-p         { font-size:.93rem; color:var(--texto-sub); line-height:1.9; margin-bottom:28px; }
+
+    .diferenciais { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:28px; }
+    .diferencial {
+      display:flex; align-items:center; gap:11px;
+      background:var(--fundo); border-radius:var(--raio);
+      border-left:3px solid var(--amarelo); padding:13px 15px;
+    }
+    .diferencial-ico {
+      width:38px; height:38px; border-radius:9px;
+      background:rgba(245,197,24,.15); display:flex; align-items:center;
+      justify-content:center; font-size:1.1rem; flex-shrink:0;
+    }
+    .diferencial span { font-size:.83rem; font-weight:700; }
+
+    /* ══════════════ CARDÁPIO ══════════════ */
+    /* Abas de categoria */
+    .categorias {
+      display:flex; gap:8px; justify-content:center; flex-wrap:wrap;
+      margin-bottom:36px;
+    }
+    .cat-btn {
+      padding:9px 22px; border-radius:50px; border:2px solid var(--borda);
+      background:var(--card); font-weight:700; font-size:.83rem;
+      cursor:pointer; transition:.2s; color:var(--texto-sub);
+      font-family:var(--fonte);
+    }
+    .cat-btn:hover, .cat-btn.ativa {
+      background:var(--amarelo); color:var(--fundo-escuro); border-color:var(--amarelo);
+    }
+
+    .cardapio-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(320px,1fr)); gap:16px; }
+    .item-card {
+      display:flex; gap:16px; align-items:center;
+      background:var(--card); border-radius:var(--raio); padding:18px 20px;
+      border:1.5px solid var(--borda); box-shadow:var(--sombra);
+      transition:.25s; cursor:pointer;
+    }
+    .item-card:hover { transform:translateY(-4px); border-color:var(--amarelo); box-shadow:0 12px 36px rgba(26,18,11,.12); }
+    .item-foto {
+      width:72px; height:72px; border-radius:11px; flex-shrink:0;
+      background:linear-gradient(135deg, #F2EDE6, #E8DDD4);
+      display:flex; align-items:center; justify-content:center;
+      font-size:2rem; overflow:hidden;
+    }
+    .item-foto img { width:100%; height:100%; object-fit:cover; }
+    .item-nome  { font-size:.97rem; font-weight:700; margin-bottom:3px; }
+    .item-desc  { font-size:.78rem; color:var(--texto-sub); line-height:1.5; }
+    .item-preco {
+      margin-left:auto; flex-shrink:0;
+      font-family:var(--fonte-titulo); font-size:1.3rem; font-weight:900;
+      color:var(--vermelho); letter-spacing:-.5px;
+    }
+    /* Badge novo/destaque */
+    .item-badge {
+      display:inline-block; background:var(--vermelho); color:#fff;
+      font-size:.6rem; font-weight:700; text-transform:uppercase; letter-spacing:1px;
+      padding:2px 8px; border-radius:50px; margin-left:6px; vertical-align:middle;
+    }
+
+    /* ══════════════ PROMOÇÃO DESTAQUE ══════════════ */
+    .promo-banner {
+      background: linear-gradient(135deg, var(--vermelho) 0%, #8B0000 100%);
+      border-radius:20px; padding:48px 52px;
+      display:flex; align-items:center; justify-content:space-between; gap:32px;
+      position:relative; overflow:hidden;
+    }
+    .promo-banner::before {
+      content:''; position:absolute; right:-60px; top:-60px;
+      width:280px; height:280px; border-radius:50%;
+      background:rgba(255,255,255,.05);
+    }
+    .promo-banner::after {
+      content:''; position:absolute; right:60px; bottom:-80px;
+      width:200px; height:200px; border-radius:50%;
+      background:rgba(255,255,255,.05);
+    }
+    .promo-txt h3 {
+      font-family:var(--fonte-titulo); font-size:3rem; font-weight:900;
+      color:#fff; text-transform:uppercase; letter-spacing:-1px; line-height:1;
+      margin-bottom:8px;
+    }
+    .promo-txt p { color:rgba(255,255,255,.75); font-size:.95rem; max-width:380px; }
+    .promo-preco {
+      flex-shrink:0; text-align:center;
+      background:rgba(255,255,255,.1); border:2px solid rgba(255,255,255,.2);
+      border-radius:16px; padding:20px 32px;
+    }
+    .promo-preco .de { font-size:.8rem; color:rgba(255,255,255,.5); text-decoration:line-through; }
+    .promo-preco .por { font-family:var(--fonte-titulo); font-size:3.5rem; font-weight:900; color:var(--amarelo); line-height:1; letter-spacing:-2px; }
+
+    /* ══════════════ GALERIA ══════════════ */
+    .galeria-grid { display:grid; grid-template-columns:repeat(4,1fr); grid-template-rows:auto auto; gap:10px; }
+    .galeria-item {
+      border-radius:var(--raio); overflow:hidden;
+      background:linear-gradient(135deg, #F2EDE6, #E8DDD4);
+      display:flex; align-items:center; justify-content:center;
+      flex-direction:column; gap:8px; color:var(--texto-sub);
+      font-size:.8rem; font-weight:700; transition:.25s; cursor:pointer;
+      height:200px;
+    }
+    .galeria-item:nth-child(1) { grid-column:span 2; grid-row:span 2; height:auto; min-height:410px; }
+    .galeria-item:hover { filter:brightness(1.05); transform:scale(1.01); box-shadow:var(--sombra); }
+    .galeria-item span { font-size:2.5rem; opacity:.3; }
+    .galeria-item img  { width:100%; height:100%; object-fit:cover; }
+
+    /* ══════════════ LOCALIZAÇÃO ══════════════ */
+    .local-grid { display:grid; grid-template-columns:1fr 1fr; gap:40px; }
+    .mapa-box {
+      border-radius:20px; overflow:hidden; height:440px;
+      background:linear-gradient(135deg, #F2EDE6, #E8DDD4);
+      display:flex; align-items:center; justify-content:center;
+      flex-direction:column; gap:12px; color:var(--texto-sub); font-size:.85rem; font-weight:700;
+      box-shadow:var(--sombra);
+    }
+    .mapa-box span  { font-size:3.5rem; opacity:.3; }
+    .mapa-box iframe { width:100%; height:100%; border:0; display:block; }
+
+    .info-cards { display:flex; flex-direction:column; gap:14px; }
+    .info-card  {
+      background:rgba(255,255,255,.06); border-radius:var(--raio); padding:22px 24px;
+      border:1px solid rgba(255,255,255,.1);
+    }
+    .info-card-h { display:flex; align-items:center; gap:11px; margin-bottom:14px; }
+    .info-card-ico {
+      width:42px; height:42px; border-radius:10px;
+      background:rgba(245,197,24,.15); border:1px solid rgba(245,197,24,.25);
+      display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0;
+    }
+    .info-card-h h3 { font-size:.97rem; font-weight:700; color:#fff; }
+
+    .endereco-txt  { font-size:.9rem; color:rgba(255,255,255,.55); line-height:1.8; }
+    .endereco-txt strong { color:#fff; font-weight:700; }
+
+    .horario-row {
+      display:flex; justify-content:space-between; align-items:center;
+      padding:9px 0; border-bottom:1px solid rgba(255,255,255,.07); font-size:.87rem;
+    }
+    .horario-row:last-child { border-bottom:none; }
+    .horario-dia { font-weight:700; color:rgba(255,255,255,.75); }
+    .horario-hr  { color:rgba(255,255,255,.4); font-weight:600; }
+    .horario-hr.off { color:var(--vermelho); font-weight:700; }
+    .horario-hr.dest { color:var(--amarelo); font-weight:700; }
+
+    .contato-row  { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid rgba(255,255,255,.07); }
+    .contato-row:last-child { border-bottom:none; }
+    .contato-ico  {
+      width:38px; height:38px; border-radius:10px;
+      background:rgba(245,197,24,.12); border:1px solid rgba(245,197,24,.2);
+      display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0;
+    }
+    .contato-label { font-size:.65rem; color:rgba(255,255,255,.3); text-transform:uppercase; letter-spacing:.8px; font-weight:700; }
+    .contato-val   { font-size:.9rem; font-weight:700; color:#fff; }
+
+    /* ══════════════ AVALIAÇÕES ══════════════ */
+    .nota-box {
+      display:flex; align-items:center; gap:20px; justify-content:center;
+      background:rgba(245,197,24,.08); border:1px solid rgba(245,197,24,.2);
+      border-radius:var(--raio); padding:22px 32px; margin-bottom:40px;
+    }
+    .nota-num   { font-family:var(--fonte-titulo); font-size:3.5rem; color:var(--amarelo); line-height:1; letter-spacing:-2px; }
+    .nota-stars { color:var(--amarelo); font-size:1.3rem; margin:4px 0; }
+    .nota-total { font-size:.82rem; color:rgba(255,255,255,.4); font-weight:700; }
+
+    .aval-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+    .aval-card {
+      background:rgba(255,255,255,.05); border-radius:var(--raio); padding:26px;
+      border:1px solid rgba(255,255,255,.1); transition:.25s;
+    }
+    .aval-card:hover { transform:translateY(-4px); background:rgba(255,255,255,.08); }
+    .aval-stars  { color:var(--amarelo); font-size:.9rem; margin-bottom:10px; }
+    .aval-texto  { font-size:.88rem; color:rgba(255,255,255,.5); line-height:1.8; font-style:italic; margin-bottom:16px; }
+    .aval-autor  { display:flex; align-items:center; gap:11px; }
+    .aval-avatar {
+      width:42px; height:42px; border-radius:50%;
+      background:rgba(245,197,24,.15); border:1px solid rgba(245,197,24,.25);
+      display:flex; align-items:center; justify-content:center;
+      font-size:1rem; font-weight:700; color:var(--amarelo); flex-shrink:0;
+    }
+    .aval-nome { font-size:.88rem; font-weight:700; color:#fff; }
+    .aval-data { font-size:.68rem; color:rgba(255,255,255,.3); font-weight:700; }
+
+    /* ══════════════ CTA ══════════════ */
+    .cta {
+      background:var(--amarelo);
+      padding:72px 24px; text-align:center; position:relative; overflow:hidden;
+    }
+    .cta::before {
+      content:'🍔'; position:absolute; font-size:18rem; opacity:.05;
+      left:-5rem; top:50%; transform:translateY(-50%);
+    }
+    .cta::after {
+      content:'🍟'; position:absolute; font-size:18rem; opacity:.05;
+      right:-5rem; top:50%; transform:translateY(-50%);
+    }
+    .cta h2 {
+      font-family:var(--fonte-titulo); font-size:3rem; font-weight:900;
+      color:var(--fundo-escuro); text-transform:uppercase; letter-spacing:-1.5px; margin-bottom:10px;
+    }
+    .cta p { font-size:1rem; color:rgba(26,18,11,.65); margin-bottom:28px; }
+    .btn-cta-escuro {
+      display:inline-flex; align-items:center; gap:9px;
+      background:var(--fundo-escuro); color:#fff;
+      padding:16px 36px; border-radius:50px;
+      font-weight:700; font-size:.97rem; transition:.25s;
+      box-shadow:0 8px 28px rgba(26,18,11,.3);
+    }
+    .btn-cta-escuro:hover { background:#2d1f14; transform:translateY(-3px); }
+
+    /* ══════════════ FOOTER ══════════════ */
+    .footer {
+      background:#0D0806; color:rgba(255,255,255,.3);
+      padding:40px 24px; text-align:center; font-size:.84rem;
+      border-top:1px solid rgba(245,197,24,.1);
+    }
+    .footer-nome { font-family:var(--fonte-titulo); font-size:1.6rem; color:var(--amarelo); margin-bottom:6px; letter-spacing:-.5px; }
+    .footer a    { color:var(--amarelo); font-weight:700; }
+    .footer-redes { display:flex; gap:12px; justify-content:center; margin:14px 0; }
+    .footer-rede {
+      width:36px; height:36px; border-radius:50%;
+      background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.1);
+      display:flex; align-items:center; justify-content:center; font-size:.9rem;
+      transition:.2s;
+    }
+    .footer-rede:hover { background:var(--amarelo); border-color:var(--amarelo); }
+
+    /* ══════════════ WPP FLUTUANTE ══════════════ */
+    .wpp-float {
+      position:fixed; bottom:24px; right:24px; z-index:999;
+      display:flex; flex-direction:column; align-items:flex-end; gap:8px;
+    }
+    .wpp-msg {
+      background:#fff; padding:10px 16px; border-radius:12px;
+      box-shadow:0 4px 18px rgba(0,0,0,.12);
+      font-size:.8rem; font-weight:700; white-space:nowrap;
+      border-left:3px solid var(--wpp); color:var(--texto);
+      animation:sobe 3s ease-in-out infinite;
+    }
+    @keyframes sobe { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+    .wpp-btn {
+      width:64px; height:64px; border-radius:50%;
+      background:var(--wpp); color:#fff; border:none; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      font-size:2rem; transition:.25s;
+      box-shadow:0 4px 22px rgba(37,211,102,.5);
+      animation:pulsa 2s infinite;
+    }
+    @keyframes pulsa {
+      0%   { box-shadow:0 0 0 0 rgba(37,211,102,.55); }
+      70%  { box-shadow:0 0 0 18px rgba(37,211,102,0); }
+      100% { box-shadow:0 0 0 0 rgba(37,211,102,0); }
+    }
+    .wpp-btn:hover { transform:scale(1.1); }
+
+    /* ══════════════ RESPONSIVO ══════════════ */
+    @media(max-width:900px){
+      .nav-links { display:none; }
+      .hero-inner { grid-template-columns:1fr; text-align:center; gap:40px; }
+      .hero h1 { font-size:3.6rem; }
+      .hero-sub, .hero-botoes { margin-inline:auto; }
+      .hero-botoes { justify-content:center; }
+      .hero-stats  { justify-content:center; }
+      .hero-visual { order:-1; max-width:300px; margin:0 auto; }
+      .sobre-grid, .local-grid { grid-template-columns:1fr; }
+      .aval-grid   { grid-template-columns:1fr; }
+      .galeria-grid{ grid-template-columns:1fr 1fr; }
+      .galeria-item:nth-child(1){ grid-column:span 2; min-height:280px; height:280px; }
+      .promo-banner { flex-direction:column; text-align:center; padding:36px 28px; }
+      .promo-txt p { margin:0 auto; }
+    }
+    @media(max-width:600px){
+      .hero { padding:90px 16px 48px; min-height:auto; }
+      .hero h1 { font-size:2.6rem; }
+      .btn-wpp, .btn-ghost, .btn-cta-escuro { width:100%; justify-content:center; }
+      .cardapio-grid { grid-template-columns:1fr; }
+      .galeria-grid  { grid-template-columns:1fr; }
+      .galeria-item:nth-child(1){ grid-column:span 1; min-height:220px; height:220px; }
+      .secao-topo h2 { font-size:2.2rem; }
+      .diferenciais  { grid-template-columns:1fr; }
+      .nota-box      { flex-direction:column; text-align:center; }
+      .nav-btn .nav-cta-texto { display:none; }
+      .promo-banner { padding:28px 20px; }
+      .promo-txt h3 { font-size:2rem; }
+      .hero-badge { width:72px; height:72px; font-size:.72rem; top:-10px; right:-10px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     CONFIGURAÇÃO — altere tudo aqui
+═══════════════════════════════════════════ -->
+<script>
+/*
+ * ╔══════════════════════════════════════════════════════════════════════╗
+ * ║  BLOCO DE DADOS — gerado/substituído automaticamente pela IA        ║
+ * ║                                                                      ║
+ * ║  INSTRUÇÕES PARA A IA:                                               ║
+ * ║  • Substitua APENAS os valores entre aspas ou números               ║
+ * ║  • Não altere os nomes das chaves (ex: "nome", "whatsapp")          ║
+ * ║  • Não altere nada fora deste bloco <script>                        ║
+ * ║  • Arrays como "cardapio" e "horarios" podem ter N itens            ║
+ * ║  • Campos opcionais: deixe "" (string vazia) se não houver valor    ║
+ * ║  • Campos de foto: deixe "" até ter a URL real da imagem            ║
+ * ╚══════════════════════════════════════════════════════════════════════╝
+*/
+const DADOS = {
+
+  /* CAMPO: nome_negocio — Nome completo da lanchonete */
+  "nome": "BurguerNight",
+
+  /* CAMPO: tipo_negocio — Tipo/segmento do negócio */
+  "tipo": "Lanchonete & Hamburgueria",
+
+  /* CAMPO: slogan — Frase curta de impacto (até ~60 caracteres) */
+  "slogan": "O sabor que você merece todo dia",
+
+  /* CAMPO: descricao — Descrição curta para o hero (1-2 frases) */
+  "descricao": "Hambúrgueres artesanais, lanches frescos e muito sabor para toda a família. Peça agora e receba em casa!",
+
+  /* CAMPO: icone_emoji — Emoji representativo do negócio */
+  "icone": "🍔",
+
+  /* CAMPO: url_logo — URL/caminho da imagem do logo (deixe "" se não tiver) */
+  "logo": "",
+
+  /* CAMPO: url_foto_banner — URL/caminho da foto principal do hero (deixe "" se não tiver) */
+  "foto_banner": "",
+
+  /* CAMPO: whatsapp_numero — Número com DDI+DDD sem espaços ou símbolos */
+  "whatsapp": "5511999999999",
+
+  /* CAMPO: whatsapp_mensagem — Mensagem pré-preenchida ao abrir o WhatsApp */
+  "wpp_msg": "Olá! Quero fazer um pedido.",
+
+  /* CAMPO: telefone_celular — Telefone/WhatsApp exibido na tela */
+  "telefone": "(11) 99999-9999",
+
+  /* CAMPO: telefone_fixo — Telefone fixo (deixe "" se não tiver) */
+  "telefone_fixo": "",
+
+  /* CAMPO: email — E-mail de contato (deixe "" se não tiver) */
+  "email": "contato@burguernicht.com.br",
+
+  /* CAMPO: url_instagram — Link completo do Instagram (deixe "" se não tiver) */
+  "instagram": "https://instagram.com/burguernicht",
+
+  /* CAMPO: url_facebook — Link completo do Facebook (deixe "" se não tiver) */
+  "facebook": "https://facebook.com/burguernicht",
+
+  /* CAMPO: stats_hero — Até 3 números de destaque exibidos no hero */
+  "stats": [
+    { "numero": "12.000+", "label": "Pedidos entregues"    }, /* CAMPO: stat_1 */
+    { "numero": "8+",      "label": "Anos de sabor"        }, /* CAMPO: stat_2 */
+    { "numero": "4.9★",    "label": "Nota no Google"       }  /* CAMPO: stat_3 */
+  ],
+
+  /* CAMPO: badge_hero — Texto do crachá giratório no hero (máx. 2 linhas curtas, deixe "" para ocultar) */
+  "badge_hero": "Feito\nna Hora",
+
+  /* ── SEÇÃO SOBRE ─────────────────────────────────────────────────── */
+  "sobre": {
+    /* CAMPO: sobre_titulo — Título da seção sobre */
+    "titulo": "Nossa História",
+
+    /* CAMPO: sobre_subtitulo — Subtítulo/destaque abaixo do título */
+    "sub": "Sabor de verdade desde 2016",
+
+    /* CAMPO: sobre_texto — Parágrafo descritivo (3-5 frases) */
+    "texto": "A BurguerNight nasceu da paixão por ingredientes frescos e receitas que fazem você fechar os olhos na primeira mordida. Cada hambúrguer é montado na hora com pão artesanal, carne selecionada e molhos exclusivos. Atendemos no salão e fazemos entregas rápidas para toda a região.",
+
+    /* CAMPO: url_foto_sobre — URL/caminho da foto da seção sobre (deixe "" se não tiver) */
+    "foto": "",
+
+    /* CAMPO: destaques — Até 4 diferenciais com emoji e texto curto */
+    "destaques": [
+      { "icone": "🥩", "texto": "Carne 100% artesanal"  }, /* CAMPO: destaque_1 */
+      { "icone": "🍞", "texto": "Pão fresquinho diário" }, /* CAMPO: destaque_2 */
+      { "icone": "🛵", "texto": "Entrega rápida"        }, /* CAMPO: destaque_3 */
+      { "icone": "⭐", "texto": "Qualidade garantida"   }  /* CAMPO: destaque_4 */
+    ]
+  },
+
+  /* ── CARDÁPIO ────────────────────────────────────────────────────── */
+  /* CAMPO: categorias — Categorias de abas do cardápio */
+  "categorias": [
+    "Tudo",          /* CAMPO: cat_1 */
+    "Hambúrgueres",  /* CAMPO: cat_2 */
+    "Lanches",       /* CAMPO: cat_3 */
+    "Bebidas",       /* CAMPO: cat_4 */
+    "Combos"         /* CAMPO: cat_5 */
+  ],
+
+  /* CAMPO: cardapio — Lista de itens do cardápio (sem limite de itens) */
+  "cardapio": [
+    { "icone": "🍔", "nome": "Classic Smash",    "descricao": "Blend 180g, queijo americano, alface, tomate e molho especial", "preco": "R$ 28",  "categoria": "Hambúrgueres", "destaque": true  }, /* CAMPO: item_1 */
+    { "icone": "🔥", "nome": "Bacon Inferno",     "descricao": "Blend 200g, bacon crocante, jalapeño, cheddar e maionese defumada", "preco": "R$ 36", "categoria": "Hambúrgueres", "destaque": false }, /* CAMPO: item_2 */
+    { "icone": "🧀", "nome": "Duplo Cheddar",     "descricao": "Dois blends 150g, cheddar derretido, cebola caramelizada", "preco": "R$ 42",  "categoria": "Hambúrgueres", "destaque": false }, /* CAMPO: item_3 */
+    { "icone": "🌮", "nome": "X-Tudo",            "descricao": "Frango ou boi, presunto, queijo, ovo, alface e tomate", "preco": "R$ 24",  "categoria": "Lanches",       "destaque": false }, /* CAMPO: item_4 */
+    { "icone": "🐔", "nome": "Crispy Chicken",    "descricao": "Frango empanado crocante, coleslaw, molho ranch", "preco": "R$ 29",  "categoria": "Lanches",       "destaque": true  }, /* CAMPO: item_5 */
+    { "icone": "🧃", "nome": "Suco Natural",      "descricao": "Laranja, limão, maracujá ou abacaxi com hortelã", "preco": "R$ 12",  "categoria": "Bebidas",       "destaque": false }, /* CAMPO: item_6 */
+    { "icone": "🥤", "nome": "Milkshake",         "descricao": "Chocolate, morango ou baunilha — 400ml", "preco": "R$ 19",  "categoria": "Bebidas",       "destaque": false }, /* CAMPO: item_7 */
+    { "icone": "🍟", "nome": "Combo Família",     "descricao": "2 hambúrgueres + 2 batatas grandes + 2 refris", "preco": "R$ 89",  "categoria": "Combos",        "destaque": true  }  /* CAMPO: item_8 */
+  ],
+
+  /* ── PROMOÇÃO DESTAQUE ───────────────────────────────────────────── */
+  "promocao": {
+    /* CAMPO: promo_ativo — true para exibir a faixa de promoção, false para ocultar */
+    "ativo": true,
+
+    /* CAMPO: promo_titulo — Título da promoção */
+    "titulo": "Combo do Dia 🔥",
+
+    /* CAMPO: promo_descricao — Descrição da promoção */
+    "descricao": "Hambúrguer artesanal + batata frita grande + refri 600ml. De segunda a quinta, a partir das 18h.",
+
+    /* CAMPO: promo_preco_de — Preço original (antes do desconto) */
+    "preco_de": "R$ 55",
+
+    /* CAMPO: promo_preco_por — Preço promocional */
+    "preco_por": "R$ 39",
+
+    /* CAMPO: promo_url_foto — Foto da promoção (deixe "" se não tiver) */
+    "foto": ""
+  },
+
+  /* ── GALERIA ─────────────────────────────────────────────────────── */
+  /* CAMPO: galeria — Fotos do espaço/comida (url_foto: deixe "" se não tiver) */
+  "galeria": [
+    { "url_foto": "", "legenda": "Nosso salão"        }, /* CAMPO: foto_1 */
+    { "url_foto": "", "legenda": "Hambúrguer Artesanal" }, /* CAMPO: foto_2 */
+    { "url_foto": "", "legenda": "Cozinha"            }, /* CAMPO: foto_3 */
+    { "url_foto": "", "legenda": "Batata Frita"       }, /* CAMPO: foto_4 */
+    { "url_foto": "", "legenda": "Milkshake"          }  /* CAMPO: foto_5 */
+  ],
+
+  /* ── LOCALIZAÇÃO ─────────────────────────────────────────────────── */
+  "localizacao": {
+    /* CAMPO: endereco_rua — Rua e número */
+    "endereco": "Rua do Sabor, 321",
+
+    /* CAMPO: endereco_bairro */
+    "bairro": "Centro",
+
+    /* CAMPO: endereco_cidade */
+    "cidade": "São Paulo",
+
+    /* CAMPO: endereco_estado — Sigla do estado (SP, RJ, etc.) */
+    "estado": "SP",
+
+    /* CAMPO: endereco_cep */
+    "cep": "01310-000",
+
+    /* CAMPO: endereco_complemento — Referência ou dica (deixe "" se não tiver) */
+    "complemento": "Em frente ao Parque Central",
+
+    /* CAMPO: google_maps_embed — Cole aqui o src do iframe do Google Maps (deixe "" para mostrar botão) */
+    "maps_embed": "",
+
+    /* CAMPO: google_maps_link — Link direto do Google Maps para abrir no app */
+    "maps_link": "https://maps.google.com"
+  },
+
+  /* ── HORÁRIOS ────────────────────────────────────────────────────── */
+  /* CAMPO: horarios — Dias e horários de funcionamento */
+  "horarios": [
+    { "dia": "Segunda a Quinta", "horario": "18:00 – 00:00", "fechado": false, "destaque": false }, /* CAMPO: horario_1 */
+    { "dia": "Sexta",            "horario": "18:00 – 01:00", "fechado": false, "destaque": true  }, /* CAMPO: horario_2 */
+    { "dia": "Sábado",           "horario": "12:00 – 01:00", "fechado": false, "destaque": true  }, /* CAMPO: horario_3 */
+    { "dia": "Domingo",          "horario": "12:00 – 23:00", "fechado": false, "destaque": false }  /* CAMPO: horario_4 */
+  ],
+
+  /* ── AVALIAÇÕES ──────────────────────────────────────────────────── */
+  "avaliacoes": {
+    /* CAMPO: nota_geral — Nota média (ex: "4.9") */
+    "nota": "4.9",
+
+    /* CAMPO: total_avaliacoes — Total de avaliações para exibir */
+    "total": "1.248",
+
+    /* CAMPO: depoimentos — Lista de depoimentos de clientes */
+    "lista": [
+      { "nome": "Rafael Souza",    "texto": "Melhor hambúrguer da cidade! Carne suculenta, pão fresquinho e entrega super rápida. Vou pedir todo fim de semana!", "estrelas": 5, "data": "Há 3 dias"   }, /* CAMPO: depoimento_1 */
+      { "nome": "Juliana Pereira", "texto": "O Bacon Inferno é uma obra de arte. Combinação perfeita de sabores. O milkshake de chocolate então... incrível!",      "estrelas": 5, "data": "Há 1 semana" }, /* CAMPO: depoimento_2 */
+      { "nome": "Fernando Lima",   "texto": "Pedi o combo família para reunião em casa. Chegou quentinho e todo mundo amou. Recomendo demais!",                      "estrelas": 5, "data": "Há 2 semanas" }  /* CAMPO: depoimento_3 */
+    ]
+  }
+
+}; /* FIM DO BLOCO DE DADOS — não altere nada após esta linha */
+
+/* Alias interno — não alterar */
+const C = {
+  nome:        DADOS.nome,
+  tipo:        DADOS.tipo,
+  slogan:      DADOS.slogan,
+  descricao:   DADOS.descricao,
+  icone:       DADOS.icone,
+  logo:        DADOS.logo        || null,
+  fotoBanner:  DADOS.foto_banner || null,
+  whatsapp:    DADOS.whatsapp,
+  wppMsg:      DADOS.wpp_msg,
+  telefone:    DADOS.telefone,
+  telefoneFixo:DADOS.telefone_fixo || null,
+  email:       DADOS.email       || null,
+  instagram:   DADOS.instagram   || null,
+  facebook:    DADOS.facebook    || null,
+  stats:       DADOS.stats.map(s => ({ n: s.numero, l: s.label })),
+  badge:       DADOS.badge_hero  || null,
+  sobre: {
+    titulo:    DADOS.sobre.titulo,
+    sub:       DADOS.sobre.sub,
+    texto:     DADOS.sobre.texto,
+    foto:      DADOS.sobre.foto  || null,
+    destaques: DADOS.sobre.destaques.map(d => ({ i: d.icone, t: d.texto })),
+  },
+  categorias:  DADOS.categorias,
+  cardapio:    DADOS.cardapio.map(i => ({
+    i: i.icone, n: i.nome, d: i.descricao, p: i.preco,
+    cat: i.categoria, dest: i.destaque
+  })),
+  promocao:    DADOS.promocao,
+  galeria:     DADOS.galeria.map(g => ({ foto: g.url_foto || null, l: g.legenda })),
+  localizacao: {
+    endereco:    DADOS.localizacao.endereco,
+    bairro:      DADOS.localizacao.bairro,
+    cidade:      DADOS.localizacao.cidade,
+    estado:      DADOS.localizacao.estado,
+    cep:         DADOS.localizacao.cep,
+    complemento: DADOS.localizacao.complemento || null,
+    mapsEmbed:   DADOS.localizacao.maps_embed  || null,
+    mapsLink:    DADOS.localizacao.maps_link,
+  },
+  horarios:    DADOS.horarios.map(h => ({ d: h.dia, h: h.horario, off: h.fechado, dest: h.destaque })),
+  avaliacoes: {
+    nota:  DADOS.avaliacoes.nota,
+    total: DADOS.avaliacoes.total,
+    lista: DADOS.avaliacoes.lista,
+  },
+};
+</script>
+
+<!-- ══════════════════════════════════════════
+     HTML — renderizado pelo JS abaixo
+═══════════════════════════════════════════ -->
+<div id="app"></div>
+
+<!-- WPP FLUTUANTE -->
+<div class="wpp-float" id="wppFloat" style="display:none">
+  <div class="wpp-msg">🍔 Faça seu pedido!</div>
+  <a id="wppBtn" href="#" target="_blank" rel="noopener noreferrer" class="wpp-btn" aria-label="WhatsApp">📱</a>
+</div>
+
+<script>
+  /* ── helpers ── */
+  const wppLink = () =>
+    `https://wa.me/${C.whatsapp}?text=${encodeURIComponent(C.wppMsg)}`;
+
+  const estrelas = n =>
+    '★'.repeat(n) + '☆'.repeat(5 - n);
+
+  /* ── WPP float ── */
+  document.getElementById('wppBtn').href = wppLink();
+  setTimeout(() => document.getElementById('wppFloat').style.display = 'flex', 2500);
+
+  /* ── build HTML ── */
+  const s   = C.sobre;
+  const loc = C.localizacao;
+  const av  = C.avaliacoes;
+  const pr  = C.promocao;
+
+  /* Badge hero — quebra linha em \n */
+  const badgeHTML = C.badge
+    ? `<div class="hero-badge">${C.badge.split('\\n').map((l,i) => i === 0 ? l : `<em>${l}</em>`).join('')}</div>`
+    : '';
+
+  document.getElementById('app').innerHTML = `
+
+  <!-- NAVBAR -->
+  <nav class="nav">
+    <div class="nav-marca">
+      <div class="nav-icone">${C.logo ? `<img src="${C.logo}" alt="${C.nome}" style="width:100%;height:100%;object-fit:cover;border-radius:10px">` : C.icone}</div>
+      <div>
+        <div class="nav-nome">${C.nome}</div>
+        <div class="nav-tipo">${C.tipo}</div>
+      </div>
+    </div>
+    <div class="nav-links">
+      <a href="#sobre">Sobre</a>
+      <a href="#cardapio">Cardápio</a>
+      <a href="#galeria">Espaço</a>
+      <a href="#local">Localização</a>
+    </div>
+    <a href="${wppLink()}" target="_blank" rel="noopener" class="nav-btn">
+      <span>📲</span><span class="nav-cta-texto">Pedir Agora</span>
+    </a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="inicio">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-tag"><span class="hero-tag-dot"></span>${C.tipo}</div>
+        <h1>${C.slogan.split(' ').slice(0,2).join(' ')}<br><em>${C.slogan.split(' ').slice(2,4).join(' ')}</em><br><span>${C.slogan.split(' ').slice(4).join(' ')}</span></h1>
+        <p class="hero-sub">${C.descricao}</p>
+        <div class="hero-botoes">
+          <a href="${wppLink()}" target="_blank" rel="noopener" class="btn-wpp">📲 Pedir pelo WhatsApp</a>
+          <a href="#cardapio" class="btn-ghost">Ver Cardápio ↓</a>
+        </div>
+        <div class="hero-stats">
+          ${C.stats.map(st => `
+            <div>
+              <div class="hero-stat-n">${st.n}</div>
+              <div class="hero-stat-l">${st.l}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-img-box">
+          ${C.fotoBanner
+            ? `<img src="${C.fotoBanner}" alt="${C.nome}">`
+            : `<span>🍔</span><small>Foto do lanche</small>`}
+        </div>
+        ${badgeHTML}
+      </div>
+    </div>
+  </section>
+
+  <!-- SOBRE -->
+  <section class="secao" id="sobre">
+    <div class="container">
+      <div class="sobre-grid">
+        <div class="sobre-img">
+          ${s.foto ? `<img src="${s.foto}" alt="Lanchonete">` : `<span>🏪</span><small>Foto da lanchonete</small>`}
+        </div>
+        <div class="sobre-texto">
+          <h2>${s.titulo}</h2>
+          <p class="sobre-sub-label">${s.sub}</p>
+          <p class="sobre-p">${s.texto}</p>
+          <div class="diferenciais">
+            ${s.destaques.map(d => `
+              <div class="diferencial">
+                <div class="diferencial-ico">${d.i}</div>
+                <span>${d.t}</span>
+              </div>`).join('')}
+          </div>
+          <a href="${wppLink()}" target="_blank" rel="noopener" class="btn-wpp" style="font-size:.9rem;padding:14px 26px">
+            📲 Pedir agora
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CARDÁPIO -->
+  <section class="secao secao-alt" id="cardapio">
+    <div class="container">
+      <div class="secao-topo">
+        <div class="tag-label">🍔 Cardápio</div>
+        <h2>O que temos pra você</h2>
+        <p>Ingredientes frescos, sabor de verdade em todo pedido.</p>
+      </div>
+
+      <!-- Abas de categoria -->
+      <div class="categorias" id="catContainer">
+        ${C.categorias.map((cat, i) => `
+          <button class="cat-btn${i === 0 ? ' ativa' : ''}" data-cat="${cat}">${cat}</button>
+        `).join('')}
+      </div>
+
+      <div class="cardapio-grid" id="cardapioGrid">
+        ${C.cardapio.map(it => `
+          <div class="item-card" data-cat="${it.cat}">
+            <div class="item-foto">${it.i}</div>
+            <div style="flex:1;min-width:0">
+              <div class="item-nome">
+                ${it.n}
+                ${it.dest ? '<span class="item-badge">🔥 Top</span>' : ''}
+              </div>
+              <div class="item-desc">${it.d}</div>
+            </div>
+            <div class="item-preco">${it.p}</div>
+          </div>`).join('')}
+      </div>
+
+      <div style="text-align:center;margin-top:40px">
+        <a href="${wppLink()}" target="_blank" rel="noopener" class="btn-wpp">📲 Fazer Pedido</a>
+      </div>
+    </div>
+  </section>
+
+  ${pr.ativo ? `
+  <!-- PROMOÇÃO DESTAQUE -->
+  <section class="secao" style="padding-top:0;padding-bottom:80px">
+    <div class="container">
+      <div class="promo-banner">
+        <div class="promo-txt">
+          <h3>${pr.titulo}</h3>
+          <p>${pr.descricao}</p>
+          <br>
+          <a href="${wppLink()}" target="_blank" rel="noopener" class="btn-wpp" style="font-size:.88rem;padding:14px 28px">
+            📲 Quero esse combo!
+          </a>
+        </div>
+        <div class="promo-preco">
+          <div class="de">${pr.preco_de}</div>
+          <div class="por">${pr.preco_por}</div>
+          <div style="font-size:.72rem;color:rgba(255,255,255,.55);font-weight:700;margin-top:4px">POR APENAS</div>
+        </div>
+      </div>
+    </div>
+  </section>` : ''}
+
+  <!-- GALERIA -->
+  <section class="secao secao-alt" id="galeria" style="padding-top:0">
+    <div class="container">
+      <div class="secao-topo">
+        <div class="tag-label">📸 Espaço</div>
+        <h2>Conheça a Lanchonete</h2>
+        <p>Ambiente confortável para toda a família</p>
+      </div>
+      <div class="galeria-grid">
+        ${C.galeria.map(g => `
+          <div class="galeria-item">
+            ${g.foto ? `<img src="${g.foto}" alt="${g.l}">` : `<span>🖼️</span>${g.l}`}
+          </div>`).join('')}
+      </div>
+    </div>
+  </section>
+
+  <!-- LOCALIZAÇÃO -->
+  <section class="secao secao-dark" id="local">
+    <div class="container">
+      <div class="secao-topo">
+        <div class="tag-label-dark">📍 Localização</div>
+        <h2 class="claro">Como nos encontrar</h2>
+        <p class="claro">Endereço, horários e contato</p>
+      </div>
+      <div class="local-grid">
+        <div class="mapa-box">
+          ${loc.mapsEmbed
+            ? `<iframe src="${loc.mapsEmbed}" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`
+            : `<span>🗺️</span><small style="color:rgba(255,255,255,.4)">Configure o Maps no bloco DADOS</small>
+               <a href="${loc.mapsLink}" target="_blank" rel="noopener" class="btn-wpp" style="font-size:.8rem;padding:10px 20px;background:var(--amarelo);color:var(--fundo-escuro)">📍 Abrir no Maps</a>`}
+        </div>
+        <div class="info-cards">
+          <div class="info-card">
+            <div class="info-card-h"><div class="info-card-ico">📍</div><h3>Endereço</h3></div>
+            <p class="endereco-txt">
+              <strong>${loc.endereco}</strong><br>
+              ${loc.bairro} — ${loc.cidade}/${loc.estado}<br>
+              CEP: ${loc.cep}
+              ${loc.complemento ? `<br><em style="font-size:.83rem;opacity:.6">📌 ${loc.complemento}</em>` : ''}
+            </p>
+          </div>
+          <div class="info-card">
+            <div class="info-card-h"><div class="info-card-ico">🕐</div><h3>Horários</h3></div>
+            ${C.horarios.map(h => `
+              <div class="horario-row">
+                <span class="horario-dia">${h.d}</span>
+                <span class="horario-hr${h.off ? ' off' : h.dest ? ' dest' : ''}">${h.h}</span>
+              </div>`).join('')}
+          </div>
+          <div class="info-card">
+            <div class="info-card-h"><div class="info-card-ico">📞</div><h3>Contato</h3></div>
+            <div class="contato-row">
+              <div class="contato-ico">📱</div>
+              <div><div class="contato-label">WhatsApp / Pedidos</div><div class="contato-val">${C.telefone}</div></div>
+            </div>
+            ${C.telefoneFixo ? `
+            <div class="contato-row">
+              <div class="contato-ico">📞</div>
+              <div><div class="contato-label">Telefone Fixo</div><div class="contato-val">${C.telefoneFixo}</div></div>
+            </div>` : ''}
+            ${C.email ? `
+            <div class="contato-row">
+              <div class="contato-ico">✉️</div>
+              <div><div class="contato-label">E-mail</div><div class="contato-val" style="font-size:.82rem">${C.email}</div></div>
+            </div>` : ''}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AVALIAÇÕES -->
+  <section class="secao secao-dark" id="avaliacoes" style="padding-top:0">
+    <div class="container">
+      <div class="secao-topo">
+        <div class="tag-label-dark">⭐ Avaliações</div>
+        <h2 class="claro">O que nossos clientes dizem</h2>
+        <p class="claro">Mais de ${av.total} avaliações no Google</p>
+      </div>
+      <div class="nota-box">
+        <div>
+          <div class="nota-num">${av.nota}</div>
+          <div class="nota-stars">★★★★★</div>
+        </div>
+        <div>
+          <div style="font-size:1.1rem;font-weight:700;color:var(--amarelo)">Excelente</div>
+          <div class="nota-total">Baseado em ${av.total} avaliações</div>
+        </div>
+      </div>
+      <div class="aval-grid">
+        ${av.lista.map(a => `
+          <div class="aval-card">
+            <div class="aval-stars">${estrelas(a.estrelas)}</div>
+            <p class="aval-texto">"${a.texto}"</p>
+            <div class="aval-autor">
+              <div class="aval-avatar">${a.nome.charAt(0)}</div>
+              <div>
+                <div class="aval-nome">${a.nome}</div>
+                <div class="aval-data">${a.data}</div>
+              </div>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <h2>Bora pedir agora?</h2>
+    <p>Mande sua mensagem pelo WhatsApp e seu pedido já começa a ser preparado!</p>
+    <a href="${wppLink()}" target="_blank" rel="noopener" class="btn-cta-escuro">📲 Pedir pelo WhatsApp</a>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-nome">${C.nome}</div>
+    <div class="footer-redes">
+      ${C.instagram ? `<a href="${C.instagram}" target="_blank" rel="noopener" class="footer-rede">📸</a>` : ''}
+      ${C.facebook  ? `<a href="${C.facebook}"  target="_blank" rel="noopener" class="footer-rede">👍</a>` : ''}
+      <a href="${wppLink()}" target="_blank" rel="noopener" class="footer-rede">📱</a>
+    </div>
+    <p>© ${new Date().getFullYear()} <a href="#inicio">${C.nome}</a> — ${C.tipo}</p>
+    <p style="margin-top:4px;font-size:.7rem;opacity:.3">Todos os direitos reservados</p>
+  </footer>
+  `;
+
+  /* ── filtro de categorias ── */
+  document.querySelectorAll('.cat-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('ativa'));
+      btn.classList.add('ativa');
+      const cat = btn.dataset.cat;
+      document.querySelectorAll('.item-card').forEach(card => {
+        card.style.display = (cat === 'Tudo' || card.dataset.cat === cat) ? 'flex' : 'none';
+      });
+    });
+  });
+
+  /* ── navbar scroll shadow ── */
+  window.addEventListener('scroll', () => {
+    document.querySelector('.nav').style.boxShadow =
+      window.scrollY > 50 ? '0 4px 28px rgba(0,0,0,.5)' : 'none';
+  });
+</script>
+</body>
+</html>

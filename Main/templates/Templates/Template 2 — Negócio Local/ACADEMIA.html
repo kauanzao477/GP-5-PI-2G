@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IronCore — Academia</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=IBM+Plex+Mono:wght@400;700&family=Outfit:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+
+    /* ══════════════════════════════════════════
+       VARIÁVEIS
+    ══════════════════════════════════════════ */
+    :root {
+      --preto:        #0A0A0A;
+      --preto2:       #111111;
+      --cinza-esc:    #1A1A1A;
+      --cinza-med:    #2A2A2A;
+      --cinza-borda:  #333333;
+      --cinza-texto:  #888888;
+      --branco:       #F0EDE8;
+      --laranja:      #FF4D00;
+      --laranja-esc:  #CC3D00;
+      --laranja-brilho:#FF7040;
+      --verde-neo:    #39FF14;  /* acento néon opcional */
+      --fundo:        #0A0A0A;
+      --card:         #141414;
+      --fonte:        'Outfit', sans-serif;
+      --fonte-titulo: 'Anton', Impact, sans-serif;
+      --fonte-alt:    'Bebas Neue', 'Anton', sans-serif;
+      --fonte-mono:   'IBM Plex Mono', monospace;
+      --raio:         4px;
+      --sombra:       0 4px 32px rgba(0,0,0,.6);
+      --sombra-lrj:   0 8px 40px rgba(255,77,0,.3);
+    }
+
+    /* ══════════════ RESET ══════════════ */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body {
+      font-family:var(--fonte); background:var(--fundo); color:var(--branco);
+      line-height:1.6; overflow-x:hidden;
+    }
+    img { max-width:100%; display:block; }
+    a   { text-decoration:none; color:inherit; }
+    .container { max-width:1100px; margin:0 auto; padding:0 24px; }
+
+    /* ══════════════ TEXTURA GLOBAL ══════════════ */
+    body::before {
+      content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.015) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    /* ══════════════ NAVBAR ══════════════ */
+    .nav {
+      position:fixed; top:0; left:0; right:0; z-index:100;
+      background:rgba(10,10,10,.96); backdrop-filter:blur(16px);
+      padding:0 24px;
+      display:flex; align-items:center; justify-content:space-between; gap:16px;
+      height:64px;
+      border-bottom:1px solid var(--cinza-borda);
+    }
+    .nav-marca { display:flex; align-items:center; gap:12px; }
+    .nav-icone {
+      width:40px; height:40px; background:var(--laranja);
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.2rem; clip-path:polygon(10% 0%,100% 0%,90% 100%,0% 100%);
+    }
+    .nav-nome { font-family:var(--fonte-alt); font-size:1.5rem; color:var(--branco); letter-spacing:2px; line-height:1; }
+    .nav-tipo { font-family:var(--fonte-mono); font-size:.55rem; color:var(--laranja); text-transform:uppercase; letter-spacing:3px; }
+    .nav-links { display:flex; gap:2px; }
+    .nav-links a {
+      color:var(--cinza-texto); font-size:.78rem; font-weight:700;
+      padding:8px 16px; letter-spacing:.5px; text-transform:uppercase;
+      transition:.2s; border-bottom:2px solid transparent;
+    }
+    .nav-links a:hover { color:var(--branco); border-bottom-color:var(--laranja); }
+    .nav-btn {
+      display:flex; align-items:center; gap:8px;
+      background:var(--laranja); color:#fff;
+      padding:10px 24px;
+      font-family:var(--fonte-alt); font-size:1rem; letter-spacing:2px;
+      transition:.2s; clip-path:polygon(6px 0%,100% 0%,calc(100% - 6px) 100%,0% 100%);
+      white-space:nowrap;
+    }
+    .nav-btn:hover { background:var(--laranja-brilho); transform:scale(1.04); }
+
+    /* ══════════════ HERO ══════════════ */
+    .hero {
+      min-height:100vh; display:flex; align-items:center;
+      background:var(--preto);
+      padding:100px 24px 72px;
+      position:relative; overflow:hidden;
+    }
+    /* Linha diagonal decorativa */
+    .hero-linha {
+      position:absolute; top:0; right:28%; width:2px; height:100%;
+      background:linear-gradient(180deg, transparent 0%, var(--laranja) 40%, transparent 100%);
+      opacity:.3;
+    }
+    .hero-linha2 {
+      position:absolute; top:0; right:calc(28% + 24px); width:1px; height:100%;
+      background:linear-gradient(180deg, transparent 0%, var(--cinza-borda) 50%, transparent 100%);
+      opacity:.4;
+    }
+    /* Glow laranja de fundo */
+    .hero::after {
+      content:''; position:absolute;
+      right:10%; top:50%; transform:translateY(-50%);
+      width:500px; height:500px; border-radius:50%;
+      background:radial-gradient(circle, rgba(255,77,0,.12) 0%, transparent 70%);
+      pointer-events:none;
+    }
+    .hero-inner {
+      max-width:1100px; margin:0 auto; width:100%;
+      display:grid; grid-template-columns:1fr 420px; gap:60px;
+      align-items:center; position:relative; z-index:1;
+    }
+
+    /* número de fundo gigante */
+    .hero-bg-num {
+      position:absolute; right:0; bottom:-40px;
+      font-family:var(--fonte-titulo); font-size:28rem; line-height:1;
+      color:rgba(255,255,255,.018); pointer-events:none; user-select:none;
+      letter-spacing:-20px;
+    }
+
+    .hero-pretitulo {
+      display:flex; align-items:center; gap:10px; margin-bottom:20px;
+    }
+    .hero-pretitulo-linha { width:40px; height:2px; background:var(--laranja); }
+    .hero-pretitulo span {
+      font-family:var(--fonte-mono); font-size:.65rem; color:var(--laranja);
+      text-transform:uppercase; letter-spacing:4px; font-weight:700;
+    }
+
+    .hero h1 {
+      font-family:var(--fonte-titulo); font-size:7rem; font-weight:400;
+      color:var(--branco); line-height:.88; margin-bottom:24px;
+      text-transform:uppercase; letter-spacing:-2px;
+    }
+    .hero h1 .destaque {
+      display:block; color:var(--laranja);
+      -webkit-text-stroke:0px;
+    }
+    .hero h1 .contorno {
+      display:block; color:transparent;
+      -webkit-text-stroke:1.5px rgba(240,237,232,.2);
+    }
+    .hero-sub {
+      font-size:.95rem; color:var(--cinza-texto); margin-bottom:40px;
+      max-width:480px; line-height:1.8; font-weight:400;
+    }
+
+    .hero-botoes { display:flex; gap:12px; flex-wrap:wrap; }
+    .btn-laranja {
+      display:inline-flex; align-items:center; gap:10px;
+      background:var(--laranja); color:#fff;
+      padding:16px 36px;
+      font-family:var(--fonte-alt); font-size:1.05rem; letter-spacing:2px;
+      transition:.25s; box-shadow:var(--sombra-lrj);
+      clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);
+    }
+    .btn-laranja:hover { background:var(--laranja-brilho); transform:translateY(-3px); box-shadow:0 14px 50px rgba(255,77,0,.45); }
+    .btn-outline {
+      display:inline-flex; align-items:center; gap:10px;
+      background:transparent; color:var(--branco);
+      padding:14px 32px;
+      font-family:var(--fonte-alt); font-size:1rem; letter-spacing:2px;
+      border:1px solid var(--cinza-borda); transition:.25s;
+    }
+    .btn-outline:hover { border-color:var(--laranja); color:var(--laranja); }
+
+    /* stats */
+    .hero-stats { display:flex; gap:0; margin-top:48px; border-top:1px solid var(--cinza-borda); padding-top:28px; }
+    .hero-stat {
+      flex:1; padding-right:28px;
+      border-right:1px solid var(--cinza-borda);
+    }
+    .hero-stat:last-child { padding-right:0; padding-left:28px; border-right:none; }
+    .hero-stat:not(:first-child) { padding-left:28px; }
+    .hero-stat-n { font-family:var(--fonte-titulo); font-size:2.4rem; color:var(--laranja); line-height:1; letter-spacing:-1px; }
+    .hero-stat-l { font-family:var(--fonte-mono); font-size:.6rem; color:var(--cinza-texto); text-transform:uppercase; letter-spacing:2px; margin-top:4px; }
+
+    /* visual direito */
+    .hero-img-box {
+      width:100%; aspect-ratio:3/4; position:relative;
+      background:var(--cinza-esc);
+      border:1px solid var(--cinza-borda);
+      display:flex; align-items:center; justify-content:center;
+      flex-direction:column; gap:12px;
+      color:var(--cinza-texto); font-size:.75rem; font-weight:700;
+      text-transform:uppercase; letter-spacing:1.5px;
+      overflow:hidden;
+    }
+    .hero-img-box img { width:100%; height:100%; object-fit:cover; }
+    .hero-img-box span { font-size:4rem; opacity:.2; }
+    /* canto cortado */
+    .hero-img-box::before {
+      content:''; position:absolute; bottom:0; right:0;
+      width:0; height:0;
+      border-style:solid; border-width:0 0 50px 50px;
+      border-color:transparent transparent var(--laranja) transparent;
+      z-index:2;
+    }
+    /* barra lateral laranja */
+    .hero-img-box::after {
+      content:''; position:absolute; left:0; top:0; bottom:0;
+      width:4px; background:var(--laranja);
+    }
+    /* tag de status */
+    .hero-aberto {
+      position:absolute; top:16px; left:16px; z-index:3;
+      display:flex; align-items:center; gap:7px;
+      background:rgba(10,10,10,.85); border:1px solid var(--cinza-borda);
+      padding:7px 14px;
+      font-family:var(--fonte-mono); font-size:.62rem; color:var(--branco);
+      letter-spacing:2px; text-transform:uppercase;
+    }
+    .hero-aberto-dot { width:7px; height:7px; background:var(--verde-neo); border-radius:50%; animation:pisca 1.5s infinite; }
+    @keyframes pisca { 0%,100%{opacity:1} 50%{opacity:.15} }
+
+    /* ══════════════ SEÇÕES ══════════════ */
+    .secao     { padding:80px 24px; position:relative; z-index:1; }
+    .secao-alt { background:var(--cinza-esc); }
+
+    .secao-topo { margin-bottom:52px; }
+    .secao-topo.centro { text-align:center; }
+    .tag-mono {
+      display:inline-flex; align-items:center; gap:8px;
+      font-family:var(--fonte-mono); font-size:.62rem; color:var(--laranja);
+      text-transform:uppercase; letter-spacing:3px; margin-bottom:12px;
+    }
+    .tag-mono::before { content:'//'; opacity:.5; }
+    .secao-topo h2 {
+      font-family:var(--fonte-titulo); font-size:3.4rem; font-weight:400;
+      color:var(--branco); text-transform:uppercase; letter-spacing:-1px; line-height:.95;
+    }
+    .secao-topo h2 em { color:var(--laranja); font-style:normal; }
+    .secao-topo p { font-size:.9rem; color:var(--cinza-texto); margin-top:12px; max-width:520px; line-height:1.8; }
+    .secao-topo.centro p { margin-inline:auto; }
+
+    /* ══════════════ SOBRE ══════════════ */
+    .sobre-grid { display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center; }
+    .sobre-img {
+      aspect-ratio:4/5; background:var(--cinza-med);
+      border:1px solid var(--cinza-borda);
+      display:flex; align-items:center; justify-content:center;
+      flex-direction:column; gap:12px; color:var(--cinza-texto);
+      font-size:.8rem; font-weight:700; position:relative; overflow:hidden;
+    }
+    .sobre-img span { font-size:4rem; opacity:.15; }
+    .sobre-img img  { width:100%; height:100%; object-fit:cover; }
+    .sobre-img::after {
+      content:''; position:absolute; bottom:0; left:0; right:0;
+      height:4px; background:var(--laranja);
+    }
+
+    .sobre-texto h2  { font-family:var(--fonte-titulo); font-size:2.8rem; font-weight:400; text-transform:uppercase; letter-spacing:-1px; line-height:1; margin-bottom:8px; }
+    .sobre-sub-label { font-family:var(--fonte-mono); color:var(--laranja); font-size:.72rem; letter-spacing:3px; text-transform:uppercase; margin-bottom:20px; display:block; }
+    .sobre-p         { font-size:.92rem; color:var(--cinza-texto); line-height:1.9; margin-bottom:30px; }
+
+    .diferenciais { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:32px; }
+    .diferencial {
+      display:flex; align-items:center; gap:12px;
+      background:var(--cinza-med); border:1px solid var(--cinza-borda);
+      border-left:3px solid var(--laranja); padding:14px 16px;
+    }
+    .diferencial-ico {
+      width:36px; height:36px; background:rgba(255,77,0,.1);
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.1rem; flex-shrink:0;
+    }
+    .diferencial span { font-size:.82rem; font-weight:700; color:var(--branco); }
+
+    /* ══════════════ PLANOS ══════════════ */
+    .planos-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(290px,1fr)); gap:2px; }
+    .plano {
+      background:var(--card); border:1px solid var(--cinza-borda);
+      padding:36px 32px; position:relative; overflow:hidden; transition:.25s;
+    }
+    .plano::before {
+      content:''; position:absolute; top:0; left:0; right:0;
+      height:3px; background:var(--cinza-borda); transition:.25s;
+    }
+    .plano:hover { background:var(--cinza-med); transform:translateY(-4px); }
+    .plano:hover::before { background:var(--laranja); }
+    .plano.destaque {
+      background:var(--laranja); border-color:var(--laranja);
+    }
+    .plano.destaque::before { background:rgba(255,255,255,.3); }
+    .plano.destaque:hover { background:var(--laranja-brilho); }
+    .plano-tag {
+      font-family:var(--fonte-mono); font-size:.58rem; color:var(--cinza-texto);
+      text-transform:uppercase; letter-spacing:3px; margin-bottom:12px; display:block;
+    }
+    .plano.destaque .plano-tag { color:rgba(255,255,255,.7); }
+    .plano-nome {
+      font-family:var(--fonte-alt); font-size:2rem; color:var(--branco);
+      letter-spacing:2px; margin-bottom:4px;
+    }
+    .plano.destaque .plano-nome { color:#fff; }
+    .plano-preco {
+      display:flex; align-items:flex-end; gap:4px; margin:20px 0;
+      padding:16px 0; border-top:1px solid var(--cinza-borda); border-bottom:1px solid var(--cinza-borda);
+    }
+    .plano.destaque .plano-preco { border-color:rgba(255,255,255,.2); }
+    .plano-cifrao { font-size:.85rem; color:var(--cinza-texto); margin-bottom:8px; font-weight:700; }
+    .plano.destaque .plano-cifrao { color:rgba(255,255,255,.7); }
+    .plano-valor { font-family:var(--fonte-titulo); font-size:3.5rem; color:var(--branco); line-height:1; letter-spacing:-2px; }
+    .plano.destaque .plano-valor { color:#fff; }
+    .plano-per  { font-size:.78rem; color:var(--cinza-texto); margin-bottom:8px; font-weight:500; }
+    .plano.destaque .plano-per { color:rgba(255,255,255,.65); }
+    .plano-itens { list-style:none; margin:20px 0 28px; display:flex; flex-direction:column; gap:10px; }
+    .plano-itens li {
+      font-size:.85rem; color:var(--cinza-texto); display:flex; align-items:center; gap:10px;
+    }
+    .plano.destaque .plano-itens li { color:rgba(255,255,255,.8); }
+    .plano-itens li::before { content:'—'; color:var(--laranja); font-weight:700; flex-shrink:0; }
+    .plano.destaque .plano-itens li::before { color:rgba(255,255,255,.5); }
+    .plano-btn {
+      display:block; text-align:center;
+      background:var(--cinza-med); color:var(--branco);
+      padding:14px; font-family:var(--fonte-alt); font-size:1rem; letter-spacing:2px;
+      border:1px solid var(--cinza-borda); transition:.2s;
+    }
+    .plano-btn:hover { background:var(--laranja); border-color:var(--laranja); color:#fff; }
+    .plano.destaque .plano-btn {
+      background:#fff; color:var(--laranja); border-color:#fff;
+    }
+    .plano.destaque .plano-btn:hover { background:rgba(255,255,255,.85); }
+    /* badge popular */
+    .plano-popular {
+      position:absolute; top:16px; right:16px;
+      background:rgba(0,0,0,.3); color:#fff; border:1px solid rgba(255,255,255,.2);
+      font-family:var(--fonte-mono); font-size:.55rem; letter-spacing:2px;
+      text-transform:uppercase; padding:4px 10px;
+    }
+
+    /* ══════════════ MODALIDADES ══════════════ */
+    .modal-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:2px; }
+    .modalidade {
+      background:var(--card); border:1px solid var(--cinza-borda);
+      padding:28px 24px; transition:.25s; position:relative; overflow:hidden;
+      cursor:default;
+    }
+    .modalidade::after {
+      content:''; position:absolute; bottom:0; left:0; right:100%;
+      height:2px; background:var(--laranja); transition:.35s ease;
+    }
+    .modalidade:hover::after { right:0; }
+    .modalidade:hover { background:var(--cinza-med); }
+    .modal-ico { font-size:2rem; margin-bottom:14px; display:block; }
+    .modal-nome { font-family:var(--fonte-alt); font-size:1.3rem; color:var(--branco); letter-spacing:1.5px; margin-bottom:6px; }
+    .modal-desc { font-size:.8rem; color:var(--cinza-texto); line-height:1.65; }
+    .modal-horario {
+      margin-top:12px; padding-top:12px; border-top:1px solid var(--cinza-borda);
+      font-family:var(--fonte-mono); font-size:.62rem; color:var(--laranja); letter-spacing:1.5px;
+    }
+
+    /* ══════════════ GALERIA ══════════════ */
+    .galeria-grid { display:grid; grid-template-columns:repeat(4,1fr); grid-template-rows:auto; gap:2px; }
+    .galeria-item {
+      background:var(--cinza-med);
+      display:flex; align-items:center; justify-content:center;
+      flex-direction:column; gap:8px; color:var(--cinza-texto);
+      font-size:.75rem; font-weight:700; transition:.25s; cursor:pointer;
+      height:200px; overflow:hidden; position:relative;
+    }
+    .galeria-item:nth-child(1) { grid-column:span 2; grid-row:span 2; height:auto; min-height:402px; }
+    .galeria-item::after {
+      content:''; position:absolute; inset:0;
+      background:rgba(255,77,0,0); transition:.3s;
+    }
+    .galeria-item:hover::after { background:rgba(255,77,0,.08); }
+    .galeria-item span { font-size:2.5rem; opacity:.15; }
+    .galeria-item img  { width:100%; height:100%; object-fit:cover; }
+    .galeria-legenda {
+      position:absolute; bottom:0; left:0; right:0;
+      background:linear-gradient(transparent, rgba(0,0,0,.8));
+      padding:20px 14px 12px;
+      font-family:var(--fonte-mono); font-size:.6rem; color:rgba(255,255,255,.6);
+      letter-spacing:2px; text-transform:uppercase;
+      transform:translateY(100%); transition:.3s;
+      z-index:2;
+    }
+    .galeria-item:hover .galeria-legenda { transform:translateY(0); }
+
+    /* ══════════════ LOCALIZAÇÃO ══════════════ */
+    .local-grid { display:grid; grid-template-columns:1fr 1fr; gap:2px; }
+    .mapa-box {
+      height:480px; background:var(--cinza-med); border:1px solid var(--cinza-borda);
+      display:flex; align-items:center; justify-content:center;
+      flex-direction:column; gap:12px; color:var(--cinza-texto); font-size:.85rem; font-weight:700;
+    }
+    .mapa-box span  { font-size:3rem; opacity:.2; }
+    .mapa-box iframe { width:100%; height:100%; border:0; display:block; filter:grayscale(1) invert(1); }
+
+    .info-cards { display:flex; flex-direction:column; gap:2px; }
+    .info-card  {
+      background:var(--card); padding:24px 28px;
+      border:1px solid var(--cinza-borda);
+    }
+    .info-card-h { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+    .info-card-ico {
+      width:40px; height:40px; background:rgba(255,77,0,.1);
+      display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0;
+    }
+    .info-card-h h3 { font-family:var(--fonte-alt); font-size:1.1rem; color:var(--branco); letter-spacing:1.5px; }
+
+    .endereco-txt { font-size:.88rem; color:var(--cinza-texto); line-height:1.9; }
+    .endereco-txt strong { color:var(--branco); }
+
+    .horario-row {
+      display:flex; justify-content:space-between; align-items:center;
+      padding:9px 0; border-bottom:1px solid var(--cinza-borda); font-size:.85rem;
+    }
+    .horario-row:last-child { border-bottom:none; }
+    .horario-dia { font-weight:700; color:var(--branco); font-family:var(--fonte-mono); font-size:.75rem; letter-spacing:1px; }
+    .horario-hr  { color:var(--cinza-texto); font-weight:600; font-family:var(--fonte-mono); font-size:.75rem; }
+    .horario-hr.off  { color:var(--laranja); }
+    .horario-hr.dest { color:var(--verde-neo); font-weight:700; }
+
+    .contato-row  { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--cinza-borda); }
+    .contato-row:last-child { border-bottom:none; }
+    .contato-ico  {
+      width:36px; height:36px; background:rgba(255,77,0,.1);
+      display:flex; align-items:center; justify-content:center; font-size:.95rem; flex-shrink:0;
+    }
+    .contato-label { font-family:var(--fonte-mono); font-size:.58rem; color:var(--cinza-texto); text-transform:uppercase; letter-spacing:1.5px; }
+    .contato-val   { font-size:.9rem; font-weight:700; color:var(--branco); }
+
+    /* ══════════════ AVALIAÇÕES ══════════════ */
+    .nota-box {
+      display:flex; align-items:center; gap:24px;
+      background:var(--card); border:1px solid var(--cinza-borda);
+      border-left:4px solid var(--laranja);
+      padding:24px 32px; margin-bottom:2px;
+    }
+    .nota-num   { font-family:var(--fonte-titulo); font-size:3.8rem; color:var(--laranja); line-height:1; letter-spacing:-3px; }
+    .nota-stars { color:var(--laranja); font-size:1.1rem; margin:4px 0; }
+    .nota-total { font-family:var(--fonte-mono); font-size:.62rem; color:var(--cinza-texto); letter-spacing:2px; text-transform:uppercase; }
+
+    .aval-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:2px; }
+    .aval-card {
+      background:var(--card); padding:28px;
+      border:1px solid var(--cinza-borda); transition:.25s; position:relative;
+    }
+    .aval-card::before {
+      content:'"'; position:absolute; top:16px; right:20px;
+      font-family:var(--fonte-titulo); font-size:5rem; color:rgba(255,77,0,.08);
+      line-height:1;
+    }
+    .aval-card:hover { background:var(--cinza-med); }
+    .aval-stars  { color:var(--laranja); font-size:.85rem; margin-bottom:12px; }
+    .aval-texto  { font-size:.87rem; color:var(--cinza-texto); line-height:1.8; margin-bottom:18px; }
+    .aval-autor  { display:flex; align-items:center; gap:12px; padding-top:16px; border-top:1px solid var(--cinza-borda); }
+    .aval-avatar {
+      width:40px; height:40px;
+      background:rgba(255,77,0,.15); border:1px solid rgba(255,77,0,.3);
+      display:flex; align-items:center; justify-content:center;
+      font-family:var(--fonte-titulo); font-size:1.1rem; color:var(--laranja); flex-shrink:0;
+    }
+    .aval-nome { font-size:.87rem; font-weight:700; color:var(--branco); }
+    .aval-data { font-family:var(--fonte-mono); font-size:.6rem; color:var(--cinza-texto); letter-spacing:1px; }
+
+    /* ══════════════ CTA ══════════════ */
+    .cta {
+      background:var(--laranja); padding:80px 24px;
+      text-align:center; position:relative; overflow:hidden;
+    }
+    .cta::before {
+      content:''; position:absolute; inset:0;
+      background-image:
+        linear-gradient(rgba(0,0,0,.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,.08) 1px, transparent 1px);
+      background-size:40px 40px;
+    }
+    .cta-inner { position:relative; z-index:1; }
+    .cta h2 {
+      font-family:var(--fonte-titulo); font-size:4.5rem; font-weight:400;
+      color:#fff; text-transform:uppercase; letter-spacing:-2px; line-height:.9;
+      margin-bottom:14px;
+    }
+    .cta p { font-size:1rem; color:rgba(255,255,255,.8); margin-bottom:32px; max-width:500px; margin-inline:auto; }
+    .btn-branco {
+      display:inline-flex; align-items:center; gap:10px;
+      background:#fff; color:var(--laranja);
+      padding:18px 40px; font-family:var(--fonte-alt); font-size:1.1rem; letter-spacing:2.5px;
+      transition:.25s; box-shadow:0 10px 40px rgba(0,0,0,.25);
+      clip-path:polygon(10px 0%,100% 0%,calc(100% - 10px) 100%,0% 100%);
+    }
+    .btn-branco:hover { background:var(--preto); color:#fff; transform:translateY(-3px); }
+
+    /* ══════════════ FOOTER ══════════════ */
+    .footer {
+      background:var(--preto); color:var(--cinza-texto);
+      padding:40px 24px;
+      border-top:1px solid var(--cinza-borda);
+    }
+    .footer-inner {
+      max-width:1100px; margin:0 auto;
+      display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap;
+    }
+    .footer-nome { font-family:var(--fonte-alt); font-size:1.6rem; color:var(--branco); letter-spacing:2px; }
+    .footer-redes { display:flex; gap:8px; }
+    .footer-rede {
+      width:36px; height:36px; background:var(--cinza-med);
+      border:1px solid var(--cinza-borda);
+      display:flex; align-items:center; justify-content:center; font-size:.9rem;
+      transition:.2s;
+    }
+    .footer-rede:hover { background:var(--laranja); border-color:var(--laranja); }
+    .footer-txt { font-family:var(--fonte-mono); font-size:.62rem; letter-spacing:2px; text-transform:uppercase; }
+    .footer-txt a { color:var(--laranja); }
+
+    /* ══════════════ WPP FLUTUANTE ══════════════ */
+    .wpp-float {
+      position:fixed; bottom:24px; right:24px; z-index:999;
+      display:flex; flex-direction:column; align-items:flex-end; gap:8px;
+    }
+    .wpp-msg {
+      background:var(--cinza-esc); padding:10px 16px;
+      border:1px solid var(--cinza-borda);
+      box-shadow:var(--sombra);
+      font-family:var(--fonte-mono); font-size:.72rem; font-weight:700;
+      white-space:nowrap; border-left:3px solid var(--wpp); color:var(--branco);
+      animation:sobe 3s ease-in-out infinite; letter-spacing:1px;
+    }
+    .wpp-msg span { color:#25D366; }
+    @keyframes sobe { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+    .wpp-btn {
+      width:60px; height:60px;
+      background:#25D366; color:#fff; border:none; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.8rem; transition:.25s;
+      box-shadow:0 4px 22px rgba(37,211,102,.5);
+      animation:pulsa 2s infinite;
+      clip-path:polygon(10% 0%,100% 0%,90% 100%,0% 100%);
+    }
+    @keyframes pulsa {
+      0%  { box-shadow:0 0 0 0 rgba(37,211,102,.55); }
+      70% { box-shadow:0 0 0 16px rgba(37,211,102,0); }
+      100%{ box-shadow:0 0 0 0 rgba(37,211,102,0); }
+    }
+    .wpp-btn:hover { background:#1ebe57; transform:scale(1.08); }
+
+    /* ══════════════ RESPONSIVO ══════════════ */
+    @media(max-width:900px){
+      .nav-links { display:none; }
+      .hero-inner { grid-template-columns:1fr; gap:40px; }
+      .hero h1 { font-size:5rem; }
+      .hero-img-box { order:-1; max-width:340px; margin:0 auto; aspect-ratio:4/3; }
+      .hero-bg-num { font-size:16rem; }
+      .sobre-grid, .local-grid { grid-template-columns:1fr; }
+      .aval-grid   { grid-template-columns:1fr; }
+      .galeria-grid{ grid-template-columns:1fr 1fr; }
+      .galeria-item:nth-child(1){ grid-column:span 2; min-height:280px; }
+      .footer-inner { flex-direction:column; text-align:center; }
+      .footer-redes { justify-content:center; }
+    }
+    @media(max-width:600px){
+      .hero { padding:88px 16px 48px; min-height:auto; }
+      .hero h1 { font-size:3.5rem; }
+      .btn-laranja, .btn-outline, .btn-branco { width:100%; justify-content:center; }
+      .modal-grid, .planos-grid { grid-template-columns:1fr; }
+      .galeria-grid { grid-template-columns:1fr; }
+      .galeria-item:nth-child(1){ grid-column:span 1; min-height:220px; height:220px; }
+      .secao-topo h2 { font-size:2.4rem; }
+      .diferenciais  { grid-template-columns:1fr; }
+      .nota-box      { flex-direction:column; }
+      .hero-stats    { flex-direction:column; gap:16px; padding-top:20px; }
+      .hero-stat     { border-right:none; border-bottom:1px solid var(--cinza-borda); padding:0 0 16px; }
+      .hero-stat:last-child { padding-bottom:0; border-bottom:none; }
+      .nav-btn .nav-cta-texto { display:none; }
+      .cta h2 { font-size:3rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     CONFIGURAÇÃO — altere tudo aqui
+═══════════════════════════════════════════ -->
+<script>
+/*
+ * ╔══════════════════════════════════════════════════════════════════════╗
+ * ║  BLOCO DE DADOS — gerado/substituído automaticamente pela IA        ║
+ * ║                                                                      ║
+ * ║  INSTRUÇÕES PARA A IA:                                               ║
+ * ║  • Substitua APENAS os valores entre aspas ou números               ║
+ * ║  • Não altere os nomes das chaves                                   ║
+ * ║  • Não altere nada fora deste bloco <script>                        ║
+ * ║  • Arrays como "planos", "modalidades" e "horarios" podem ter N     ║
+ * ║  • Campos opcionais: deixe "" (string vazia) se não houver valor    ║
+ * ║  • Campos de foto: deixe "" até ter a URL real da imagem            ║
+ * ╚══════════════════════════════════════════════════════════════════════╝
+*/
+const DADOS = {
+
+  /* CAMPO: nome_negocio — Nome completo da academia */
+  "nome": "IronCore",
+
+  /* CAMPO: tipo_negocio — Tipo/segmento do negócio */
+  "tipo": "Academia & Fitness",
+
+  /* CAMPO: slogan_linha1 — 1ª linha do slogan (hero) */
+  "slogan1": "FORGE",
+
+  /* CAMPO: slogan_linha2 — 2ª linha (destaque em laranja) */
+  "slogan2": "YOUR",
+
+  /* CAMPO: slogan_linha3 — 3ª linha (contorno vazado) */
+  "slogan3": "LIMITS",
+
+  /* CAMPO: descricao — Descrição curta para o hero (1-2 frases) */
+  "descricao": "Equipamentos de alto desempenho, instrutores certificados e metodologia que entrega resultado de verdade. Venha treinar onde os fortes se formam.",
+
+  /* CAMPO: icone_emoji — Emoji representativo do negócio */
+  "icone": "💪",
+
+  /* CAMPO: url_logo — URL/caminho da imagem do logo (deixe "" se não tiver) */
+  "logo": "",
+
+  /* CAMPO: url_foto_banner — URL/caminho da foto principal do hero (deixe "" se não tiver) */
+  "foto_banner": "",
+
+  /* CAMPO: whatsapp_numero — Número com DDI+DDD sem espaços ou símbolos */
+  "whatsapp": "5511999999999",
+
+  /* CAMPO: whatsapp_mensagem — Mensagem pré-preenchida ao abrir o WhatsApp */
+  "wpp_msg": "Olá! Quero saber mais sobre os planos e fazer minha matrícula.",
+
+  /* CAMPO: telefone_celular — Telefone/WhatsApp exibido na tela */
+  "telefone": "(11) 99999-9999",
+
+  /* CAMPO: telefone_fixo — Telefone fixo (deixe "" se não tiver) */
+  "telefone_fixo": "(11) 3333-4444",
+
+  /* CAMPO: email — E-mail de contato (deixe "" se não tiver) */
+  "email": "contato@ironcore.com.br",
+
+  /* CAMPO: url_instagram — Link completo do Instagram (deixe "" se não tiver) */
+  "instagram": "https://instagram.com/ironcore",
+
+  /* CAMPO: url_facebook — Link completo do Facebook (deixe "" se não tiver) */
+  "facebook": "https://facebook.com/ironcore",
+
+  /* CAMPO: status_aberto — Texto do status exibido no hero (ex: "ABERTO AGORA") */
+  "status_aberto": "ABERTO AGORA",
+
+  /* CAMPO: stats_hero — Até 3 números de destaque exibidos no hero */
+  "stats": [
+    { "numero": "2.800+", "label": "Alunos Ativos"      }, /* CAMPO: stat_1 */
+    { "numero": "12+",    "label": "Anos no Mercado"    }, /* CAMPO: stat_2 */
+    { "numero": "18",     "label": "Instrutores"        }  /* CAMPO: stat_3 */
+  ],
+
+  /* ── SEÇÃO SOBRE ─────────────────────────────────────────────────── */
+  "sobre": {
+    /* CAMPO: sobre_titulo — Título da seção sobre */
+    "titulo": "Sobre a IronCore",
+
+    /* CAMPO: sobre_subtitulo — Subtítulo/destaque */
+    "sub": "Treinamento de alto desempenho desde 2012",
+
+    /* CAMPO: sobre_texto — Parágrafo descritivo (3-5 frases) */
+    "texto": "A IronCore nasceu para quem leva o treino a sério. Estrutura completa com musculação, cardio, salas de aula e área funcional de alto nível. Nossos instrutores acompanham cada aluno com avaliação física, planilha personalizada e reavaliação periódica.",
+
+    /* CAMPO: url_foto_sobre — URL/caminho da foto da seção sobre (deixe "" se não tiver) */
+    "foto": "",
+
+    /* CAMPO: destaques — Até 4 diferenciais com emoji e texto curto */
+    "destaques": [
+      { "icone": "🏋️", "texto": "Equipamentos premium"    }, /* CAMPO: destaque_1 */
+      { "icone": "📋", "texto": "Planilha personalizada"  }, /* CAMPO: destaque_2 */
+      { "icone": "📊", "texto": "Avaliação física grátis" }, /* CAMPO: destaque_3 */
+      { "icone": "🚿", "texto": "Vestiários completos"    }  /* CAMPO: destaque_4 */
+    ]
+  },
+
+  /* ── PLANOS ──────────────────────────────────────────────────────── */
+  /* CAMPO: planos — Lista de planos de matrícula (sem limite de itens) */
+  "planos": [
+    {
+      "nome": "MENSAL",                                           /* CAMPO: plano_1_nome */
+      "tag": "Plano básico",                                      /* CAMPO: plano_1_tag */
+      "preco": "89",                                              /* CAMPO: plano_1_preco */
+      "periodo": "/ mês",                                         /* CAMPO: plano_1_periodo */
+      "popular": false,                                           /* CAMPO: plano_1_popular */
+      "destaque": false,                                          /* CAMPO: plano_1_destaque */
+      "itens": [                                                  /* CAMPO: plano_1_itens */
+        "Musculação livre",
+        "Área de cardio",
+        "Sem fidelidade"
+      ]
+    },
+    {
+      "nome": "TRIMESTRAL",                                       /* CAMPO: plano_2_nome */
+      "tag": "Mais popular",                                      /* CAMPO: plano_2_tag */
+      "preco": "69",                                              /* CAMPO: plano_2_preco */
+      "periodo": "/ mês",                                         /* CAMPO: plano_2_periodo */
+      "popular": true,                                            /* CAMPO: plano_2_popular */
+      "destaque": true,                                           /* CAMPO: plano_2_destaque */
+      "itens": [                                                  /* CAMPO: plano_2_itens */
+        "Musculação livre",
+        "Área de cardio",
+        "1 aula coletiva / sem.",
+        "Avaliação física inclusa"
+      ]
+    },
+    {
+      "nome": "ANUAL",                                            /* CAMPO: plano_3_nome */
+      "tag": "Melhor custo-benefício",                            /* CAMPO: plano_3_tag */
+      "preco": "49",                                              /* CAMPO: plano_3_preco */
+      "periodo": "/ mês",                                         /* CAMPO: plano_3_periodo */
+      "popular": false,                                           /* CAMPO: plano_3_popular */
+      "destaque": false,                                          /* CAMPO: plano_3_destaque */
+      "itens": [                                                  /* CAMPO: plano_3_itens */
+        "Musculação livre",
+        "Área de cardio",
+        "Aulas coletivas ilimitadas",
+        "Avaliação física inclusa",
+        "Personal trainer 1x / mês"
+      ]
+    }
+  ],
+
+  /* ── MODALIDADES ─────────────────────────────────────────────────── */
+  /* CAMPO: modalidades — Atividades/aulas oferecidas */
+  "modalidades": [
+    { "icone": "🏋️", "nome": "MUSCULAÇÃO",    "descricao": "Treino com carga progressiva e planilha individualizada.",  "horario": "06:00 – 23:00" }, /* CAMPO: modalidade_1 */
+    { "icone": "🔥", "nome": "HIIT",          "descricao": "Alta intensidade com circuitos e queima máxima de calorias.", "horario": "07:00, 12:00, 19:00" }, /* CAMPO: modalidade_2 */
+    { "icone": "🥊", "nome": "BOXE",          "descricao": "Técnica e condicionamento com instrutor especializado.",       "horario": "08:00, 20:00" }, /* CAMPO: modalidade_3 */
+    { "icone": "🧘", "nome": "YOGA",          "descricao": "Flexibilidade, equilíbrio e foco mental.",                    "horario": "07:00, 18:30" }, /* CAMPO: modalidade_4 */
+    { "icone": "💃", "nome": "SPINNING",      "descricao": "Ciclismo indoor com música e muito suor.",                    "horario": "06:30, 12:00, 19:30" }, /* CAMPO: modalidade_5 */
+    { "icone": "🤸", "nome": "FUNCIONAL",     "descricao": "Movimentos funcionais e treino de força integrada.",           "horario": "07:00, 12:00, 18:00" }  /* CAMPO: modalidade_6 */
+  ],
+
+  /* ── GALERIA ─────────────────────────────────────────────────────── */
+  /* CAMPO: galeria — Fotos do espaço (url_foto: deixe "" se não tiver) */
+  "galeria": [
+    { "url_foto": "", "legenda": "Área de Musculação"  }, /* CAMPO: foto_1 */
+    { "url_foto": "", "legenda": "Sala de Aulas"       }, /* CAMPO: foto_2 */
+    { "url_foto": "", "legenda": "Área Cardio"         }, /* CAMPO: foto_3 */
+    { "url_foto": "", "legenda": "Vestiários"          }, /* CAMPO: foto_4 */
+    { "url_foto": "", "legenda": "Sala Funcional"      }  /* CAMPO: foto_5 */
+  ],
+
+  /* ── LOCALIZAÇÃO ─────────────────────────────────────────────────── */
+  "localizacao": {
+    /* CAMPO: endereco_rua — Rua e número */
+    "endereco": "Av. Industrial, 1.200",
+
+    /* CAMPO: endereco_bairro */
+    "bairro": "Vila Nova",
+
+    /* CAMPO: endereco_cidade */
+    "cidade": "São Paulo",
+
+    /* CAMPO: endereco_estado */
+    "estado": "SP",
+
+    /* CAMPO: endereco_cep */
+    "cep": "02050-000",
+
+    /* CAMPO: endereco_complemento — Referência ou dica (deixe "" se não tiver) */
+    "complemento": "Estacionamento gratuito",
+
+    /* CAMPO: google_maps_embed — Cole aqui o src do iframe do Google Maps (deixe "" para mostrar botão) */
+    "maps_embed": "",
+
+    /* CAMPO: google_maps_link — Link direto do Google Maps para abrir no app */
+    "maps_link": "https://maps.google.com"
+  },
+
+  /* ── HORÁRIOS ────────────────────────────────────────────────────── */
+  "horarios": [
+    { "dia": "Segunda a Sexta", "horario": "05:30 – 23:00", "fechado": false, "destaque": false }, /* CAMPO: horario_1 */
+    { "dia": "Sábado",          "horario": "07:00 – 18:00", "fechado": false, "destaque": false }, /* CAMPO: horario_2 */
+    { "dia": "Domingo",         "horario": "08:00 – 14:00", "fechado": false, "destaque": false }, /* CAMPO: horario_3 */
+    { "dia": "Feriados",        "horario": "08:00 – 12:00", "fechado": false, "destaque": false }  /* CAMPO: horario_4 */
+  ],
+
+  /* ── AVALIAÇÕES ──────────────────────────────────────────────────── */
+  "avaliacoes": {
+    /* CAMPO: nota_geral — Nota média */
+    "nota": "4.9",
+
+    /* CAMPO: total_avaliacoes — Total de avaliações para exibir */
+    "total": "947",
+
+    /* CAMPO: depoimentos */
+    "lista": [
+      { "nome": "Lucas Ferreira",  "texto": "Melhor academia que já treinei. Equipamento de primeira, instrutores atenciosos e o ambiente te dá vontade de treinar todo dia.",        "estrelas": 5, "data": "Há 4 dias"    }, /* CAMPO: depoimento_1 */
+      { "nome": "Amanda Costa",    "texto": "Perdi 14kg em 5 meses com acompanhamento dos instrutores. Recomendo para qualquer pessoa que queira resultado de verdade.",             "estrelas": 5, "data": "Há 2 semanas" }, /* CAMPO: depoimento_2 */
+      { "nome": "Rodrigo Martins", "texto": "A aula de HIIT é incrível! Treino de 45 minutos que vale por duas horas. Infraestrutura excelente e música que anima demais.",         "estrelas": 5, "data": "Há 1 mês"     }  /* CAMPO: depoimento_3 */
+    ]
+  }
+
+}; /* FIM DO BLOCO DE DADOS — não altere nada após esta linha */
+
+/* Alias interno — não alterar */
+const C = {
+  nome:        DADOS.nome,
+  tipo:        DADOS.tipo,
+  slogan1:     DADOS.slogan1,
+  slogan2:     DADOS.slogan2,
+  slogan3:     DADOS.slogan3,
+  descricao:   DADOS.descricao,
+  icone:       DADOS.icone,
+  logo:        DADOS.logo        || null,
+  fotoBanner:  DADOS.foto_banner || null,
+  whatsapp:    DADOS.whatsapp,
+  wppMsg:      DADOS.wpp_msg,
+  telefone:    DADOS.telefone,
+  telefoneFixo:DADOS.telefone_fixo || null,
+  email:       DADOS.email       || null,
+  instagram:   DADOS.instagram   || null,
+  facebook:    DADOS.facebook    || null,
+  statusAberto:DADOS.status_aberto,
+  stats:       DADOS.stats.map(s => ({ n: s.numero, l: s.label })),
+  sobre: {
+    titulo:    DADOS.sobre.titulo,
+    sub:       DADOS.sobre.sub,
+    texto:     DADOS.sobre.texto,
+    foto:      DADOS.sobre.foto  || null,
+    destaques: DADOS.sobre.destaques.map(d => ({ i: d.icone, t: d.texto })),
+  },
+  planos:      DADOS.planos,
+  modalidades: DADOS.modalidades,
+  galeria:     DADOS.galeria.map(g => ({ foto: g.url_foto || null, l: g.legenda })),
+  localizacao: {
+    endereco:    DADOS.localizacao.endereco,
+    bairro:      DADOS.localizacao.bairro,
+    cidade:      DADOS.localizacao.cidade,
+    estado:      DADOS.localizacao.estado,
+    cep:         DADOS.localizacao.cep,
+    complemento: DADOS.localizacao.complemento || null,
+    mapsEmbed:   DADOS.localizacao.maps_embed  || null,
+    mapsLink:    DADOS.localizacao.maps_link,
+  },
+  horarios:    DADOS.horarios.map(h => ({ d: h.dia, h: h.horario, off: h.fechado, dest: h.destaque })),
+  avaliacoes: {
+    nota:  DADOS.avaliacoes.nota,
+    total: DADOS.avaliacoes.total,
+    lista: DADOS.avaliacoes.lista,
+  },
+};
+</script>
+
+<div id="app"></div>
+
+<div class="wpp-float" id="wppFloat" style="display:none">
+  <div class="wpp-msg"><span>●</span> FALE CONOSCO</div>
+  <a id="wppBtn" href="#" target="_blank" rel="noopener noreferrer" class="wpp-btn" aria-label="WhatsApp">📱</a>
+</div>
+
+<script>
+  const wppLink = () =>
+    `https://wa.me/${C.whatsapp}?text=${encodeURIComponent(C.wppMsg)}`;
+
+  const estrelas = n => '★'.repeat(n) + '☆'.repeat(5 - n);
+
+  document.getElementById('wppBtn').href = wppLink();
+  setTimeout(() => document.getElementById('wppFloat').style.display = 'flex', 2500);
+
+  const s   = C.sobre;
+  const loc = C.localizacao;
+  const av  = C.avaliacoes;
+
+  document.getElementById('app').innerHTML = `
+
+  <!-- NAVBAR -->
+  <nav class="nav">
+    <div class="nav-marca">
+      <div class="nav-icone">
+        ${C.logo
+          ? `<img src="${C.logo}" alt="${C.nome}" style="width:100%;height:100%;object-fit:cover">`
+          : C.icone}
+      </div>
+      <div>
+        <div class="nav-nome">${C.nome}</div>
+        <div class="nav-tipo">${C.tipo}</div>
+      </div>
+    </div>
+    <div class="nav-links">
+      <a href="#sobre">Sobre</a>
+      <a href="#planos">Planos</a>
+      <a href="#modalidades">Modalidades</a>
+      <a href="#local">Localização</a>
+    </div>
+    <a href="${wppLink()}" target="_blank" rel="noopener" class="nav-btn">
+      <span class="nav-cta-texto">MATRICULE-SE</span>
+    </a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="inicio">
+    <div class="hero-linha"></div>
+    <div class="hero-linha2"></div>
+    <div class="hero-bg-num">24H</div>
+    <div class="hero-inner">
+      <div>
+        <div class="hero-pretitulo">
+          <div class="hero-pretitulo-linha"></div>
+          <span>${C.tipo}</span>
+        </div>
+        <h1>
+          <span>${C.slogan1}</span>
+          <span class="destaque">${C.slogan2}</span>
+          <span class="contorno">${C.slogan3}</span>
+        </h1>
+        <p class="hero-sub">${C.descricao}</p>
+        <div class="hero-botoes">
+          <a href="${wppLink()}" target="_blank" rel="noopener" class="btn-laranja">📲 MATRICULE-SE</a>
+          <a href="#planos" class="btn-outline">VER PLANOS →</a>
+        </div>
+        <div class="hero-stats">
+          ${C.stats.map(st => `
+            <div class="hero-stat">
+              <div class="hero-stat-n">${st.n}</div>
+              <div class="hero-stat-l">${st.l}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+      <div style="position:relative">
+        <div class="hero-img-box">
+          ${C.fotoBanner
+            ? `<img src="${C.fotoBanner}" alt="${C.nome}">`
+            : `<span>💪</span><small>Foto da academia</small>`}
+          <div class="hero-aberto">
+            <span class="hero-aberto-dot"></span>
+            ${C.statusAberto}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SOBRE -->
+  <section class="secao" id="sobre">
+    <div class="container">
+      <div class="sobre-grid">
+        <div class="sobre-img">
+          ${s.foto ? `<img src="${s.foto}" alt="Academia">` : `<span>🏋️</span><small>Foto da academia</small>`}
+        </div>
+        <div class="sobre-texto">
+          <div class="tag-mono">sobre nós</div>
+          <h2>${s.titulo}</h2>
+          <span class="sobre-sub-label">${s.sub}</span>
+          <p class="sobre-p">${s.texto}</p>
+          <div class="diferenciais">
+            ${s.destaques.map(d => `
+              <div class="diferencial">
+                <div class="diferencial-ico">${d.i}</div>
+                <span>${d.t}</span>
+              </div>`).join('')}
+          </div>
+          <a href="${wppLink()}" target="_blank" rel="noopener" class="btn-laranja" style="font-size:.9rem;padding:14px 28px">
+            📲 FALE CONOSCO
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PLANOS -->
+  <section class="secao secao-alt" id="planos">
+    <div class="container">
+      <div class="secao-topo centro">
+        <div class="tag-mono">planos & preços</div>
+        <h2>ESCOLHA SEU <em>PLANO</em></h2>
+        <p>Sem taxas ocultas. Cancele quando quiser nos planos mensais.</p>
+      </div>
+      <div class="planos-grid">
+        ${C.planos.map(pl => `
+          <div class="plano${pl.destaque ? ' destaque' : ''}">
+            ${pl.popular ? `<div class="plano-popular">★ POPULAR</div>` : ''}
+            <span class="plano-tag">${pl.tag}</span>
+            <div class="plano-nome">${pl.nome}</div>
+            <div class="plano-preco">
+              <span class="plano-cifrao">R$</span>
+              <span class="plano-valor">${pl.preco}</span>
+              <span class="plano-per">${pl.periodo}</span>
+            </div>
+            <ul class="plano-itens">
+              ${pl.itens.map(it => `<li>${it}</li>`).join('')}
+            </ul>
+            <a href="${wppLink()}" target="_blank" rel="noopener" class="plano-btn">MATRICULAR →</a>
+          </div>`).join('')}
+      </div>
+    </div>
+  </section>
+
+  <!-- MODALIDADES -->
+  <section class="secao" id="modalidades">
+    <div class="container">
+      <div class="secao-topo">
+        <div class="tag-mono">atividades</div>
+        <h2>NOSSAS <em>MODALIDADES</em></h2>
+        <p>Variedade de treinos para todos os objetivos e níveis.</p>
+      </div>
+      <div class="modal-grid">
+        ${C.modalidades.map(m => `
+          <div class="modalidade">
+            <span class="modal-ico">${m.icone}</span>
+            <div class="modal-nome">${m.nome}</div>
+            <div class="modal-desc">${m.descricao}</div>
+            <div class="modal-horario">⏱ ${m.horario}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+  </section>
+
+  <!-- GALERIA -->
+  <section class="secao secao-alt" id="galeria">
+    <div class="container">
+      <div class="secao-topo">
+        <div class="tag-mono">estrutura</div>
+        <h2>CONHEÇA A <em>ACADEMIA</em></h2>
+        <p>Espaço projetado para performance.</p>
+      </div>
+      <div class="galeria-grid">
+        ${C.galeria.map(g => `
+          <div class="galeria-item">
+            ${g.foto ? `<img src="${g.foto}" alt="${g.l}">` : `<span>🖼️</span>`}
+            <div class="galeria-legenda">${g.l}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+  </section>
+
+  <!-- LOCALIZAÇÃO -->
+  <section class="secao" id="local">
+    <div class="container">
+      <div class="secao-topo">
+        <div class="tag-mono">onde estamos</div>
+        <h2>COMO NOS <em>ENCONTRAR</em></h2>
+      </div>
+      <div class="local-grid">
+        <div class="mapa-box">
+          ${loc.mapsEmbed
+            ? `<iframe src="${loc.mapsEmbed}" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`
+            : `<span>🗺️</span>
+               <a href="${loc.mapsLink}" target="_blank" rel="noopener" class="btn-laranja" style="font-size:.8rem;padding:12px 24px">📍 ABRIR NO MAPS</a>`}
+        </div>
+        <div class="info-cards">
+          <div class="info-card">
+            <div class="info-card-h"><div class="info-card-ico">📍</div><h3>ENDEREÇO</h3></div>
+            <p class="endereco-txt">
+              <strong>${loc.endereco}</strong><br>
+              ${loc.bairro} — ${loc.cidade} / ${loc.estado}<br>
+              CEP: ${loc.cep}
+              ${loc.complemento ? `<br><span style="color:var(--laranja)">✔ ${loc.complemento}</span>` : ''}
+            </p>
+          </div>
+          <div class="info-card">
+            <div class="info-card-h"><div class="info-card-ico">🕐</div><h3>HORÁRIOS</h3></div>
+            ${C.horarios.map(h => `
+              <div class="horario-row">
+                <span class="horario-dia">${h.d}</span>
+                <span class="horario-hr${h.off ? ' off' : h.dest ? ' dest' : ''}">${h.h}</span>
+              </div>`).join('')}
+          </div>
+          <div class="info-card">
+            <div class="info-card-h"><div class="info-card-ico">📞</div><h3>CONTATO</h3></div>
+            <div class="contato-row">
+              <div class="contato-ico">📱</div>
+              <div><div class="contato-label">WhatsApp / Matrículas</div><div class="contato-val">${C.telefone}</div></div>
+            </div>
+            ${C.telefoneFixo ? `
+            <div class="contato-row">
+              <div class="contato-ico">📞</div>
+              <div><div class="contato-label">Telefone Fixo</div><div class="contato-val">${C.telefoneFixo}</div></div>
+            </div>` : ''}
+            ${C.email ? `
+            <div class="contato-row">
+              <div class="contato-ico">✉️</div>
+              <div><div class="contato-label">E-mail</div><div class="contato-val" style="font-size:.82rem">${C.email}</div></div>
+            </div>` : ''}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AVALIAÇÕES -->
+  <section class="secao secao-alt" id="avaliacoes">
+    <div class="container">
+      <div class="secao-topo centro">
+        <div class="tag-mono">depoimentos</div>
+        <h2>O QUE NOSSOS <em>ALUNOS</em> DIZEM</h2>
+        <p>Resultados reais de quem treina com a gente.</p>
+      </div>
+      <div class="nota-box">
+        <div>
+          <div class="nota-num">${av.nota}</div>
+          <div class="nota-stars">★★★★★</div>
+        </div>
+        <div>
+          <div style="font-family:var(--fonte-alt);font-size:1.3rem;color:var(--laranja);letter-spacing:2px">EXCELENTE</div>
+          <div class="nota-total">BASEADO EM ${av.total} AVALIAÇÕES NO GOOGLE</div>
+        </div>
+      </div>
+      <div class="aval-grid">
+        ${av.lista.map(a => `
+          <div class="aval-card">
+            <div class="aval-stars">${estrelas(a.estrelas)}</div>
+            <p class="aval-texto">${a.texto}</p>
+            <div class="aval-autor">
+              <div class="aval-avatar">${a.nome.charAt(0)}</div>
+              <div>
+                <div class="aval-nome">${a.nome}</div>
+                <div class="aval-data">${a.data}</div>
+              </div>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <div class="cta-inner">
+      <h2>HORA DE<br>TREINAR</h2>
+      <p>Primeira semana grátis. Sem burocracia, sem desculpa.</p>
+      <a href="${wppLink()}" target="_blank" rel="noopener" class="btn-branco">📲 QUERO MINHA VAGA</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-nome">${C.nome}</div>
+        <div class="footer-txt" style="margin-top:4px">${C.tipo}</div>
+      </div>
+      <div class="footer-redes">
+        ${C.instagram ? `<a href="${C.instagram}" target="_blank" rel="noopener" class="footer-rede">📸</a>` : ''}
+        ${C.facebook  ? `<a href="${C.facebook}"  target="_blank" rel="noopener" class="footer-rede">👍</a>` : ''}
+        <a href="${wppLink()}" target="_blank" rel="noopener" class="footer-rede">📱</a>
+      </div>
+      <div class="footer-txt">
+        © ${new Date().getFullYear()} <a href="#inicio">${C.nome}</a> — Todos os direitos reservados
+      </div>
+    </div>
+  </footer>
+  `;
+
+  /* navbar scroll */
+  window.addEventListener('scroll', () => {
+    document.querySelector('.nav').style.boxShadow =
+      window.scrollY > 50 ? '0 4px 32px rgba(0,0,0,.8)' : 'none';
+  });
+</script>
+</body>
+</html>
