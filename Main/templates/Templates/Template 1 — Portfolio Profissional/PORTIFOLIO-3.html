@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfólio Pro - Template V2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<style>
+:root {
+  /* ─── PALETA AZUL/ROXO MODERNA ─── */
+  --primary: #3B82F6;           /* Azul principal */
+  --primary-dark: #1D4ED8;       /* Azul escuro */
+  --primary-light: #DBEAFE;      /* Azul claro */
+  --primary-rgb: 59, 130, 246;
+  --accent: #8B5CF6;             /* Roxo accent */
+  --accent-light: #EDE9FE;       /* Roxo claro */
+  --gradient-main: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 50%, #1E40AF 100%);
+  --gradient-hero: linear-gradient(145deg, #1E3A8A 0%, #1E40AF 100%);
+
+  /* ─── Neutros ─── */
+  --bg-primary: #FFFFFF;
+  --bg-secondary: #F8FAFC;
+  --bg-hero: #0F172A;
+  --text-primary: #111827;
+  --text-secondary: #6B7280;
+  --text-light: #F9FAFB;
+
+  /* ─── Utils ─── */
+  --border: #E2E8F0;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+  --shadow-md: 0 10px 30px rgba(0,0,0,0.1);
+  --shadow-lg: 0 20px 50px rgba(0,0,0,0.15);
+  --radius: 20px;
+  --radius-full: 9999px;
+
+  /* ─── Spacing & Typography ─── */
+  --container-max: 1200px;
+  --section-py: 120px;
+  --font-family: 'Inter', sans-serif;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: var(--font-family);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* ─── ASIDE FIXO (NOVO LAYOUT) ─── */
+.aside {
+  position: fixed; right: 40px; top: 50%; transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: 20px; z-index: 100;
+}
+.nav-bubble {
+  width: 56px; height: 56px; border-radius: var(--radius-full);
+  background: white; display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow-lg); border: 3px solid white;
+  transition: var(--transition); cursor: pointer; position: relative;
+}
+.nav-bubble:hover { transform: translateY(-4px) scale(1.05); }
+.nav-bubble.active { background: var(--primary); color: white; }
+.nav-bubble::after {
+  content: attr(data-label); position: absolute; right: 70px;
+  background: var(--text-primary); color: white; padding: 8px 16px;
+  border-radius: var(--radius); font-size: 0.8rem; font-weight: 600;
+  white-space: nowrap; opacity: 0; visibility: hidden;
+  transition: var(--transition); transform: translateX(20px);
+}
+.nav-bubble:hover::after {
+  opacity: 1; visibility: visible; transform: translateX(0);
+}
+.wpp-bubble {
+  background: var(--primary); color: white; font-size: 1.4rem;
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(59,130,246,0.7); }
+  70% { box-shadow: 0 0 0 20px rgba(59,130,246,0); }
+  100% { box-shadow: 0 0 0 0 rgba(59,130,246,0); }
+}
+
+/* ─── HEADER HERO ─── */
+.hero {
+  min-height: 100vh; display: flex; align-items: center;
+  background: var(--gradient-hero); position: relative; overflow: hidden;
+  padding: 0 60px;
+}
+.hero::before {
+  content: ''; position: absolute; inset: 0;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(59,130,246,0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(139,92,246,0.1) 0%, transparent 50%);
+}
+.hero-content { max-width: var(--container-max); margin: 0 auto; text-align: center; position: relative; z-index: 2; }
+.avatar-stack {
+  display: flex; gap: 16px; justify-content: center; margin-bottom: 40px; flex-wrap: wrap;
+}
+.avatar {
+  width: 120px; height: 120px; border-radius: var(--radius-full);
+  border: 5px solid white; box-shadow: var(--shadow-lg);
+  background: var(--gradient-main); display: flex; align-items: center;
+  justify-content: center; font-size: 3rem;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,0.2); backdrop-filter: blur(10px);
+  padding: 12px 24px; border-radius: 50px; font-weight: 700;
+  font-size: 0.9rem; color: white; margin-bottom: 24px;
+  border: 1px solid rgba(255,255,255,0.3);
+}
+.hero-title {
+  font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 900;
+  background: linear-gradient(135deg, white 0%, #EFF6FF 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; margin-bottom: 20px; line-height: 1.1;
+}
+.hero-subtitle {
+  font-size: 1.3rem; color: rgba(255,255,255,0.9);
+  max-width: 600px; margin: 0 auto 40px; font-weight: 400;
+}
+.cta-grid { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+.btn {
+  padding: 16px 32px; border-radius: 50px; font-weight: 700;
+  font-size: 1rem; text-decoration: none; display: inline-flex;
+  align-items: center; gap: 12px; transition: var(--transition);
+  border: none; cursor: pointer;
+}
+.btn-primary {
+  background: var(--gradient-main); color: white;
+  box-shadow: 0 10px 30px rgba(59,130,246,0.4);
+}
+.btn-primary:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(59,130,246,0.5); }
+.btn-secondary {
+  background: transparent; color: white;
+  border: 2px solid rgba(255,255,255,0.5);
+}
+.btn-secondary:hover { background: rgba(255,255,255,0.1); border-color: white; }
+
+/* ─── SECTIONS ─── */
+.section {
+  padding: var(--section-py) 60px;
+  max-width: var(--container-max); margin: 0 auto;
+}
+.section-alt { background: var(--bg-primary); }
+
+/* ─── CONTENT CARDS ─── */
+.content-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 40px; margin-top: 60px;
+}
+.card-modern {
+  background: var(--bg-primary); border-radius: var(--radius);
+  padding: 40px; box-shadow: var(--shadow-md);
+  border: 1px solid var(--border); transition: var(--transition);
+  height: 100%; position: relative; overflow: hidden;
+}
+.card-modern::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 4px; background: var(--gradient-main);
+}
+.card-modern:hover {
+  transform: translateY(-12px); box-shadow: var(--shadow-lg);
+}
+
+/* ─── SECTION HEADERS ─── */
+.section-header {
+  text-align: center; margin-bottom: 80px;
+}
+.section-label {
+  font-size: 0.85rem; font-weight: 700; color: var(--primary);
+  letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 16px; display: block;
+}
+.section-h2 {
+  font-size: clamp(2rem, 4vw, 3rem); font-weight: 800;
+  line-height: 1.2; margin-bottom: 12px;
+}
+.section-p {
+  font-size: 1.1rem; color: var(--text-secondary);
+  max-width: 600px; margin: 0 auto;
+}
+
+/* ─── SKILLS ─── */
+.skills-list {
+  display: flex; flex-wrap: wrap; gap: 16px; justify-content: center;
+}
+.skill-tag {
+  background: var(--primary-light); color: var(--primary-dark);
+  padding: 12px 24px; border-radius: 50px; font-weight: 600;
+  font-size: 0.95rem; border: 2px solid transparent;
+  transition: var(--transition);
+}
+.skill-tag:hover {
+  background: var(--primary); color: white;
+  transform: translateY(-2px);
+}
+
+/* ─── EXPERIENCE ─── */
+.exp-item {
+  display: flex; gap: 24px; align-items: flex-start; padding: 32px 0;
+  border-bottom: 1px solid var(--border);
+}
+.exp-item:last-child { border-bottom: none; padding-bottom: 0; }
+.exp-icon {
+  width: 64px; height: 64px; border-radius: 16px;
+  background: var(--gradient-main); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; color: white;
+}
+.exp-content { flex: 1; }
+.exp-header {
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 12px; flex-wrap: wrap;
+}
+.exp-title { font-size: 1.3rem; font-weight: 800; }
+.exp-period {
+  background: var(--primary-light); color: var(--primary-dark);
+  padding: 6px 16px; border-radius: 20px; font-size: 0.85rem;
+  font-weight: 600;
+}
+.exp-company { color: var(--text-secondary); font-weight: 600; margin-top: 4px; }
+.exp-desc { margin: 16px 0; line-height: 1.7; }
+
+/* ─── CONTACT ─── */
+.contact-item {
+  text-align: center; padding: 32px;
+}
+.contact-icon {
+  width: 80px; height: 80px; margin: 0 auto 20px;
+  border-radius: var(--radius-full); display: flex; align-items: center;
+  justify-content: center; font-size: 2rem; background: var(--primary-light);
+}
+
+/* ─── FOOTER ─── */
+.footer {
+  background: var(--bg-hero); color: rgba(255,255,255,0.7);
+  text-align: center; padding: 60px 40px; font-size: 0.95rem;
+}
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 768px) {
+  .aside { right: 20px; }
+  .hero { padding: 0 30px; }
+  .section { padding: 80px 30px; }
+  .content-grid { grid-template-columns: 1fr; }
+  .cta-grid { flex-direction: column; align-items: center; }
+  .btn { justify-content: center; width: 100%; max-width: 320px; }
+  .avatar-stack { flex-direction: column; align-items: center; }
+}
+</style>
+</head>
+<body>
+
+<div id="root"></div>
+
+<script type="text/babel">
+/* ╔═══════════════════════════════════════════════════════════════════╗ */
+/* ║  💙 TEMPLATE V2 - AZUL/ROXO - ASIDE FIXO - IA READY              ║ */
+/* ╚═══════════════════════════════════════════════════════════════════╝ */
+
+const CONFIG = {
+  // ─── PRONTOS PARA IA ───
+  nome: "[NOME COMPLETO]",
+  profissao: "[SUA PROFISSÃO]",
+  resumo: "[RESUMO PROFISSIONAL GERADO PELA IA]",
+  status: "Aberto a Oportunidades",
+  
+  // Contatos
+  whatsapp: "5511999999999",
+  email: "seu@email.com",
+  telefone: "(11) 99999-9999",
+  localizacao: "São Paulo, SP",
+  
+  // Conteúdo
+  sobre: "[SOBRE MIM GERADO PELA IA - 2-3 PARÁGRAFOS]",
+  experiencias: [
+    {
+      cargo: "[CARGO 1]",
+      empresa: "[EMPRESA 1]", 
+      periodo: "2022 - Presente",
+      descricao: "[DESCRIÇÃO IA]"
+    }
+  ],
+  
+  habilidades: [
+    "React", "JavaScript", "Node.js", "UI/UX", "Figma"
+  ],
+  
+  formacao: [
+    { curso: "[CURSO]", instituicao: "[FACULDADE]", ano: "2020-2024" }
+  ]
+};
+
+// ─── NAV ASIDE FIXO ───
+function NavAside() {
+  const [activeSection, setActiveSection] = React.useState('hero');
+  
+  React.useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id);
+        }
+      });
+    }, { threshold: 0.3 });
+    
+    document.querySelectorAll('section[id]').forEach(sec => {
+      observer.observe(sec);
+    });
+  }, []);
+
+  const sections = [
+    { id: 'hero', icon: '👋', label: 'Início' },
+    { id: 'sobre', icon: '👤', label: 'Sobre' },
+    { id: 'skills', icon: '⚡', label: 'Skills' },
+    { id: 'exp', icon: '💼', label: 'Carreira' },
+    { id: 'contato', icon: '📬', label: 'Contato' }
+  ];
+
+  return (
+    <div className="aside">
+      {sections.map(sec => (
+        <a key={sec.id} href={`#${sec.id}`} 
+           className={`nav-bubble ${activeSection === sec.id ? 'active' : ''}`}
+           data-label={sec.label}>
+          {sec.icon}
+        </a>
+      ))}
+      <a href={`https://wa.me/${CONFIG.whatsapp}`} 
+         className="nav-bubble wpp-bubble" target="_blank" rel="noopener">
+        💬
+      </a>
+    </div>
+  );
+}
+
+// ─── HERO ───
+function Hero() {
+  return (
+    <section id="hero" className="hero">
+      <div className="hero-content">
+        <div className="avatar-stack">
+          <div className="avatar">👤</div>
+          <div className="avatar" style={{background: 'var(--accent-light)', color: 'var(--accent)'}}>📄</div>
+        </div>
+        
+        <div className="hero-badge">
+          <span style={{animation: 'pulse 2s infinite'}}>•</span>
+          {CONFIG.status}
+        </div>
+        
+        <h1 className="hero-title">{CONFIG.nome}</h1>
+        <p className="hero-subtitle">{CONFIG.profissao}</p>
+        
+        <div className="cta-grid">
+          <a href={`https://wa.me/${CONFIG.whatsapp}`} className="btn btn-primary" target="_blank">
+            📲 Falar no WhatsApp
+          </a>
+          <a href="#contato" className="btn btn-secondary">
+            ✉️ Ver Contato
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── SOBRE ───
+function Sobre() {
+  return (
+    <section id="sobre" className="section section-alt">
+      <div className="section-header">
+        <div className="section-label">Sobre Mim</div>
+        <h2 className="section-h2">Quem sou eu</h2>
+        <p className="section-p">{CONFIG.resumo}</p>
+      </div>
+      
+      <div className="content-grid">
+        <div className="card-modern">
+          <h3 style={{fontSize:'1.4rem', marginBottom:'20px', color:'var(--text-primary)'}}>Minha Missão</h3>
+          <p style={{color:'var(--text-secondary)', lineHeight:'1.8'}}>{CONFIG.sobre}</p>
+        </div>
+        <div className="card-modern">
+          <h3 style={{fontSize:'1.4rem', marginBottom:'20px'}}>O que ofereço</h3>
+          <ul style={{color:'var(--text-secondary)', listStyle:'none'}}>
+            <li style={{marginBottom:'12px'}}>• Soluções criativas</li>
+            <li style={{marginBottom:'12px'}}>• Resultados mensuráveis</li>
+            <li style={{marginBottom:'12px'}}>• Parceria estratégica</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── SKILLS ───
+function Skills() {
+  return (
+    <section id="skills" className="section">
+      <div className="section-header">
+        <div className="section-label">Competências</div>
+        <h2 className="section-h2">O que eu domino</h2>
+        <p className="section-p">Tecnologias e habilidades que utilizo diariamente</p>
+      </div>
+      
+      <div style={{textAlign:'center'}}>
+        <div className="skills-list">
+          {CONFIG.habilidades.map((skill, i) => (
+            <div key={i} className="skill-tag">{skill}</div>
+          ))}
+        </div>
+      </div>
+      
+      <div style={{marginTop:'60px'}}>
+        <div className="content-grid">
+          {CONFIG.formacao.map((form, i) => (
+            <div key={i} className="card-modern">
+              <div style={{fontSize:'1.5rem', marginBottom:'16px'}}>🎓</div>
+              <h4 style={{marginBottom:'8px'}}>{form.curso}</h4>
+              <p style={{color:'var(--text-secondary)', marginBottom:'12px'}}>{form.instituicao}</p>
+              <div style={{fontWeight:'700', color:'var(--primary)'}}>{form.ano}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── EXPERIÊNCIA ───
+function Experiencia() {
+  return (
+    <section id="exp" className="section section-alt">
+      <div className="section-header">
+        <div className="section-label">Carreira</div>
+        <h2 className="section-h2">Experiência Profissional</h2>
+        <p className="section-p">Minha trajetória construída com dedicação</p>
+      </div>
+      
+      <div className="card-modern" style={{maxWidth:'800px', margin:'0 auto'}}>
+        {CONFIG.experiencias.map((exp, i) => (
+          <div key={i} className="exp-item">
+            <div className="exp-icon">💼</div>
+            <div className="exp-content">
+              <div className="exp-header">
+                <div className="exp-title">{exp.cargo}</div>
+                <div className="exp-period">{exp.periodo}</div>
+              </div>
+              <div className="exp-company">{exp.empresa}</div>
+              <p className="exp-desc">{exp.descricao}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// ─── CONTATO ───
+function Contato() {
+  return (
+    <section id="contato" className="section">
+      <div className="section-header">
+        <div className="section-label">Contato</div>
+        <h2 className="section-h2">Vamos conversar?</h2>
+        <p className="section-p">Estou disponível para novas oportunidades</p>
+      </div>
+      
+      <div className="content-grid">
+        <div className="card-modern contact-item">
+          <div className="contact-icon" style={{background:'rgba(59,130,246,0.1)'}}>📱</div>
+          <div className="section-label">WhatsApp</div>
+          <div style={{fontSize:'1.4rem', fontWeight:'800', margin:'12px 0'}}>{CONFIG.telefone}</div>
+          <a href={`https://wa.me/${CONFIG.whatsapp}`} className="btn btn-primary" target="_blank">Iniciar Chat</a>
+        </div>
+        
+        <div className="card-modern contact-item">
+          <div className="contact-icon" style={{background:'rgba(139,92,246,0.1)'}}>✉️</div>
+          <div className="section-label">E-mail</div>
+          <div style={{fontSize:'1.1rem', fontWeight:'700', margin:'12px 0'}}>{CONFIG.email}</div>
+          <a href={`mailto:${CONFIG.email}`} className="btn btn-secondary">Enviar Mensagem</a>
+        </div>
+        
+        <div className="card-modern contact-item">
+          <div className="contact-icon" style={{background:'rgba(59,130,246,0.1)'}}>📍</div>
+          <div className="section-label">Onde estou</div>
+          <div style={{fontSize:'1.2rem', fontWeight:'700', margin:'12px 0'}}>{CONFIG.localizacao}</div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── FOOTER ───
+function Footer() {
+  return (
+    <footer className="footer">
+      <p>© 2024 {CONFIG.nome} | Feito com <span style={{color:'var(--primary)'}}>💙</span></p>
+      <p style={{marginTop:'8px', opacity:'0.8'}}>{CONFIG.profissao}</p>
+    </footer>
+  );
+}
+
+// ─── APP ───
+function App() {
+  return (
+    <>
+      <NavAside />
+      <Hero />
+      <Sobre />
+      <Skills />
+      <Experiencia />
+      <Contato />
+      <Footer />
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

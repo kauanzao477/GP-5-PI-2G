@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portfólio Profissional - Template</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<style>
+:root {
+  /* ─── NOVA PALETA ROXO/AZUL ESCURO ─── */
+  --cor-primaria: #7C3AED;
+  --cor-primaria-hover: #6D28D9;
+  --cor-primaria-light: #EDE9FE;
+  --cor-primaria-rgb: 124, 58, 237;
+  --cor-primaria-gradient: linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%);
+
+  /* ─── Accent Laranja Suave ─── */
+  --cor-accent: #F59E0B;
+  --cor-accent-light: #FEF3C7;
+  --cor-accent-rgb: 245, 158, 11;
+
+  /* ─── Fundos Modernos ─── */
+  --cor-fundo: #FAFAFA;
+  --cor-fundo-alt: #F8FAFC;
+  --cor-fundo-hero: linear-gradient(160deg, #1E1B4B 0%, #312E81 50%, #1E1B4B 100%);
+  --cor-fundo-card: #FFFFFF;
+  --cor-fundo-escuro: #0F0F23;
+
+  /* ─── Textos ─── */
+  --cor-texto: #1E293B;
+  --cor-texto-light: #64748B;
+  --cor-texto-claro: #F8FAFC;
+  --cor-texto-muted: #94A3B8;
+
+  /* ─── Especiais ─── */
+  --cor-whatsapp: #25D366;
+  --cor-whatsapp-hover: #1EBE57;
+  --cor-sucesso: #10B981;
+  --cor-barra-fundo: #E2E8F0;
+  --cor-link: #7C3AED;
+
+  /* ─── Bordas e Sombras ─── */
+  --cor-borda: #E2E8F0;
+  --cor-borda-light: #F1F5F9;
+  --sombra-sutil: 0 1px 3px rgba(0,0,0,0.06);
+  --sombra-card: 0 10px 40px rgba(0,0,0,0.08);
+  --sombra-card-hover: 0 20px 60px rgba(0,0,0,0.15);
+  --sombra-foto: 0 12px 40px rgba(124,58,237,0.3);
+
+  /* ─── Raios Modernos ─── */
+  --raio: 16px;
+  --raio-grande: 24px;
+  --raio-botao: 12px;
+  --raio-pill: 50px;
+  --raio-foto: 50%;
+
+  /* ─── Tipografia ─── */
+  --fonte: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* ─── Espaçamentos ─── */
+  --secao-padding: 100px;
+  --max-largura: 900px;
+  --max-largura-larga: 1100px;
+
+  /* ─── Transições ─── */
+  --trans: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ─── Barra de Habilidade ─── */
+  --barra-altura: 12px;
+  --barra-raio: 6px;
+}
+
+/* ─── RESET ─── */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;font-size:16px}
+body{
+  font-family:var(--fonte);color:var(--cor-texto);
+  background:var(--cor-fundo);line-height:1.7;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+img{max-width:100%;display:block}
+a{text-decoration:none;color:inherit}
+ul{list-style:none}
+
+/* ─── NAVBAR SIMPLIFICADA ─── */
+.navbar{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  background:rgba(255,255,255,0.95);backdrop-filter:blur(20px);
+  box-shadow:var(--sombra-sutil);transition:var(--trans);
+}
+.navbar-inner{
+  max-width:var(--max-largura-larga);margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 32px;
+}
+.logo{
+  font-size:1.1rem;font-weight:900;
+  background:var(--cor-primaria-gradient);-webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;background-clip:text;
+}
+.nav-links{display:flex;gap:8px}
+.nav-link{
+  color:var(--cor-texto-light);font-weight:600;font-size:0.9rem;
+  padding:12px 20px;border-radius:var(--raio-botao);transition:var(--trans);
+}
+.nav-link:hover{color:var(--cor-primaria);background:var(--cor-primaria-light)}
+.cta-btn{
+  background:var(--cor-primaria-gradient);color:white;
+  padding:12px 28px;border-radius:var(--raio-botao);
+  font-weight:700;font-size:0.9rem;transition:var(--trans);
+}
+.cta-btn:hover{transform:translateY(-2px);box-shadow:var(--sombra-card)}
+
+/* ─── HERO REORGANIZADO ─── */
+.hero{
+  background:var(--cor-fundo-hero);padding:140px 32px 100px;
+  text-align:center;color:var(--cor-texto-claro);position:relative;
+  overflow:hidden;
+}
+.hero-bg-pattern{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(var(--cor-primaria-rgb),0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(var(--cor-accent-rgb),0.1) 0%, transparent 50%);
+}
+.hero-content{position:relative;z-index:2;max-width:var(--max-largura);margin:0 auto}
+
+.profile-section{
+  display:grid;grid-template-columns:1fr 2fr;gap:60px;align-items:center;
+  margin-bottom:48px;
+}
+.profile-photo{
+  width:200px;height:200px;border-radius:var(--raio-foto);
+  margin:0 auto;position:relative;box-shadow:var(--sombra-foto);
+}
+.profile-ring{
+  position:absolute;inset:-8px;border-radius:var(--raio-foto);
+  background:var(--cor-primaria-gradient);padding:6px;
+  animation:ring-glow 6s ease-in-out infinite;
+}
+@keyframes ring-glow{
+  0%,100%{box-shadow:0 0 20px rgba(var(--cor-primaria-rgb),0.4)}
+  50%{box-shadow:0 0 40px rgba(var(--cor-primaria-rgb),0.6)}
+}
+.profile-inner{
+  width:100%;height:100%;border-radius:var(--raio-foto);
+  background:linear-gradient(45deg,var(--cor-fundo-escuro),#1E1B4B);
+  display:flex;align-items:center;justify-content:center;
+}
+.profile-placeholder{
+  text-align:center;color:var(--cor-primaria-light);
+}
+.profile-icon{font-size:4rem;margin-bottom:8px}
+
+.hero-main-title{font-size:3.2rem;font-weight:900;line-height:1.1;margin-bottom:12px}
+.hero-subtitle{
+  font-size:1.25rem;font-weight:600;color:rgba(255,255,255,0.9);
+  margin-bottom:16px;background:var(--cor-accent-light);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero-description{
+  font-size:1.05rem;color:rgba(255,255,255,0.75);
+  max-width:550px;margin:0 auto 40px;line-height:1.8;
+}
+.status-badge{
+  display:inline-flex;align-items:center;gap:10px;
+  background:rgba(16,185,129,0.2);border:1px solid rgba(16,185,129,0.3);
+  padding:8px 20px;border-radius:var(--raio-pill);
+  font-size:0.8rem;font-weight:700;color:var(--cor-sucesso);
+  margin-bottom:24px;letter-spacing:1px;
+}
+.status-dot{
+  width:8px;height:8px;background:var(--cor-sucesso);
+  border-radius:50%;animation:pulse 2s infinite;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+.action-buttons{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.btn-modern{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:16px 36px;border-radius:var(--raio-botao);
+  font-size:0.95rem;font-weight:700;border:none;cursor:pointer;
+  transition:var(--trans);
+}
+.btn-primary{  
+  background:var(--cor-primaria-gradient);color:white;
+  box-shadow:0 8px 25px rgba(var(--cor-primaria-rgb),0.4);
+}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 15px 35px rgba(var(--cor-primaria-rgb),0.5)}
+.btn-secondary{
+  background:transparent;color:white;
+  border:2px solid rgba(255,255,255,0.3);
+}
+.btn-secondary:hover{background:rgba(255,255,255,0.1);border-color:white}
+
+/* ─── STATS HERO ─── */
+.stats-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+  gap:32px;margin-top:60px;padding-top:40px;
+  border-top:1px solid rgba(255,255,255,0.1);
+}
+.stat-item{text-align:center}
+.stat-value{font-size:2rem;font-weight:900;color:white;line-height:1}
+.stat-label{font-size:0.75rem;color:rgba(255,255,255,0.6);margin-top:8px;letter-spacing:1px}
+
+/* ─── SEÇÕES REORGANIZADAS ─── */
+.container{max-width:var(--max-largura);margin:0 auto;padding:0 32px}
+.section{padding:var(--secao-padding) 0;position:relative}
+.section-header{margin-bottom:48px;text-align:center}
+.section-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:0.8rem;font-weight:700;color:var(--cor-primaria);
+  background:var(--cor-primaria-light);padding:8px 20px;
+  border-radius:var(--raio-pill);letter-spacing:1.5px;margin-bottom:16px;
+}
+.section-title{font-size:2rem;font-weight:900;color:var(--cor-texto);line-height:1.2}
+.section-subtitle{font-size:1rem;color:var(--cor-texto-light);margin-top:12px}
+
+/* ─── CARDS MODERNOS ─── */
+.card{
+  background:var(--cor-fundo-card);border-radius:var(--raio-grande);
+  padding:40px;box-shadow:var(--sombra-card);
+  border:1px solid var(--cor-borda-light);transition:var(--trans);
+  position:relative;overflow:hidden;
+}
+.card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:4px;
+  background:var(--cor-primaria-gradient);
+}
+.card:hover{transform:translateY(-8px);box-shadow:var(--sombra-card-hover)}
+
+/* ─── SOBRE ─── */
+.about-content{font-size:1rem;color:var(--cor-texto-light);line-height:1.9}
+.about-highlights{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:16px;margin-top:40px;
+}
+.highlight-item{
+  display:flex;align-items:center;gap:12px;
+  background:var(--cor-fundo-alt);padding:20px;border-radius:var(--raio);
+  border:1px solid var(--cor-borda);font-weight:600;transition:var(--trans);
+}
+.highlight-item:hover{
+  background:var(--cor-primaria-light);border-color:var(--cor-primaria);
+  transform:translateX(8px);
+}
+
+/* ─── EXPERIÊNCIA COM NOVA TIMELINE ─── */
+.experience-timeline{padding:0;position:relative}
+.experience-timeline::before{
+  content:'';position:absolute;left:40px;top:0;bottom:0;width:3px;
+  background:var(--cor-primaria-gradient);
+}
+.timeline-item{position:relative;margin-bottom:48px;padding-left:80px}
+.timeline-item:last-child{margin-bottom:0}
+.timeline-dot{
+  position:absolute;left:32px;top:12px;width:24px;height:24px;
+  background:var(--cor-fundo-card);border:4px solid var(--cor-primaria);
+  border-radius:50%;z-index:2;box-shadow:0 0 0 4px white;
+}
+.timeline-content{
+  background:var(--cor-fundo-card);border-radius:var(--raio-grande);
+  padding:32px;box-shadow:var(--sombra-sutil);
+  border:1px solid var(--cor-borda-light);position:relative;
+}
+.timeline-header{
+  display:flex;align-items:center;gap:16px;margin-bottom:16px;
+}
+.timeline-job{font-size:1.2rem;font-weight:800;color:var(--cor-texto)}
+.timeline-period{
+  background:var(--cor-primaria);color:white;padding:6px 16px;
+  border-radius:var(--raio-pill);font-weight:700;font-size:0.85rem;
+}
+.timeline-company{font-size:0.95rem;color:var(--cor-texto-light);margin-bottom:16px}
+.timeline-description{font-size:0.95rem;color:var(--cor-texto-light);line-height:1.8}
+
+/* ─── HABILIDADES E FORMAÇÃO JUNTAS ─── */
+.skills-education{display:grid;grid-template-columns:1fr 1fr;gap:48px}
+.skills-section,.education-section{grid-column:span 1}
+.skills-toggle{display:flex;gap:12px;margin-bottom:32px}
+.toggle-btn{
+  padding:12px 24px;border:2px solid var(--cor-borda);
+  background:transparent;border-radius:var(--raio);font-weight:700;
+  cursor:pointer;transition:var(--trans);font-size:0.9rem;
+}
+.toggle-btn.active{
+  background:var(--cor-primaria);color:white;border-color:var(--cor-primaria);
+}
+.skill-bar{
+  background:var(--cor-fundo-card);padding:24px;border-radius:var(--raio);
+  margin-bottom:20px;box-shadow:var(--sombra-sutil);
+}
+.skill-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.skill-name{font-weight:700;font-size:1rem}
+.skill-percent{font-weight:800;color:var(--cor-primaria);font-size:0.95rem}
+.skill-track{
+  height:var(--barra-altura);background:var(--cor-barra-fundo);
+  border-radius:var(--barra-raio);overflow:hidden;
+}
+.skill-fill{
+  height:100%;background:var(--cor-primaria-gradient);
+  border-radius:var(--barra-raio);transition:width 1.5s ease;
+}
+.education-item{
+  display:flex;gap:24px;padding:28px;background:var(--cor-fundo-card);
+  border-radius:var(--raio);margin-bottom:20px;box-shadow:var(--sombra-sutil);
+  border:1px solid var(--cor-borda-light);
+}
+.edu-icon{width:64px;height:64px;border-radius:16px;background:var(--cor-primaria-light);
+  display:flex;align-items:center;justify-content:center;font-size:1.8rem}
+.edu-info{flex:1}
+.edu-title{font-size:1.1rem;font-weight:800;margin-bottom:4px}
+.edu-school{font-size:0.95rem;color:var(--cor-texto-light)}
+
+/* ─── CONTATO FINAL ─── */
+.contact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;margin-bottom:40px}
+.contact-item{
+  display:flex;gap:20px;padding:28px;background:var(--cor-fundo-card);
+  border-radius:var(--raio-grande);box-shadow:var(--sombra-sutil);
+  border:1px solid var(--cor-borda-light);transition:var(--trans);
+}
+.contact-item:hover{transform:translateY(-4px);box-shadow:var(--sombra-card)}
+.contact-icon{
+  width:60px;height:60px;border-radius:16px;display:flex;align-items:center;
+  justify-content:center;font-size:1.6rem;flex-shrink:0;
+}
+.contact-wpp{background:rgba(37,211,102,0.1)}
+.contact-email{background:var(--cor-accent-light)}
+.contact-phone{background:var(--cor-primaria-light)}
+.contact-location{background:#FEF3C7}
+.contact-label{font-size:0.75rem;color:var(--cor-texto-muted);font-weight:600;letter-spacing:0.5px}
+.contact-value{font-size:1rem;font-weight:700;margin-top:4px}
+
+/* ─── FOOTER ─── */
+.footer{
+  background:var(--cor-fundo-escuro);color:rgba(255,255,255,0.5);
+  padding:40px 32px;text-align:center;font-size:0.9rem;
+}
+
+/* ─── RESPONSIVO ─── */
+@media(max-width:1024px){
+  .skills-education{grid-template-columns:1fr}
+  .profile-section{grid-template-columns:1fr;text-align:center}
+}
+@media(max-width:768px){
+  :root{--secao-padding:70px}
+  .container{padding:0 24px}
+  .profile-section{gap:40px}
+  .hero-main-title{font-size:2.4rem}
+  .stats-grid{grid-template-columns:repeat(2,1fr);gap:24px}
+  .action-buttons{flex-direction:column;align-items:center}
+  .btn-modern{width:100%;justify-content:center;max-width:300px}
+  .timeline-item{padding-left:60px}
+  .experience-timeline::before{left:28px}
+  .education-item{flex-direction:column;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<div id="root"></div>
+
+<script type="text/babel">
+
+/* ╔════════════════════════════════════════════════════════════════╗ */
+/* ║  🎯 TEMPLATE PRONTO PARA IA - CONFIGURAÇÃO CENTRALIZADA      ║ */
+/* ╚════════════════════════════════════════════════════════════════╝ */
+
+const CONFIG = {
+  // ─── DADOS PESSOAIS (PREENCHIDOS PELA IA) ───
+  pessoal: {
+    nome: "[NOME COMPLETO]",
+    profissao: "[PROFISSÃO]",
+    status: "Disponível para novas oportunidades",
+    foto: null,
+    whatsapp: "5511999999999",
+    telefone: "(11) 99999-9999",
+    email: "seu.email@exemplo.com",
+    cidade: "São Paulo, SP",
+    linkedin: "",
+    github: "",
+    curriculoPDF: null
+  },
+
+  // ─── ESTATÍSTICAS ───
+  stats: [
+    { valor: "3+", label: "Anos de Experiência" },
+    { valor: "5", label: "Projetos" },
+    { valor: "100%", label: "Comprometimento" }
+  ],
+
+  // ─── SOBRE MIM ───
+  sobre: {
+    texto: "[TEXTO GERADO PELA IA SOBRE SUA TRAJETÓRIA]",
+    destaques: [
+      { icone: "🚀", texto: "Proativo" },
+      { icone: "💡", texto: "Criativo" },
+      { icone: "🎯", texto: "Focado em Resultados" }
+    ]
+  },
+
+  // ─── EXPERIÊNCIAS ───
+  experiencias: [
+    {
+      cargo: "[CARGO]",
+      empresa: "[EMPRESA]",
+      periodo: "2022 - Atual",
+      descricao: "[DESCRIÇÃO GERADA PELA IA]"
+    }
+  ],
+
+  // ─── FORMAÇÃO ───
+  formacao: [
+    {
+      curso: "[CURSO]",
+      instituicao: "[INSTITUIÇÃO]",
+      ano: "2020 - 2024"
+    }
+  ],
+
+  // ─── HABILIDADES ───
+  habilidades: [
+    { nome: "Habilidade 1", icone: "⚡", nivel: 90 },
+    { nome: "Habilidade 2", icone: "🔧", nivel: 85 }
+  ]
+};
+
+/* ╔══════════════════════════════════════════════════════════════╗ */
+/* ║  🏗️ COMPONENTES REACT - NÃO ALTERAR                         ║ */
+/* ╚══════════════════════════════════════════════════════════════╝ */
+
+function Navbar() {
+  return (
+    <nav className="navbar">
+      <div className="navbar-inner">
+        <div className="logo">✦ {CONFIG.pessoal.nome.split(' ')[0]}</div>
+        <div className="nav-links">
+          <a href="#sobre" className="nav-link">Sobre</a>
+          <a href="#experiencia" className="nav-link">Experiência</a>
+          <a href="#habilidades" className="nav-link">Skills</a>
+          <a href="#contato" className="nav-link">Contato</a>
+        </div>
+        <a href={`https://wa.me/${CONFIG.pessoal.whatsapp}`} className="cta-btn">Contato</a>
+      </div>
+    </nav>
+  );
+}
+
+function Hero() {
+  return (
+    <section className="hero" id="inicio">
+      <div className="hero-bg-pattern"></div>
+      <div className="hero-content">
+        <div className="profile-section">
+          <div className="profile-photo">
+            <div className="profile-ring">
+              <div className="profile-inner">
+                <div className="profile-placeholder">
+                  <div className="profile-icon">👤</div>
+                  <div>Adicionar foto</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="status-badge">
+              <span className="status-dot"></span>
+              {CONFIG.pessoal.status}
+            </div>
+            <h1 className="hero-main-title">{CONFIG.pessoal.nome}</h1>
+            <p className="hero-subtitle">{CONFIG.pessoal.profissao}</p>
+            <p className="hero-description">{CONFIG.sobre.texto.slice(0,200)}...</p>
+            <div className="action-buttons">
+              <a href={`https://wa.me/${CONFIG.pessoal.whatsapp}`} className="btn-modern btn-primary">
+                📲 WhatsApp
+              </a>
+              <a href="#contato" className="btn-modern btn-secondary">
+                ✉️ Entrar em Contato
+              </a>
+            </div>
+          </div>
+        </div>
+        <div className="stats-grid">
+          {CONFIG.stats.map((stat, i) => (
+            <div className="stat-item" key={i}>
+              <div className="stat-value">{stat.valor}</div>
+              <div className="stat-label">{stat.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Sobre() {
+  return (
+    <section className="section" id="sobre">
+      <div className="container">
+        <div className="section-header">
+          <div className="section-badge">👤 Sobre Mim</div>
+          <h2 className="section-title">Minha História</h2>
+        </div>
+        <div className="card">
+          <div className="about-content">{CONFIG.sobre.texto}</div>
+          <div className="about-highlights">
+            {CONFIG.sobre.destaques.map((d, i) => (
+              <div className="highlight-item" key={i}>
+                <span>{d.icone}</span>
+                <span>{d.texto}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Experiencia() {
+  return (
+    <section className="section" id="experiencia">
+      <div className="container">
+        <div className="section-header">
+          <div className="section-badge">💼 Carreira</div>
+          <h2 className="section-title">Experiência Profissional</h2>
+          <p className="section-subtitle">Minha trajetória no mercado</p>
+        </div>
+        <div className="experience-timeline">
+          {CONFIG.experiencias.map((exp, i) => (
+            <div className="timeline-item" key={i}>
+              <div className="timeline-dot"></div>
+              <div className="timeline-content">
+                <div className="timeline-header">
+                  <span className="timeline-job">{exp.cargo}</span>
+                  <span className="timeline-period">{exp.periodo}</span>
+                </div>
+                <div className="timeline-company">🏢 {exp.empresa}</div>
+                <p className="timeline-description">{exp.descricao}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function HabilidadesFormacao() {
+  const [modo, setModo] = React.useState('barras');
+  const [animado, setAnimado] = React.useState(false);
+
+  React.useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) setAnimado(true);
+    });
+    const el = document.getElementById('habilidades');
+    if (el) observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <section className="section" id="habilidades">
+      <div className="container">
+        <div className="section-header">
+          <div className="section-badge">⚡ Competências</div>
+          <h2 className="section-title">Habilidades & Formação</h2>
+        </div>
+        <div className="skills-education">
+          <div className="skills-section">
+            <div className="skills-toggle">
+              <button className={`toggle-btn ${modo === 'barras' ? 'active' : ''}`} onClick={() => setModo('barras')}>
+                📊
+              </button>
+              <button className={`toggle-btn ${modo === 'tags' ? 'active' : ''}`} onClick={() => setModo('tags')}>
+                🏷️
+              </button>
+            </div>
+            {modo === 'barras' ? (
+              CONFIG.habilidades.map((skill, i) => (
+                <div className="skill-bar" key={i}>
+                  <div className="skill-header">
+                    <span className="skill-name">{skill.icone} {skill.nome}</span>
+                    <span className="skill-percent">{skill.nivel}%</span>
+                  </div>
+                  <div className="skill-track">
+                    <div 
+                      className="skill-fill" 
+                      style={{width: animado ? `${skill.nivel}%` : '0%'}} 
+                    />
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div>Modo tags em desenvolvimento</div>
+            )}
+          </div>
+          <div className="education-section">
+            <h3 style={{fontSize:'1.3rem',fontWeight:800,marginBottom:'24px'}}>Formação</h3>
+            {CONFIG.formacao.map((edu, i) => (
+              <div className="education-item" key={i}>
+                <div className="edu-icon">🎓</div>
+                <div className="edu-info">
+                  <div className="edu-title">{edu.curso}</div>
+                  <div className="edu-school">{edu.instituicao}</div>
+                </div>
+                <div style={{fontWeight:700,color:'var(--cor-primaria)'}}>{edu.ano}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Contato() {
+  return (
+    <section className="section" id="contato">
+      <div className="container">
+        <div className="section-header">
+          <div className="section-badge">📬 Contato</div>
+          <h2 className="section-title">Fale Comigo</h2>
+          <p className="section-subtitle">Pronto para novas oportunidades</p>
+        </div>
+        <div className="contact-grid">
+          <div className="contact-item">
+            <div className="contact-icon contact-wpp">📱</div>
+            <div>
+              <div className="contact-label">WhatsApp</div>
+              <div className="contact-value">{CONFIG.pessoal.telefone}</div>
+            </div>
+          </div>
+          <div className="contact-item">
+            <div className="contact-icon contact-email">✉️</div>
+            <div>
+              <div className="contact-label">E-mail</div>
+              <div className="contact-value">{CONFIG.pessoal.email}</div>
+            </div>
+          </div>
+          <div className="contact-item">
+            <div className="contact-icon contact-phone">📞</div>
+            <div>
+              <div className="contact-label">Telefone</div>
+              <div className="contact-value">{CONFIG.pessoal.telefone}</div>
+            </div>
+          </div>
+          <div className="contact-item">
+            <div className="contact-icon contact-location">📍</div>
+            <div>
+              <div className="contact-label">Localização</div>
+              <div className="contact-value">{CONFIG.pessoal.cidade}</div>
+            </div>
+          </div>
+        </div>
+        <div style={{textAlign:'center'}}>
+          <a href={`https://wa.me/${CONFIG.pessoal.whatsapp}`} className="btn-modern btn-primary" style={{maxWidth:'320px',margin:'0 auto'}}>
+            🚀 Iniciar Conversa
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="footer">
+      <p>© 2024 {CONFIG.pessoal.nome} | {CONFIG.pessoal.profissao}</p>
+      <p style={{marginTop:'8px',fontSize:'0.85rem',opacity:0.7}}>Portfolio criado com ❤️</p>
+    </footer>
+  );
+}
+
+function App() {
+  return (
+    <>
+      <Navbar />
+      <Hero />
+      <Sobre />
+      <Experiencia />
+      <HabilidadesFormacao />
+      <Contato />
+      <Footer />
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
