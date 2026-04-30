@@ -1,0 +1,29 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Regras para a coleção de usuários
+    match /usuarios/{uid} {
+      // Usuário só pode ler e escrever seu próprio documento
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // Regras para a coleção de sites
+    match /sites/{siteId} {
+      // Qualquer pessoa pode ler sites publicados (para acesso público)
+      allow read: if resource.data.publicado == true;
+
+      // Usuário autenticado pode ler seus próprios sites (mesmo não publicados)
+      allow read: if request.auth != null
+                  && resource.data.uidUsuario == request.auth.uid;
+
+      // Só o dono pode criar, editar e deletar
+      allow create: if request.auth != null
+                    && request.resource.data.uidUsuario == request.auth.uid;
+
+      allow update, delete: if request.auth != null
+                             && resource.data.uidUsuario == request.auth.uid;
+    }
+  }
+}
