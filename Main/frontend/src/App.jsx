@@ -264,7 +264,7 @@ function HeroSection({ onStartCreating }) {
           </div>
           <div className="stat-divider"></div>
           <div className="stat">
-            <span className="stat-number">3+</span>
+            <span className="stat-number">10+</span>
             <span className="stat-label">Templates</span>
           </div>
           <div className="stat-divider"></div>
