@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VetCare — Clínica Veterinária</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,900;1,600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+
+    /* ══════════════════════════════════════════
+       VARIÁVEIS — edite aqui para mudar as cores
+    ══════════════════════════════════════════ */
+    :root {
+      --verde:        #2D6A4F;
+      --verde-escuro: #1B4332;
+      --verde-claro:  #D8F3DC;
+      --accent:       #E07A5F;
+      --accent-claro: #FDEAE5;
+      --fundo:        #F7FAF8;
+      --card:         #FFFFFF;
+      --texto:        #1C2E22;
+      --texto-sub:    #5A6E5F;
+      --borda:        #DCE9DF;
+      --wpp:          #25D366;
+      --fonte:        'Nunito', sans-serif;
+      --fonte-titulo: 'Fraunces', Georgia, serif;
+      --raio:         14px;
+      --sombra:       0 4px 20px rgba(45,106,79,.10);
+    }
+
+    /* ══════════════ RESET ══════════════ */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
+    body { font-family:var(--fonte); background:var(--fundo); color:var(--texto); line-height:1.6; overflow-x:hidden; }
+    img  { max-width:100%; display:block; }
+    a    { text-decoration:none; color:inherit; }
+
+    .container { max-width:1100px; margin:0 auto; padding:0 24px; }
+
+    /* ══════════════ NAVBAR ══════════════ */
+    .nav {
+      position: fixed; top:0; left:0; right:0; z-index:100;
+      background: rgba(27,67,50,.97); backdrop-filter:blur(10px);
+      padding: 14px 24px;
+      display: flex; align-items:center; justify-content:space-between;
+      gap: 16px;
+    }
+    .nav-marca { display:flex; align-items:center; gap:10px; }
+    .nav-icone {
+      width:40px; height:40px; border-radius:10px;
+      background:var(--verde); display:flex; align-items:center;
+      justify-content:center; font-size:1.3rem;
+    }
+    .nav-nome  { font-family:var(--fonte-titulo); font-size:1.1rem; color:#fff; }
+    .nav-tipo  { font-size:.68rem; color:#74C69D; text-transform:uppercase; letter-spacing:1.5px; font-weight:700; }
+    .nav-links { display:flex; gap:4px; }
+    .nav-links a {
+      color:rgba(255,255,255,.65); font-size:.82rem; font-weight:700;
+      padding:8px 14px; border-radius:50px; transition:.25s;
+    }
+    .nav-links a:hover { color:#fff; background:rgba(255,255,255,.1); }
+    .nav-btn {
+      display:flex; align-items:center; gap:7px;
+      background:var(--accent); color:#fff;
+      padding:10px 22px; border-radius:50px;
+      font-weight:800; font-size:.82rem; transition:.25s;
+      white-space:nowrap;
+    }
+    .nav-btn:hover { background:#c4614a; transform:scale(1.04); }
+
+    /* ══════════════ HERO ══════════════ */
+    .hero {
+      min-height:100vh; display:flex; align-items:center;
+      background: linear-gradient(150deg, #0D2818 0%, #1B4332 55%, #2D6A4F 100%);
+      padding: 110px 24px 72px;
+      position:relative; overflow:hidden;
+    }
+    .hero::before {
+      content:''; position:absolute; inset:0;
+      background:
+        radial-gradient(circle at 75% 40%, rgba(45,106,79,.3) 0%, transparent 55%),
+        radial-gradient(circle at 10% 80%, rgba(224,122,95,.15) 0%, transparent 45%);
+    }
+    .hero-inner {
+      max-width:1100px; margin:0 auto; width:100%;
+      display:grid; grid-template-columns:1fr 1fr; gap:56px;
+      align-items:center; position:relative; z-index:1;
+    }
+
+    /* conteúdo esquerdo */
+    .hero-tag {
+      display:inline-flex; align-items:center; gap:8px;
+      background:rgba(224,122,95,.2); border:1px solid rgba(224,122,95,.35);
+      color:var(--accent); padding:7px 18px; border-radius:50px;
+      font-size:.7rem; font-weight:800; text-transform:uppercase; letter-spacing:2px;
+      margin-bottom:20px;
+    }
+    .hero-tag-dot { width:6px; height:6px; background:#52B788; border-radius:50%; animation:pisca 2s infinite; }
+    @keyframes pisca { 0%,100%{opacity:1} 50%{opacity:.15} }
+
+    .hero h1 {
+      font-family:var(--fonte-titulo); font-size:3.6rem; font-weight:600;
+      color:#fff; line-height:1.08; margin-bottom:16px;
+    }
+    .hero h1 em { color:var(--accent); font-style:italic; }
+    .hero-sub  { font-size:1.05rem; color:rgba(255,255,255,.65); margin-bottom:34px; max-width:440px; }
+
+    .hero-botoes { display:flex; gap:12px; flex-wrap:wrap; }
+    .btn-wpp {
+      display:inline-flex; align-items:center; gap:9px;
+      background:var(--wpp); color:#fff;
+      padding:16px 34px; border-radius:50px;
+      font-weight:800; font-size:.98rem; transition:.25s;
+      box-shadow:0 6px 22px rgba(37,211,102,.4);
+    }
+    .btn-wpp:hover { background:#1EBE57; transform:translateY(-3px); }
+    .btn-ghost {
+      display:inline-flex; align-items:center; gap:9px;
+      background:transparent; color:#fff;
+      padding:16px 32px; border-radius:50px;
+      font-weight:700; font-size:.95rem;
+      border:2px solid rgba(255,255,255,.2); transition:.25s;
+    }
+    .btn-ghost:hover { border-color:var(--accent); color:var(--accent); }
+
+    /* stats */
+    .hero-stats { display:flex; gap:28px; margin-top:36px; }
+    .hero-stat-n { font-family:var(--fonte-titulo); font-size:2rem; color:#fff; line-height:1; }
+    .hero-stat-l { font-size:.68rem; color:rgba(255,255,255,.4); text-transform:uppercase; letter-spacing:1.5px; font-weight:700; margin-top:2px; }
+
+    /* visual direito */
+    .hero-img {
+      width:100%; aspect-ratio:4/5; border-radius:24px; overflow:hidden;
+      background:rgba(45,106,79,.25); border:2px solid rgba(255,255,255,.1);
+      box-shadow:0 24px 70px rgba(0,0,0,.45);
+      display:flex; align-items:center; justify-content:center;
+      flex-direction:column; gap:12px;
+      color:rgba(255,255,255,.2); font-size:.75rem; font-weight:700;
+      text-transform:uppercase; letter-spacing:1.5px;
+    }
+    .hero-img img  { width:100%; height:100%; object-fit:cover; }
+    .hero-img span { font-size:5rem; }
+
+    /* ══════════════ SEÇÕES GENÉRICAS ══════════════ */
+    .secao      { padding:80px 24px; }
+    .secao-alt  { background:#EDF3EF; }
+
+    .secao-topo { text-align:center; margin-bottom:52px; }
+    .tag-label {
+      display:inline-block; background:var(--verde-claro); color:var(--verde);
+      font-size:.7rem; font-weight:800; text-transform:uppercase; letter-spacing:2.5px;
+      padding:6px 16px; border-radius:50px; margin-bottom:12px;
+    }
+    .secao-topo h2 {
+      font-family:var(--fonte-titulo); font-size:2.4rem; font-weight:600; color:var(--texto);
+    }
+    .secao-topo p { font-size:.97rem; color:var(--texto-sub); margin-top:10px; max-width:500px; margin-inline:auto; }
+
+    /* ══════════════ SOBRE ══════════════ */
+    .sobre-grid { display:grid; grid-template-columns:1fr 1fr; gap:52px; align-items:center; }
+    .sobre-img {
+      aspect-ratio:4/5; border-radius:24px; overflow:hidden;
+      background:linear-gradient(135deg, var(--verde-claro), #EDF3EF);
+      display:flex; align-items:center; justify-content:center;
+      flex-direction:column; gap:10px; color:var(--texto-sub);
+      font-size:.82rem; font-weight:700;
+    }
+    .sobre-img span  { font-size:4rem; opacity:.3; }
+    .sobre-img img   { width:100%; height:100%; object-fit:cover; }
+
+    .sobre-texto h2  { font-family:var(--fonte-titulo); font-size:2rem; font-weight:600; margin-bottom:6px; }
+    .sobre-sub-label { color:var(--accent); font-weight:700; margin-bottom:18px; font-size:.97rem; }
+    .sobre-p         { font-size:.94rem; color:var(--texto-sub); line-height:1.85; margin-bottom:26px; }
+
+    .destaques { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:28px; }
+    .destaque {
+      display:flex; align-items:center; gap:11px;
+      background:var(--fundo); border-radius:var(--raio);
+      border-left:3px solid var(--verde); padding:13px 15px;
+    }
+    .destaque-icone {
+      width:38px; height:38px; border-radius:10px;
+      background:var(--verde-claro); display:flex; align-items:center;
+      justify-content:center; font-size:1.1rem; flex-shrink:0;
+    }
+    .destaque span { font-size:.84rem; font-weight:800; }
+
+    /* ══════════════ SERVIÇOS ══════════════ */
+    .servicos-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(300px,1fr)); gap:16px; }
+    .servico {
+      display:flex; align-items:center; gap:15px;
+      background:var(--card); border-radius:var(--raio); padding:20px 22px;
+      border:2px solid var(--borda); transition:.25s; box-shadow:var(--sombra);
+    }
+    .servico:hover { transform:translateY(-4px); border-color:rgba(45,106,79,.25); box-shadow:0 12px 36px rgba(45,106,79,.15); }
+    .servico-ico {
+      width:50px; height:50px; border-radius:13px; background:var(--verde-claro);
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.5rem; flex-shrink:0; transition:.25s;
+    }
+    .servico:hover .servico-ico { background:var(--verde); }
+    .servico-nome { font-size:.97rem; font-weight:800; }
+    .servico-desc { font-size:.8rem; color:var(--texto-sub); margin-top:2px; }
+    .servico-preco {
+      margin-left:auto; flex-shrink:0;
+      background:var(--accent-claro); color:var(--accent);
+      font-size:.88rem; font-weight:800; padding:5px 13px; border-radius:50px;
+    }
+
+    /* ══════════════ GALERIA ══════════════ */
+    .galeria-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+    .galeria-item {
+      border-radius:var(--raio); overflow:hidden; height:230px;
+      background:linear-gradient(135deg, var(--verde-claro), #EDF3EF);
+      display:flex; align-items:center; justify-content:center;
+      flex-direction:column; gap:8px; color:var(--texto-sub);
+      font-size:.8rem; font-weight:700; transition:.25s; cursor:pointer;
+    }
+    .galeria-item:nth-child(1) { grid-column:span 2; height:300px; }
+    .galeria-item:hover { transform:scale(1.02); box-shadow:var(--sombra); }
+    .galeria-item span  { font-size:2.5rem; opacity:.3; }
+    .galeria-item img   { width:100%; height:100%; object-fit:cover; }
+
+    /* ══════════════ LOCALIZAÇÃO ══════════════ */
+    .local-grid { display:grid; grid-template-columns:1fr 1fr; gap:40px; }
+    .mapa-box {
+      border-radius:24px; overflow:hidden; height:420px;
+      background:linear-gradient(135deg, var(--verde-claro), #EDF3EF);
+      display:flex; align-items:center; justify-content:center;
+      flex-direction:column; gap:12px; color:var(--texto-sub); font-size:.85rem; font-weight:700;
+    }
+    .mapa-box span  { font-size:3.5rem; opacity:.3; }
+    .mapa-box iframe { width:100%; height:100%; border:0; display:block; }
+
+    .info-cards { display:flex; flex-direction:column; gap:16px; }
+    .info-card  {
+      background:var(--card); border-radius:var(--raio); padding:24px;
+      border:1px solid var(--borda); box-shadow:var(--sombra);
+    }
+    .info-card-h { display:flex; align-items:center; gap:11px; margin-bottom:16px; }
+    .info-card-ico {
+      width:42px; height:42px; border-radius:11px; background:var(--verde-claro);
+      display:flex; align-items:center; justify-content:center; font-size:1.2rem; flex-shrink:0;
+    }
+    .info-card-h h3 { font-size:1rem; font-weight:800; }
+
+    .endereco-txt  { font-size:.9rem; color:var(--texto-sub); line-height:1.8; }
+    .endereco-txt strong { color:var(--texto); font-weight:800; }
+
+    .horario-row {
+      display:flex; justify-content:space-between; align-items:center;
+      padding:9px 0; border-bottom:1px solid var(--borda); font-size:.87rem;
+    }
+    .horario-row:last-child { border-bottom:none; }
+    .horario-dia { font-weight:800; }
+    .horario-hr  { color:var(--texto-sub); font-weight:600; }
+    .horario-hr.off { color:var(--accent); font-weight:800; }
+
+    .contato-row  { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--borda); }
+    .contato-row:last-child { border-bottom:none; }
+    .contato-ico {
+      width:38px; height:38px; border-radius:10px; background:var(--verde-claro);
+      display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0;
+    }
+    .contato-label { font-size:.67rem; color:#9EB09F; text-transform:uppercase; letter-spacing:.8px; font-weight:700; }
+    .contato-val   { font-size:.9rem; font-weight:800; }
+
+    /* ══════════════ AVALIAÇÕES ══════════════ */
+    .nota-box {
+      display:flex; align-items:center; gap:20px; justify-content:center;
+      background:var(--verde-claro); border-radius:var(--raio); padding:22px 32px;
+      margin-bottom:40px;
+    }
+    .nota-num   { font-family:var(--fonte-titulo); font-size:3.2rem; color:var(--verde); line-height:1; }
+    .nota-stars { color:#F4A261; font-size:1.3rem; margin:4px 0; }
+    .nota-total { font-size:.84rem; color:var(--texto-sub); font-weight:700; }
+
+    .aval-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+    .aval-card {
+      background:var(--card); border-radius:var(--raio); padding:26px;
+      border:1px solid var(--borda); box-shadow:var(--sombra); transition:.25s;
+    }
+    .aval-card:hover { transform:translateY(-4px); box-shadow:0 14px 40px rgba(45,106,79,.14); }
+    .aval-stars  { color:#F4A261; font-size:.9rem; margin-bottom:10px; }
+    .aval-texto  { font-size:.88rem; color:var(--texto-sub); line-height:1.75; font-style:italic; margin-bottom:16px; }
+    .aval-autor  { display:flex; align-items:center; gap:11px; }
+    .aval-avatar {
+      width:42px; height:42px; border-radius:50%; background:var(--verde-claro);
+      display:flex; align-items:center; justify-content:center;
+      font-size:1rem; font-weight:800; color:var(--verde); flex-shrink:0;
+    }
+    .aval-nome { font-size:.88rem; font-weight:800; }
+    .aval-data { font-size:.7rem; color:#9EB09F; font-weight:700; }
+
+    /* ══════════════ CTA ══════════════ */
+    .cta {
+      background:linear-gradient(135deg, var(--verde) 0%, var(--verde-escuro) 100%);
+      padding:72px 24px; text-align:center; color:#fff;
+    }
+    .cta h2 { font-family:var(--fonte-titulo); font-size:2.2rem; font-weight:600; margin-bottom:12px; }
+    .cta p  { font-size:1.02rem; opacity:.8; margin-bottom:28px; }
+
+    /* ══════════════ FOOTER ══════════════ */
+    .footer {
+      background:#0D2818; color:rgba(255,255,255,.35);
+      padding:36px 24px; text-align:center; font-size:.84rem;
+    }
+    .footer-nome { font-family:var(--fonte-titulo); font-size:1.4rem; color:#fff; margin-bottom:6px; }
+    .footer a    { color:#74C69D; font-weight:700; }
+
+    /* ══════════════ WPP FLUTUANTE ══════════════ */
+    .wpp-float {
+      position:fixed; bottom:24px; right:24px; z-index:999;
+      display:flex; flex-direction:column; align-items:flex-end; gap:8px;
+    }
+    .wpp-msg {
+      background:#fff; padding:10px 16px; border-radius:12px;
+      box-shadow:0 4px 18px rgba(0,0,0,.12);
+      font-size:.8rem; font-weight:700; white-space:nowrap;
+      border-left:3px solid var(--wpp);
+      animation:sobe 3s ease-in-out infinite;
+    }
+    @keyframes sobe { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+    .wpp-btn {
+      width:64px; height:64px; border-radius:50%;
+      background:var(--wpp); color:#fff; border:none; cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      font-size:2rem; transition:.25s;
+      box-shadow:0 4px 22px rgba(37,211,102,.5);
+      animation:pulsa 2s infinite;
+    }
+    @keyframes pulsa {
+      0%   { box-shadow:0 0 0 0 rgba(37,211,102,.55); }
+      70%  { box-shadow:0 0 0 18px rgba(37,211,102,0); }
+      100% { box-shadow:0 0 0 0 rgba(37,211,102,0); }
+    }
+    .wpp-btn:hover { transform:scale(1.1); }
+
+    /* ══════════════ RESPONSIVO ══════════════ */
+    @media(max-width:900px){
+      .nav-links { display:none; }
+      .hero-inner { grid-template-columns:1fr; text-align:center; gap:36px; }
+      .hero h1 { font-size:2.8rem; }
+      .hero-sub, .hero-botoes { margin-inline:auto; }
+      .hero-botoes { justify-content:center; }
+      .hero-stats  { justify-content:center; }
+      .hero-img    { order:-1; max-width:320px; margin:0 auto; }
+      .sobre-grid, .local-grid { grid-template-columns:1fr; }
+      .aval-grid   { grid-template-columns:1fr; }
+      .galeria-grid{ grid-template-columns:1fr 1fr; }
+      .galeria-item:nth-child(1){ grid-column:span 2; }
+    }
+    @media(max-width:600px){
+      .hero { padding:90px 16px 48px; min-height:auto; }
+      .hero h1 { font-size:2rem; }
+      .btn-wpp, .btn-ghost { width:100%; justify-content:center; }
+      .servicos-grid { grid-template-columns:1fr; }
+      .galeria-grid  { grid-template-columns:1fr; }
+      .galeria-item:nth-child(1){ grid-column:span 1; height:240px; }
+      .secao-topo h2 { font-size:1.9rem; }
+      .destaques { grid-template-columns:1fr; }
+      .nota-box  { flex-direction:column; text-align:center; }
+      .nav-btn .nav-cta-texto { display:none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     CONFIGURAÇÃO — altere tudo aqui
+═══════════════════════════════════════════ -->
+<script>
+/*
+ * ╔══════════════════════════════════════════════════════════════════════╗
+ * ║  BLOCO DE DADOS — gerado/substituído automaticamente pela IA        ║
+ * ║                                                                      ║
+ * ║  INSTRUÇÕES PARA A IA:                                               ║
+ * ║  • Substitua APENAS os valores entre aspas ou números               ║
+ * ║  • Não altere os nomes das chaves (ex: "nome", "whatsapp")          ║
+ * ║  • Não altere nada fora deste bloco <script id="dados">             ║
+ * ║  • Arrays como "servicos" e "horarios" podem ter N itens            ║
+ * ║  • Campos opcionais: deixe "" (string vazia) se não houver valor    ║
+ * ║  • Campos de foto: deixe "" até ter a URL real da imagem            ║
+ * ╚══════════════════════════════════════════════════════════════════════╝
+*/
+const DADOS = {
+
+  /* CAMPO: nome_negocio — Nome completo da clínica/empresa */
+  "nome": "VetCare Clínica",
+
+  /* CAMPO: tipo_negocio — Tipo/segmento do negócio */
+  "tipo": "Clínica Veterinária",
+
+  /* CAMPO: slogan — Frase curta de impacto (até ~60 caracteres) */
+  "slogan": "Saúde e carinho para o seu melhor amigo",
+
+  /* CAMPO: descricao — Descrição curta para o hero (1-2 frases) */
+  "descricao": "Atendimento veterinário completo com profissionais especializados e estrutura moderna para o bem-estar do seu animal.",
+
+  /* CAMPO: icone_emoji — Emoji representativo do negócio */
+  "icone": "🐾",
+
+  /* CAMPO: url_logo — URL/caminho da imagem do logo (deixe "" se não tiver) */
+  "logo": "",
+
+  /* CAMPO: url_foto_banner — URL/caminho da foto principal do hero (deixe "" se não tiver) */
+  "foto_banner": "",
+
+  /* CAMPO: whatsapp_numero — Número com DDI+DDD sem espaços ou símbolos */
+  "whatsapp": "5511999999999",
+
+  /* CAMPO: whatsapp_mensagem — Mensagem pré-preenchida ao abrir o WhatsApp */
+  "wpp_msg": "Olá! Gostaria de agendar uma consulta.",
+
+  /* CAMPO: telefone_celular — Telefone/WhatsApp exibido na tela */
+  "telefone": "(11) 99999-9999",
+
+  /* CAMPO: telefone_fixo — Telefone fixo (deixe "" se não tiver) */
+  "telefone_fixo": "(11) 3333-4444",
+
+  /* CAMPO: email — E-mail de contato (deixe "" se não tiver) */
+  "email": "contato@vetcare.com.br",
+
+  /* CAMPO: url_instagram — Link completo do Instagram (deixe "" se não tiver) */
+  "instagram": "https://instagram.com/vetcare",
+
+  /* CAMPO: url_facebook — Link completo do Facebook (deixe "" se não tiver) */
+  "facebook": "https://facebook.com/vetcare",
+
+  /* CAMPO: stats_hero — Até 3 números de destaque exibidos no hero */
+  "stats": [
+    { "numero": "4.500+", "label": "Pacientes atendidos" },  /* CAMPO: stat_1 */
+    { "numero": "15+",    "label": "Anos de experiência"  }, /* CAMPO: stat_2 */
+    { "numero": "8",      "label": "Especialistas"        }  /* CAMPO: stat_3 */
+  ],
+
+  /* ── SEÇÃO SOBRE ─────────────────────────────────────────────────── */
+  "sobre": {
+    /* CAMPO: sobre_titulo — Título da seção sobre */
+    "titulo": "Sobre a VetCare",
+
+    /* CAMPO: sobre_subtitulo — Subtítulo/destaque abaixo do título */
+    "sub": "Referência em saúde animal desde 2009",
+
+    /* CAMPO: sobre_texto — Parágrafo descritivo (3-5 frases) */
+    "texto": "A VetCare nasceu da paixão por animais e do compromisso com o bem-estar dos seus companheiros. Contamos com médicos veterinários qualificados, equipamentos modernos e um ambiente acolhedor pensado para deixar seu pet tranquilo. Atendemos cães, gatos, aves e pequenos animais.",
+
+    /* CAMPO: url_foto_sobre — URL/caminho da foto da seção sobre (deixe "" se não tiver) */
+    "foto": "",
+
+    /* CAMPO: destaques — Até 4 diferenciais com emoji e texto curto */
+    "destaques": [
+      { "icone": "🏥", "texto": "Infraestrutura completa"  }, /* CAMPO: destaque_1 */
+      { "icone": "🩺", "texto": "Médicos especializados"   }, /* CAMPO: destaque_2 */
+      { "icone": "🔬", "texto": "Exames laboratoriais"     }, /* CAMPO: destaque_3 */
+      { "icone": "❤️", "texto": "Atendimento humanizado"   }  /* CAMPO: destaque_4 */
+    ]
+  },
+
+  /* ── SERVIÇOS ────────────────────────────────────────────────────── */
+  /* CAMPO: servicos — Lista de serviços oferecidos (sem limite de itens) */
+  "servicos": [
+    { "icone": "🩺", "nome": "Consulta Clínica",     "descricao": "Avaliação geral do animal",        "preco": "R$ 120"          }, /* CAMPO: servico_1 */
+    { "icone": "💉", "nome": "Vacinação",             "descricao": "Calendário vacinal completo",       "preco": "A partir R$ 60"  }, /* CAMPO: servico_2 */
+    { "icone": "🔬", "nome": "Exames Laboratoriais",  "descricao": "Hemograma, bioquímica e mais",      "preco": "Consultar"       }, /* CAMPO: servico_3 */
+    { "icone": "🦷", "nome": "Odontologia",           "descricao": "Limpeza e extração dentária",       "preco": "A partir R$ 180" }, /* CAMPO: servico_4 */
+    { "icone": "✂️", "nome": "Cirurgias",             "descricao": "Castração e cirurgias gerais",      "preco": "Consultar"       }, /* CAMPO: servico_5 */
+    { "icone": "🛁", "nome": "Banho & Tosa",          "descricao": "Banho higiênico e tosa completa",   "preco": "A partir R$ 50"  }  /* CAMPO: servico_6 */
+  ],
+
+  /* ── GALERIA ─────────────────────────────────────────────────────── */
+  /* CAMPO: galeria — Fotos do espaço (url_foto: deixe "" se não tiver) */
+  "galeria": [
+    { "url_foto": "", "legenda": "Recepção"        }, /* CAMPO: foto_1 */
+    { "url_foto": "", "legenda": "Sala de Consulta"}, /* CAMPO: foto_2 */
+    { "url_foto": "", "legenda": "Laboratório"     }, /* CAMPO: foto_3 */
+    { "url_foto": "", "legenda": "Banho & Tosa"    }  /* CAMPO: foto_4 */
+  ],
+
+  /* ── LOCALIZAÇÃO ─────────────────────────────────────────────────── */
+  "localizacao": {
+    /* CAMPO: endereco_rua — Rua e número */
+    "endereco": "Av. das Palmeiras, 456",
+
+    /* CAMPO: endereco_bairro */
+    "bairro": "Jardim Verde",
+
+    /* CAMPO: endereco_cidade */
+    "cidade": "São Paulo",
+
+    /* CAMPO: endereco_estado — Sigla do estado (SP, RJ, etc.) */
+    "estado": "SP",
+
+    /* CAMPO: endereco_cep */
+    "cep": "04001-000",
+
+    /* CAMPO: endereco_complemento — Referência ou dica (deixe "" se não tiver) */
+    "complemento": "Estacionamento próprio",
+
+    /* CAMPO: google_maps_embed — Cole aqui o src do iframe do Google Maps (deixe "" para mostrar botão) */
+    "maps_embed": "",
+
+    /* CAMPO: google_maps_link — Link direto do Google Maps para abrir no app */
+    "maps_link": "https://maps.google.com"
+  },
+
+  /* ── HORÁRIOS ────────────────────────────────────────────────────── */
+  /* CAMPO: horarios — Dias e horários de funcionamento */
+  "horarios": [
+    { "dia": "Segunda a Sexta", "horario": "08:00 – 18:00", "fechado": false }, /* CAMPO: horario_1 */
+    { "dia": "Sábado",          "horario": "08:00 – 14:00", "fechado": false }, /* CAMPO: horario_2 */
+    { "dia": "Domingo",         "horario": "Somente Emergências", "fechado": false }  /* CAMPO: horario_3 */
+  ],
+
+  /* ── AVALIAÇÕES ──────────────────────────────────────────────────── */
+  "avaliacoes": {
+    /* CAMPO: nota_geral — Nota média (ex: "4.9") */
+    "nota": "4.9",
+
+    /* CAMPO: total_avaliacoes — Total de avaliações para exibir */
+    "total": "382",
+
+    /* CAMPO: depoimentos — Lista de depoimentos de clientes */
+    "lista": [
+      { "nome": "Mariana Oliveira", "texto": "Atendimento incrível! Dr. Pedro foi super atencioso com minha Luna. Ambiente limpo e equipe maravilhosa.", "estrelas": 5, "data": "Há 1 semana"  }, /* CAMPO: depoimento_1 */
+      { "nome": "Carlos Mendonça",  "texto": "Fiz a castração do meu Bolinha aqui. Tudo perfeito — equipe profissional e pós-operatório excelente!",    "estrelas": 5, "data": "Há 2 semanas" }, /* CAMPO: depoimento_2 */
+      { "nome": "Patrícia Ramos",   "texto": "Atenderam minha gata em emergência rapidamente. Salvaram a vida dela. Gratidão eterna a toda equipe!",    "estrelas": 5, "data": "Há 1 mês"     }  /* CAMPO: depoimento_3 */
+    ]
+  }
+
+}; /* FIM DO BLOCO DE DADOS — não altere nada após esta linha */
+
+/* Alias interno — não alterar */
+const C = {
+  nome:        DADOS.nome,
+  tipo:        DADOS.tipo,
+  slogan:      DADOS.slogan,
+  descricao:   DADOS.descricao,
+  icone:       DADOS.icone,
+  logo:        DADOS.logo        || null,
+  fotoBanner:  DADOS.foto_banner || null,
+  whatsapp:    DADOS.whatsapp,
+  wppMsg:      DADOS.wpp_msg,
+  telefone:    DADOS.telefone,
+  telefoneFixo:DADOS.telefone_fixo || null,
+  email:       DADOS.email       || null,
+  instagram:   DADOS.instagram   || null,
+  facebook:    DADOS.facebook    || null,
+  stats:       DADOS.stats.map(s => ({ n: s.numero, l: s.label })),
+  sobre: {
+    titulo:    DADOS.sobre.titulo,
+    sub:       DADOS.sobre.sub,
+    texto:     DADOS.sobre.texto,
+    foto:      DADOS.sobre.foto  || null,
+    destaques: DADOS.sobre.destaques.map(d => ({ i: d.icone, t: d.texto })),
+  },
+  servicos:    DADOS.servicos.map(s => ({ i: s.icone, n: s.nome, d: s.descricao, p: s.preco })),
+  galeria:     DADOS.galeria.map(g => ({ foto: g.url_foto || null, l: g.legenda })),
+  localizacao: {
+    endereco:    DADOS.localizacao.endereco,
+    bairro:      DADOS.localizacao.bairro,
+    cidade:      DADOS.localizacao.cidade,
+    estado:      DADOS.localizacao.estado,
+    cep:         DADOS.localizacao.cep,
+    complemento: DADOS.localizacao.complemento || null,
+    mapsEmbed:   DADOS.localizacao.maps_embed  || null,
+    mapsLink:    DADOS.localizacao.maps_link,
+  },
+  horarios:    DADOS.horarios.map(h => ({ d: h.dia, h: h.horario, off: h.fechado })),
+  avaliacoes: {
+    nota:  DADOS.avaliacoes.nota,
+    total: DADOS.avaliacoes.total,
+    lista: DADOS.avaliacoes.lista,
+  },
+};
+</script>
+
+<!-- ══════════════════════════════════════════
+     HTML — renderizado pelo JS abaixo
+═══════════════════════════════════════════ -->
+
+<div id="app"></div>
+
+<!-- WPP FLUTUANTE -->
+<div class="wpp-float" id="wppFloat" style="display:none">
+  <div class="wpp-msg">🐾 Agende a consulta!</div>
+  <a id="wppBtn" href="#" target="_blank" rel="noopener noreferrer" class="wpp-btn" aria-label="WhatsApp">📱</a>
+</div>
+
+<script>
+  /* ── helpers ── */
+  const wppLink = () =>
+    `https://wa.me/${C.whatsapp}?text=${encodeURIComponent(C.wppMsg)}`;
+
+  const estrelas = n =>
+    '★'.repeat(n) + '☆'.repeat(5 - n);
+
+  /* ── WPP float ── */
+  document.getElementById('wppBtn').href = wppLink();
+  setTimeout(() => document.getElementById('wppFloat').style.display = 'flex', 2500);
+
+  /* ── build HTML ── */
+  const s = C.sobre;
+  const loc = C.localizacao;
+  const av = C.avaliacoes;
+
+  document.getElementById('app').innerHTML = `
+
+  <!-- NAVBAR -->
+  <nav class="nav">
+    <div class="nav-marca">
+      <div class="nav-icone">${C.logo ? `<img src="${C.logo}" alt="${C.nome}">` : C.icone}</div>
+      <div>
+        <div class="nav-nome">${C.nome}</div>
+        <div class="nav-tipo">${C.tipo}</div>
+      </div>
+    </div>
+    <div class="nav-links">
+      <a href="#sobre">Sobre</a>
+      <a href="#servicos">Serviços</a>
+      <a href="#galeria">Espaço</a>
+      <a href="#local">Localização</a>
+    </div>
+    <a href="${wppLink()}" target="_blank" rel="noopener" class="nav-btn">
+      <span>📲</span><span class="nav-cta-texto">Agendar Consulta</span>
+    </a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="inicio">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-tag"><span class="hero-tag-dot"></span>${C.tipo}</div>
+        <h1>Saúde &amp; Bem-estar<br>para o seu <em>melhor amigo</em></h1>
+        <p class="hero-sub">${C.descricao}</p>
+        <div class="hero-botoes">
+          <a href="${wppLink()}" target="_blank" rel="noopener" class="btn-wpp">📲 Agendar Consulta</a>
+          <a href="#servicos" class="btn-ghost">Ver Serviços ↓</a>
+        </div>
+        <div class="hero-stats">
+          ${C.stats.map(st => `
+            <div>
+              <div class="hero-stat-n">${st.n}</div>
+              <div class="hero-stat-l">${st.l}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+      <div class="hero-img">
+        ${C.fotoBanner
+          ? `<img src="${C.fotoBanner}" alt="${C.nome}">`
+          : `<span>🐶🐱</span><small>Foto da clínica</small>`}
+      </div>
+    </div>
+  </section>
+
+  <!-- SOBRE -->
+  <section class="secao" id="sobre">
+    <div class="container">
+      <div class="sobre-grid">
+        <div class="sobre-img">
+          ${s.foto ? `<img src="${s.foto}" alt="Clínica">` : `<span>🏥</span><small>Foto da clínica</small>`}
+        </div>
+        <div class="sobre-texto">
+          <h2>${s.titulo}</h2>
+          <p class="sobre-sub-label">${s.sub}</p>
+          <p class="sobre-p">${s.texto}</p>
+          <div class="destaques">
+            ${s.destaques.map(d => `
+              <div class="destaque">
+                <div class="destaque-icone">${d.i}</div>
+                <span>${d.t}</span>
+              </div>`).join('')}
+          </div>
+          <a href="${wppLink()}" target="_blank" rel="noopener" class="btn-wpp" style="font-size:.9rem;padding:14px 26px">
+            📲 Agendar agora
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVIÇOS -->
+  <section class="secao secao-alt" id="servicos">
+    <div class="container">
+      <div class="secao-topo">
+        <div class="tag-label">🩺 Serviços</div>
+        <h2>O que oferecemos</h2>
+        <p>Cuidado completo para a saúde e bem-estar do seu pet.</p>
+      </div>
+      <div class="servicos-grid">
+        ${C.servicos.map(sv => `
+          <div class="servico">
+            <div class="servico-ico">${sv.i}</div>
+            <div>
+              <div class="servico-nome">${sv.n}</div>
+              <div class="servico-desc">${sv.d}</div>
+            </div>
+            ${sv.p ? `<div class="servico-preco">${sv.p}</div>` : ''}
+          </div>`).join('')}
+      </div>
+      <div style="text-align:center;margin-top:40px">
+        <a href="${wppLink()}" target="_blank" rel="noopener" class="btn-wpp">📲 Agendar Serviço</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALERIA -->
+  <section class="secao" id="galeria">
+    <div class="container">
+      <div class="secao-topo">
+        <div class="tag-label">📸 Espaço</div>
+        <h2>Conheça a Clínica</h2>
+        <p>Ambiente pensado para o conforto e segurança do seu pet</p>
+      </div>
+      <div class="galeria-grid">
+        ${C.galeria.map(g => `
+          <div class="galeria-item">
+            ${g.foto ? `<img src="${g.foto}" alt="${g.l}">` : `<span>🖼️</span>${g.l}`}
+          </div>`).join('')}
+      </div>
+    </div>
+  </section>
+
+  <!-- LOCALIZAÇÃO -->
+  <section class="secao secao-alt" id="local">
+    <div class="container">
+      <div class="secao-topo">
+        <div class="tag-label">📍 Localização</div>
+        <h2>Como nos encontrar</h2>
+        <p>Endereço, horários e contato</p>
+      </div>
+      <div class="local-grid">
+        <div class="mapa-box">
+          ${loc.mapsEmbed
+            ? `<iframe src="${loc.mapsEmbed}" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`
+            : `<span>🗺️</span><small>Configure o Maps no CONFIG</small>
+               <a href="${loc.mapsLink}" target="_blank" rel="noopener" class="btn-wpp" style="font-size:.8rem;padding:10px 20px;background:var(--verde)">📍 Abrir no Maps</a>`}
+        </div>
+        <div class="info-cards">
+          <div class="info-card">
+            <div class="info-card-h"><div class="info-card-ico">📍</div><h3>Endereço</h3></div>
+            <p class="endereco-txt">
+              <strong>${loc.endereco}</strong><br>
+              ${loc.bairro} — ${loc.cidade}/${loc.estado}<br>
+              CEP: ${loc.cep}
+              ${loc.complemento ? `<br><em style="font-size:.83rem;color:var(--texto-sub)">🅿️ ${loc.complemento}</em>` : ''}
+            </p>
+          </div>
+          <div class="info-card">
+            <div class="info-card-h"><div class="info-card-ico">🕐</div><h3>Horários</h3></div>
+            ${C.horarios.map(h => `
+              <div class="horario-row">
+                <span class="horario-dia">${h.d}</span>
+                <span class="horario-hr ${h.off ? 'off' : ''}">${h.h}</span>
+              </div>`).join('')}
+          </div>
+          <div class="info-card">
+            <div class="info-card-h"><div class="info-card-ico">📞</div><h3>Contato</h3></div>
+            <div class="contato-row">
+              <div class="contato-ico">📱</div>
+              <div><div class="contato-label">WhatsApp</div><div class="contato-val">${C.telefone}</div></div>
+            </div>
+            ${C.telefoneFixo ? `
+            <div class="contato-row">
+              <div class="contato-ico">📞</div>
+              <div><div class="contato-label">Telefone</div><div class="contato-val">${C.telefoneFixo}</div></div>
+            </div>` : ''}
+            ${C.email ? `
+            <div class="contato-row">
+              <div class="contato-ico">✉️</div>
+              <div><div class="contato-label">E-mail</div><div class="contato-val" style="font-size:.82rem">${C.email}</div></div>
+            </div>` : ''}
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AVALIAÇÕES -->
+  <section class="secao" id="avaliacoes">
+    <div class="container">
+      <div class="secao-topo">
+        <div class="tag-label">⭐ Avaliações</div>
+        <h2>O que nossos clientes dizem</h2>
+        <p>A confiança de quem já nos visitou</p>
+      </div>
+      <div class="nota-box">
+        <div>
+          <div class="nota-num">${av.nota}</div>
+          <div class="nota-stars">★★★★★</div>
+        </div>
+        <div>
+          <div style="font-size:1.1rem;font-weight:800;color:var(--verde)">Excelente</div>
+          <div class="nota-total">Baseado em ${av.total} avaliações no Google</div>
+        </div>
+      </div>
+      <div class="aval-grid">
+        ${av.lista.map(a => `
+          <div class="aval-card">
+            <div class="aval-stars">${estrelas(a.estrelas)}</div>
+            <p class="aval-texto">"${a.texto}"</p>
+            <div class="aval-autor">
+              <div class="aval-avatar">${a.nome.charAt(0)}</div>
+              <div>
+                <div class="aval-nome">${a.nome}</div>
+                <div class="aval-data">${a.data}</div>
+              </div>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <h2>Seu pet merece o melhor cuidado</h2>
+    <p>Agende agora pelo WhatsApp. Rápido, fácil e sem complicação!</p>
+    <a href="${wppLink()}" target="_blank" rel="noopener" class="btn-wpp">📲 Agendar pelo WhatsApp</a>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-nome">${C.nome}</div>
+    <p>© ${new Date().getFullYear()} <a href="#inicio">${C.nome}</a> — ${C.tipo}</p>
+    <p style="margin-top:4px;font-size:.72rem;opacity:.4">Todos os direitos reservados</p>
+  </footer>
+  `;
+
+  /* ── navbar scroll shadow ── */
+  window.addEventListener('scroll', () => {
+    document.querySelector('.nav').style.boxShadow =
+      window.scrollY > 50 ? '0 4px 28px rgba(0,0,0,.35)' : 'none';
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chef João Santos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <style>
+    :root {
+      --primary: #3B82F6;
+      --primary-hover: #2563EB;
+      --secondary: #1E293B;
+      --accent: #10B981;
+      --bg: #F8FAFC;
+      --card: #FFFFFF;
+      --text: #1E293B;
+      --text-light: #64748B;
+      --white: #FFFFFF;
+      --border: #E2E8F0;
+      --shadow: 0 10px 40px rgba(0,0,0,0.08);
+      --shadow-hover: 0 20px 60px rgba(0,0,0,0.15);
+      --radius: 20px;
+      --radius-btn: 50px;
+      --transition: all 0.3s ease;
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+    /* Header */
+    .header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+      transition: var(--transition);
+    }
+    .header.scrolled { box-shadow: var(--shadow); }
+    .header-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px; max-width: 1200px; margin: 0 auto;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 12px;
+      text-decoration: none;
+    }
+    .logo-icon {
+      width: 48px; height: 48px; background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      border-radius: 12px; display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; color: white; font-weight: 800;
+    }
+    .logo-text h1 { font-size: 1.2rem; font-weight: 800; color: var(--secondary); margin: 0; }
+    .logo-text span { font-size: 0.8rem; color: var(--primary); font-weight: 600; text-transform: uppercase; }
+    .cta-header {
+      background: var(--accent); color: white; padding: 12px 24px; border-radius: var(--radius-btn);
+      font-weight: 700; font-size: 0.9rem; border: none; cursor: pointer;
+      transition: var(--transition); text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+    }
+    .cta-header:hover { background: #059669; transform: translateY(-2px); }
+
+    /* Hero */
+    .hero {
+      padding: 140px 20px 80px; background: linear-gradient(135deg, #1E293B 0%, #334155 100%);
+      min-height: 100vh; display: flex; align-items: center; position: relative;
+    }
+    .hero::before {
+      content: ''; position: absolute; top: -50%; right: -20%; width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(59,130,246,0.2) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .hero-inner {
+      max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 60px;
+      align-items: center; position: relative; z-index: 2;
+    }
+    .hero-content { color: white; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(59,130,246,0.2); border: 1px solid rgba(59,130,246,0.4);
+      padding: 8px 20px; border-radius: var(--radius-btn); font-size: 0.85rem;
+      font-weight: 700; color: var(--primary); margin-bottom: 24px; text-transform: uppercase;
+    }
+    .hero-h1 { font-size: 3.5rem; font-weight: 900; line-height: 1.1; margin-bottom: 12px; }
+    .hero-subtitle { 
+      font-size: 1.3rem; color: var(--primary); font-weight: 700; margin-bottom: 16px;
+      text-transform: uppercase; letter-spacing: 1px;
+    }
+    .hero-tagline { 
+      font-size: 1.6rem; font-weight: 700; margin-bottom: 20px; 
+    }
+    .hero-tagline span { color: var(--primary); }
+    .hero-desc { 
+      font-size: 1.1rem; color: rgba(255,255,255,0.8); margin-bottom: 40px; max-width: 450px;
+    }
+    .hero-buttons { display: flex; gap: 20px; flex-wrap: wrap; }
+    .btn-primary {
+      background: var(--accent); color: white; padding: 18px 36px; border-radius: var(--radius-btn);
+      font-size: 1rem; font-weight: 700; border: none; cursor: pointer;
+      transition: var(--transition); text-decoration: none; display: inline-flex;
+      align-items: center; gap: 12px; box-shadow: 0 8px 25px rgba(16,185,129,0.4);
+    }
+    .btn-primary:hover { 
+      background: #059669; transform: translateY(-3px); box-shadow: 0 15px 35px rgba(16,185,129,0.5);
+    }
+    .btn-secondary {
+      background: transparent; color: white; padding: 18px 36px; border-radius: var(--radius-btn);
+      font-size: 1rem; font-weight: 700; border: 2px solid rgba(255,255,255,0.3);
+      transition: var(--transition); text-decoration: none; display: inline-flex;
+      align-items: center; gap: 12px;
+    }
+    .btn-secondary:hover { 
+      border-color: var(--primary); color: var(--primary); background: rgba(59,130,246,0.1);
+    }
+    .stats { 
+      display: flex; gap: 40px; margin-top: 48px; padding-top: 32px;
+      border-top: 1px solid rgba(255,255,255,0.2);
+    }
+    .stat { text-align: center; }
+    .stat-number { font-size: 2.2rem; font-weight: 900; color: var(--primary); }
+    .stat-label { font-size: 0.85rem; color: rgba(255,255,255,0.6); text-transform: uppercase; margin-top: 4px; }
+
+    .hero-image {
+      width: 420px; height: 480px; border-radius: var(--radius); overflow: hidden;
+      border: 4px solid rgba(59,130,246,0.3); box-shadow: var(--shadow);
+      background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(59,130,246,0.05));
+    }
+    .hero-image img { width: 100%; height: 100%; object-fit: cover; }
+    .hero-placeholder {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      height: 100%; color: rgba(255,255,255,0.4); gap: 16px; padding: 40px;
+      text-align: center;
+    }
+    .hero-placeholder-icon { font-size: 5rem; }
+
+    /* Services */
+    .services-section { padding: 100px 20px; background: var(--bg); }
+    .section-title {
+      text-align: center; margin-bottom: 60px;
+    }
+    .section-subtitle {
+      font-size: 0.9rem; color: var(--primary); font-weight: 700; text-transform: uppercase;
+      letter-spacing: 2px; margin-bottom: 12px; display: block;
+    }
+    .section-h2 { 
+      font-size: 2.5rem; font-weight: 900; color: var(--secondary); margin-bottom: 16px;
+    }
+    .section-desc { 
+      font-size: 1.1rem; color: var(--text-light); max-width: 600px; margin: 0 auto;
+    }
+    .services-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px;
+    }
+    .service-card {
+      background: var(--card); border-radius: var(--radius); padding: 40px 30px;
+      text-align: center; box-shadow: var(--shadow); transition: var(--transition);
+      border-top: 4px solid transparent;
+    }
+    .service-card:hover {
+      transform: translateY(-10px); box-shadow: var(--shadow-hover);
+      border-top-color: var(--primary);
+    }
+    .service-icon { font-size: 3.5rem; margin-bottom: 20px; display: block; }
+    .service-title { 
+      font-size: 1.3rem; font-weight: 800; color: var(--secondary); margin-bottom: 12px;
+    }
+    .service-desc { color: var(--text-light); line-height: 1.6; }
+
+    /* CTA Final */
+    .cta-final {
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      padding: 80px 20px; text-align: center; color: white;
+    }
+    .cta-h2 { font-size: 2.8rem; font-weight: 900; margin-bottom: 20px; }
+    .cta-desc { font-size: 1.2rem; margin-bottom: 40px; opacity: 0.95; }
+
+    /* WhatsApp Float */
+    .whatsapp-float {
+      position: fixed; bottom: 30px; right: 30px; z-index: 9999;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.7); }
+      70% { box-shadow: 0 0 0 20px rgba(16,185,129,0); }
+      100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
+    }
+    .whatsapp-btn {
+      width: 70px; height: 70px; border-radius: 50%; background: var(--accent);
+      color: white; border: none; font-size: 2rem; cursor: pointer;
+      box-shadow: 0 8px 25px rgba(16,185,129,0.4); transition: var(--transition);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .whatsapp-btn:hover { transform: scale(1.1); background: #059669; }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .hero-inner { grid-template-columns: 1fr; text-align: center; gap: 40px; }
+      .hero-buttons { justify-content: center; }
+      .stats { justify-content: center; gap: 30px; flex-wrap: wrap; }
+      .hero-image { width: 300px; height: 340px; }
+      .hero-h1 { font-size: 2.8rem; }
+    }
+    @media (max-width: 600px) {
+      .hero { padding: 120px 16px 60px; }
+      .hero-h1 { font-size: 2.2rem; }
+      .hero-buttons .btn-primary, .btn-secondary { flex: 1; justify-content: center; }
+      .services-grid { grid-template-columns: 1fr; }
+      .whatsapp-float { bottom: 20px; right: 20px; }
+      .whatsapp-btn { width: 60px; height: 60px; font-size: 1.8rem; }
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const CONFIG = {
+      nome: "João Santos",
+      profissao: "Chef Autônomo",
+      tagline: "Sabor que conquista!",
+      descricao: "Especialista em eventos, marmitas e delivery premium com ingredientes frescos.",
+      whatsapp: "5511999999999",
+      foto: null,
+      stats: [
+        { num: "500+", label: "Eventos" },
+        { num: "10K+", label: "Pratos" },
+        { num: "5⭐", label: "Avaliação" }
+      ],
+      pratos: [
+        { icon: "🍖", title: "Churrasco Premium", desc: "Cortes nobres + acompanhamentos especiais" },
+        { icon: "🍝", title: "Massas Artesanais", desc: "Feitas na hora com molhos exclusivos" },
+        { icon: "🍲", title: "Marmitas Saudáveis", desc: "Balanceadas e delivery rápido" },
+        { icon: "🍗", title: "Frango Assado", desc: "Recheado com ervas e crocância perfeita" },
+        { icon: "🥩", title: "Parrillada", desc: "Mix de carnes grelhadas na brasa" },
+        { icon: "🍰", title: "Doces Finos", desc: "Sobremesas para finalizar em grande estilo" }
+      ]
+    };
+
+    function getWhatsApp() {
+      return `https://wa.me/${CONFIG.whatsapp}?text=Olá! Gostaria de ver o cardápio do Chef ${CONFIG.nome}`;
+    }
+
+    function Header() {
+      const [scrolled, setScrolled] = React.useState(false);
+      React.useEffect(() => {
+        const handleScroll = () => setScrolled(window.scrollY > 10);
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+      }, []);
+      
+      return (
+        <header className={`header ${scrolled ? 'scrolled' : ''}`}>
+          <div className="header-inner">
+            <a href="#" className="logo">
+              <div className="logo-icon">👨‍🍳</div>
+              <div className="logo-text">
+                <h1>{CONFIG.nome}</h1>
+                <span>{CONFIG.profissao}</span>
+              </div>
+            </a>
+            <a href={getWhatsApp()} target="_blank" className="cta-header">
+              📱 Cardápio
+            </a>
+          </div>
+        </header>
+      );
+    }
+
+    function Hero() {
+      return (
+        <section className="hero">
+          <div className="hero-inner">
+            <div className="hero-content">
+              <div className="badge">
+                <span style={{width:'8px',height:'8px',background:'var(--accent)',borderRadius:'50%'}}></span>
+                Atendendo agora
+              </div>
+              <h1 className="hero-h1">{CONFIG.nome}</h1>
+              <p className="hero-subtitle">{CONFIG.profissao}</p>
+              <h2 className="hero-tagline">
+                "<span>{CONFIG.tagline}</span>"
+              </h2>
+              <p className="hero-desc">{CONFIG.descricao}</p>
+              <div className="hero-buttons">
+                <a href={getWhatsApp()} target="_blank" className="btn-primary">
+                  📲 Solicitar Cardápio
+                </a>
+                <a href="#pratos" className="btn-secondary">
+                  Ver Pratos
+                </a>
+              </div>
+              <div className="stats">
+                {CONFIG.stats.map((stat, i) => (
+                  <div className="stat" key={i}>
+                    <div className="stat-number">{stat.num}</div>
+                    <div className="stat-label">{stat.label}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="hero-image">
+              {CONFIG.foto ? (
+                <img src={CONFIG.foto} alt={CONFIG.nome} />
+              ) : (
+                <div className="hero-placeholder">
+                  <div className="hero-placeholder-icon">👨‍🍳</div>
+                  <div>Foto do Chef</div>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    function Services() {
+      return (
+        <section className="services-section" id="pratos">
+          <div className="container">
+            <div className="section-title">
+              <span className="section-subtitle">Nossos Pratos</span>
+              <h2 className="section-h2">Especialidades do Chef</h2>
+              <p className="section-desc">Seleção premium para todos os gostos</p>
+            </div>
+            <div className="services-grid">
+              {CONFIG.pratos.map((prato, i) => (
+                <div className="service-card" key={i}>
+                  <span className="service-icon">{prato.icon}</span>
+                  <h3 className="service-title">{prato.title}</h3>
+                  <p className="service-desc">{prato.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    function CTASection() {
+      return (
+        <section className="cta-final">
+          <div className="container">
+            <h2 className="cta-h2">Fome de qualidade?</h2>
+            <p className="cta-desc">Fale comigo agora e receba seu cardápio em segundos!</p>
+            <a href={getWhatsApp()} target="_blank" className="btn-primary" style={{fontSize:'1.1rem', padding:'20px 48px'}}>
+              📲 Falar com o Chef
+            </a>
+          </div>
+        </section>
+      );
+    }
+
+    function WhatsAppFloat() {
+      const [show, setShow] = React.useState(false);
+      React.useEffect(() => {
+        const timer = setTimeout(() => setShow(true), 2000);
+        return () => clearTimeout(timer);
+      }, []);
+      
+      if (!show) return null;
+      
+      return (
+        <a href={getWhatsApp()} target="_blank" className="whatsapp-float whatsapp-btn">
+          💬
+        </a>
+      );
+    }
+
+    function App() {
+      return (
+        <>
+          <Header />
+          <Hero />
+          <Services />
+          <CTASection />
+          <WhatsAppFloat />
+        </>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
