@@ -79,7 +79,7 @@ async function buscarSite(req, res, next) {
     const { uid } = req.usuario;
     const { siteId } = req.params;
 
-    const site = await firestoreService.bu
+    const site = await firestoreService.buscarSitePorId(siteId);
     
     if (!site) {
       throw criarErro("site nao encontrado", 404);

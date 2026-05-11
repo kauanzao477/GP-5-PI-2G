@@ -29,7 +29,6 @@ app.get("/", (req, res) => {
   return res.status(200).json({
     sucesso: true,
     mensagem: "MeuSiteJá backend está rodando",
-    versao: "1.0.0",
     timestamp: new Date().toISOString(),
   });
 });

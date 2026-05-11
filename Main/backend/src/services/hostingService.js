@@ -14,7 +14,7 @@ async function publicarSite(siteId, slug) {
     atualizadoEm: new Date().toISOString(),
   });
 
-  console.log(`✅ Site ${siteId} publicado em: ${urlPublica}`);
+  console.log(`Site ${siteId} publicado em: ${urlPublica}`);
 
   return {
     siteId,

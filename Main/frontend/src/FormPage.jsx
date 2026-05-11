@@ -1349,51 +1349,66 @@ export default function FormPage({ onBack }) {
   if (!validateStep()) return;
   setIsProcessingIA(true);
 
-    try {
-      const token = authToken;
-      if (!token) throw new Error("Faça login novamente");
+  try {
+    const token = authToken;
+    if (!token) throw new Error("Faça login novamente");
 
-      // MAPEIA OS NOMES (seu front usa 'business', o back espera 'negocio-local')
-      const templateMap = {
-        portfolio: "portfolio",
-        business: "negocio-local",
-        service: "prestador-servicos"
-      };
-      const tipoTemplate = templateMap[formData.template];
+    const templateMap = {
+      portfolio: "portfolio",
+      business: "negocio-local",
+      service: "prestador-servicos"
+    };
 
-      // 1. CRIAR O SITE NO FIRESTORE
-      const siteRes = await fetch(`${API_URL}/api/sites`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-        body: JSON.stringify({
-          tipoTemplate,
-          dadosOriginais: formData,
-          dadosProcessados: formData // Por enquanto mandamos o mesmo, depois usamos a IA
-        })
-      });
-      if (!siteRes.ok) throw new Error("Erro ao criar site");
-      const siteData = await siteRes.json();
-      const siteId = siteData.dados.siteId;
+    const dadosParaSalvar = {
+      tipoTemplate: templateMap[formData.template],
+      dadosOriginais: formData,
+      dadosProcessados: formData
+    };
 
-      // 2. PUBLICAR COM O SLUG
-      const pubRes = await fetch(`${API_URL}/api/sites/${siteId}/publicar`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-        body: JSON.stringify({ slug: formData.subdomain })
-      });
-      const pubData = await pubRes.json();
+    const siteRes = await fetch(`${API_URL}/api/sites`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify(dadosParaSalvar)
+    });
 
-      setIsProcessingIA(false);
-      alert(`✅ Site criado com sucesso!\nLink: ${pubData.dados.urlPublica}`);
-      // Por enquanto, como você só tem templates, vamos só mostrar os dados salvos
-      console.log("DADOS SALVOS NO FIREBASE:", pubData);
+    const siteData = await siteRes.json();
 
-    } catch (error) {
-      setIsProcessingIA(false);
-      console.error(error);
-      alert("Erro: " + error.message);
+    if (!siteRes.ok) {
+      throw new Error(siteData.mensagem || "Erro ao criar site");
     }
-  };
+
+    const siteId = siteData.dados.siteId;
+
+    const pubRes = await fetch(`${API_URL}/api/sites/${siteId}/publicar`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ slug: formData.subdomain })
+    });
+
+    const pubData = await pubRes.json();
+
+    if (!pubRes.ok) {
+      throw new Error(pubData.mensagem || "Erro ao publicar site");
+    }
+
+    setIsProcessingIA(false);
+
+    window.alert(
+      `Site criado com sucesso!\n\nSeu link: meusiteja.com/usuarios/${formData.subdomain}\n\nEm breve você poderá visualizar e editar seu site por aqui.`
+    );
+
+  } catch (error) {
+    setIsProcessingIA(false);
+    window.alert("Erro: " + error.message);
+    console.error(error);
+  }
+};
 
   // Generate subdomain suggestions
   const getSubdomainSuggestions = () => {
