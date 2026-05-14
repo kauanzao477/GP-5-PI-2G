@@ -1042,7 +1042,7 @@ function SubdomainSuggestions({ suggestions, selected, onSelect }) {
 }
 
 // Main Form Page Component
-export default function FormPage({ onBack }) {
+export default function FormPage({ onBack, onPreview }) {
   const [phase, setPhase] = useState(1);
   const [currentStep, setCurrentStep] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -1359,49 +1359,63 @@ export default function FormPage({ onBack }) {
       service: "prestador-servicos"
     };
 
-    const dadosParaSalvar = {
-      tipoTemplate: templateMap[formData.template],
-      dadosOriginais: formData,
-      dadosProcessados: formData
-    };
-
+    // 1. CRIA O RASCUNHO NO FIRESTORE
     const siteRes = await fetch(`${API_URL}/api/sites`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${token}`
       },
-      body: JSON.stringify(dadosParaSalvar)
+      body: JSON.stringify({
+        tipoTemplate: templateMap[formData.template],
+        dadosOriginais: formData,
+        dadosProcessados: formData
+      })
     });
 
     const siteData = await siteRes.json();
-
-    if (!siteRes.ok) {
-      throw new Error(siteData.mensagem || "Erro ao criar site");
-    }
-
+    if (!siteRes.ok) throw new Error(siteData.mensagem || "Erro ao criar site");
     const siteId = siteData.dados.siteId;
 
-    const pubRes = await fetch(`${API_URL}/api/sites/${siteId}/publicar`, {
+    // 2. CHAMA A IA PARA MELHORAR OS TEXTOS
+    const iaRes = await fetch(`${API_URL}/api/ia/processar-formulario`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${token}`
       },
-      body: JSON.stringify({ slug: formData.subdomain })
+      body: JSON.stringify({
+        tipoTemplate: templateMap[formData.template],
+        ...formData
+      })
     });
 
-    const pubData = await pubRes.json();
+    const iaData = await iaRes.json();
 
-    if (!pubRes.ok) {
-      throw new Error(pubData.mensagem || "Erro ao publicar site");
-    }
+    // Se a IA falhar, usa os dados originais sem quebrar o fluxo
+    const dadosProcessados = iaRes.ok
+      ? iaData.dados.dadosProcessados
+      : formData;
+
+    // 3. ATUALIZA O SITE COM OS DADOS MELHORADOS PELA IA
+    await fetch(`${API_URL}/api/sites/${siteId}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ dadosProcessados })
+    });
 
     setIsProcessingIA(false);
 
-    window.alert(
-      `Site criado com sucesso!\n\nSeu link: meusiteja.com/usuarios/${formData.subdomain}\n\nEm breve você poderá visualizar e editar seu site por aqui.`
-    );
+    // 4. REDIRECIONA PARA A PREVIEW (sem alert)
+    onPreview({
+      siteId,
+      dadosProcessados,
+      token,
+      slug: formData.subdomain
+    });
 
   } catch (error) {
     setIsProcessingIA(false);

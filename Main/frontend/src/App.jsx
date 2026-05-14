@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 import FormPage from "./FormPage";
+import PreviewPage from "./PreviewPage";
 import logopng from "../../assets/logopng.png"
 
 // Ícones simples em SVG
@@ -1218,17 +1219,32 @@ function Footer() {
 // Componente Principal
 export default function App() {
   const [currentPage, setCurrentPage] = useState("home");
+  const [previewData, setPreviewData] = useState(null);
 
-  const handleStartCreating = () => {
-    setCurrentPage("form");
-  };
+  const handleStartCreating = () => setCurrentPage("form");
+  const handleBackToHome = () => setCurrentPage("home");
 
-  const handleBackToHome = () => {
-    setCurrentPage("home");
+  const handleGoToPreview = (dados) => {
+    setPreviewData(dados);
+    setCurrentPage("preview");
   };
 
   if (currentPage === "form") {
-    return <FormPage onBack={handleBackToHome} />;
+    return (
+      <FormPage
+        onBack={handleBackToHome}
+        onPreview={handleGoToPreview}
+      />
+    );
+  }
+
+  if (currentPage === "preview") {
+    return (
+      <PreviewPage
+        dados={previewData}
+        onBack={() => setCurrentPage("form")}
+      />
+    );
   }
 
   return (
