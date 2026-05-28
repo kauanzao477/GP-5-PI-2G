@@ -31,9 +31,17 @@ async function sugerirSlugs(req, res, next) {
   }
 }
 
+// backend/controllers/aiController.js — SUBSTITUA o processarFormulario
+
 async function processarFormulario(req, res, next) {
   try {
     const dadosFormulario = req.body;
+
+    console.log("═══════════════════════════════════════");
+    console.log("📥 RECEBIDO no processarFormulario:");
+    console.log("tipoTemplate:", dadosFormulario.tipoTemplate);
+    console.log("Campos recebidos:", Object.keys(dadosFormulario));
+    console.log("═══════════════════════════════════════");
 
     if (!dadosFormulario || Object.keys(dadosFormulario).length === 0) {
       throw criarErro("nenhum dado de formulario foi enviado", 400);
@@ -43,9 +51,11 @@ async function processarFormulario(req, res, next) {
       throw criarErro("o tipo de template é obrigatorio", 400);
     }
 
-    console.log("processando dados do formulario com IA");
+    console.log("🤖 Chamando groqService.processarDadosSite...");
 
     const dadosProcessados = await groqService.processarDadosSite(dadosFormulario);
+
+    console.log("✅ Dados processados. Campos retornados:", Object.keys(dadosProcessados));
 
     return res.status(200).json({
       sucesso: true,
@@ -56,6 +66,7 @@ async function processarFormulario(req, res, next) {
       },
     });
   } catch (erro) {
+    console.error("❌ ERRO no processarFormulario:", erro.message);
     next(erro);
   }
 }

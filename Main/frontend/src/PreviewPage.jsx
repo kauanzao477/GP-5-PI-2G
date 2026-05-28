@@ -1,10 +1,20 @@
-// frontend/src/PreviewPage.jsx
+// frontend/src/PreviewPage.jsx — SUBSTITUA a seção do template resolve
 
 import { useState, useRef, useCallback } from "react";
 import PortfolioTemplate from "./templates/portfolio/PortfolioTemplate";
+import NegocioLocalTemplate from "./templates/negocio-local/NegocioLocalTemplate";
+import PrestadorServicosTemplate from "./templates/prestador-servicos/PrestadorServicosTemplate";
 import logopng from "../../assets/logopng.png";
 
 const API_URL = "http://localhost:3000";
+
+const TEMPLATE_MAP = {
+  "portfolio": PortfolioTemplate,
+  "negocio-local": NegocioLocalTemplate,
+  "business": NegocioLocalTemplate,
+  "prestador-servicos": PrestadorServicosTemplate,
+  "service": PrestadorServicosTemplate,
+};
 
 export default function PreviewPage({ dados, onBack }) {
   const { siteId, dadosProcessados, token, slug } = dados;
@@ -15,6 +25,33 @@ export default function PreviewPage({ dados, onBack }) {
   const [publicado, setPublicado] = useState(false);
   const [linkGerado, setLinkGerado] = useState("");
   const salvarTimerRef = useRef(null);
+
+  // ── Resolver template ──
+  const tipoTemplate = dadosAtuais.template || dadosAtuais.tipoTemplate || "portfolio";
+  const TemplateComponent = TEMPLATE_MAP[tipoTemplate] || PortfolioTemplate;
+
+  // LOG para debug
+  console.log("═══════════════════════════════════════");
+  console.log("🖥️ PREVIEW PAGE");
+  console.log("  tipoTemplate resolvido:", tipoTemplate);
+  console.log("  TemplateComponent:", TemplateComponent.name || "desconhecido");
+  console.log("  dadosAtuais.template:", dadosAtuais.template);
+  console.log("  dadosAtuais.tipoTemplate:", dadosAtuais.tipoTemplate);
+  console.log("  Campos nos dados:", Object.keys(dadosAtuais));
+  
+  // Verifica se os campos da IA estão presentes
+  if (tipoTemplate === "portfolio" || dadosAtuais.template === "portfolio") {
+    console.log("  aboutMe (50 chars):", dadosAtuais.aboutMe?.substring(0, 50));
+  }
+  if (tipoTemplate === "negocio-local" || dadosAtuais.template === "business") {
+    console.log("  history (50 chars):", dadosAtuais.history?.substring(0, 50));
+    console.log("  services:", dadosAtuais.services?.length, "itens");
+  }
+  if (tipoTemplate === "prestador-servicos" || dadosAtuais.template === "service") {
+    console.log("  trustParagraph (50 chars):", dadosAtuais.trustParagraph?.substring(0, 50));
+    console.log("  providerServices:", dadosAtuais.providerServices?.length, "itens");
+  }
+  console.log("═══════════════════════════════════════");
 
   const salvarNoFirestore = useCallback(async (dadosParaSalvar) => {
     setSalvando(true);
@@ -40,6 +77,7 @@ export default function PreviewPage({ dados, onBack }) {
       const partes = caminho.split(".");
       let ref = novo;
       for (let i = 0; i < partes.length - 1; i++) {
+        if (ref[partes[i]] === undefined) ref[partes[i]] = {};
         ref = ref[partes[i]];
       }
       ref[partes[partes.length - 1]] = valor;
@@ -73,8 +111,6 @@ export default function PreviewPage({ dados, onBack }) {
       const data = await res.json();
       if (!res.ok) throw new Error(data.mensagem || "Erro ao publicar");
 
-      // Salva o link gerado e marca como publicado
-      // Por agora o link é simbólico (não tem hosting real ainda)
       setLinkGerado(`meusiteja.com/usuarios/${slug}`);
       setPublicado(true);
 
@@ -87,18 +123,13 @@ export default function PreviewPage({ dados, onBack }) {
 
   return (
     <div className="form-page">
-
-      {/* ── Background igual ao FormPage ── */}
       <div className="form-background">
         <div className="gradient-orb form-orb-1"></div>
         <div className="gradient-orb form-orb-2"></div>
         <div className="gradient-orb form-orb-3"></div>
       </div>
 
-      {/* ── Header igual ao FormPage ── */}
       <header className="form-header">
-
-        {/* Esquerda: voltar */}
         <button className="btn-back" onClick={onBack}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
             strokeLinecap="round" strokeLinejoin="round" className="icon-small">
@@ -108,72 +139,43 @@ export default function PreviewPage({ dados, onBack }) {
           <span>Voltar ao formulário</span>
         </button>
 
-        {/* Centro: logo */}
         <div className="form-logo">
-          <img
-            src={logopng}
-            alt="Logo MeuSiteJá"
+          <img src={logopng} alt="Logo MeuSiteJá"
             style={{ height: "13rem", cursor: "pointer" }}
-            onClick={() => window.location.href = "/"}
-          />
+            onClick={() => window.location.href = "/"} />
         </div>
 
-        {/* Direita: status + publicar */}
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-
-          {/* Status de salvamento */}
           <span style={{
-            fontSize: "0.85rem",
-            fontWeight: 600,
+            fontSize: "0.85rem", fontWeight: 600,
             color: salvando ? "#FBBF24" : "#4ADE80",
-            display: "flex",
-            alignItems: "center",
-            gap: "0.4rem"
+            display: "flex", alignItems: "center", gap: "0.4rem"
           }}>
             {salvando ? "💾 Salvando..." : "✅ Salvo"}
           </span>
 
-          {/* Dica de edição */}
           <span style={{
-            fontSize: "0.8rem",
-            color: "rgba(255,255,255,0.4)",
-            fontWeight: 500,
-            padding: "0.4rem 0.85rem",
-            background: "rgba(255,255,255,0.05)",
-            borderRadius: "50px",
-            border: "1px solid rgba(255,255,255,0.08)"
+            fontSize: "0.8rem", color: "rgba(255,255,255,0.4)", fontWeight: 500,
+            padding: "0.4rem 0.85rem", background: "rgba(255,255,255,0.05)",
+            borderRadius: "50px", border: "1px solid rgba(255,255,255,0.08)"
           }}>
             ✏️ Clique nos textos para editar
           </span>
 
-          {/* Botão publicar / link gerado */}
           {publicado ? (
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-              <span style={{ color: "#4ADE80", fontWeight: 700, fontSize: "0.9rem" }}>
-                ✅ Publicado!
-              </span>
+              <span style={{ color: "#4ADE80", fontWeight: 700, fontSize: "0.9rem" }}>✅ Publicado!</span>
               <div style={{
-                background: "rgba(99,102,241,0.15)",
-                border: "1px solid rgba(99,102,241,0.3)",
-                borderRadius: "8px",
-                padding: "0.5rem 1rem",
-                fontSize: "0.85rem",
-                color: "#818CF8",
-                fontWeight: 600
-              }}>
-                🔗 {linkGerado}
-              </div>
+                background: "rgba(99,102,241,0.15)", border: "1px solid rgba(99,102,241,0.3)",
+                borderRadius: "8px", padding: "0.5rem 1rem", fontSize: "0.85rem",
+                color: "#818CF8", fontWeight: 600
+              }}>🔗 {linkGerado}</div>
             </div>
           ) : (
-            <button
-              onClick={handlePublicar}
-              disabled={publicando}
+            <button onClick={handlePublicar} disabled={publicando}
               className={`btn ${publicando ? "btn-secondary" : "btn-success"}`}
-              style={{ minWidth: 160 }}
-            >
-              {publicando ? (
-                "Publicando..."
-              ) : (
+              style={{ minWidth: 160 }}>
+              {publicando ? "Publicando..." : (
                 <>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
                     strokeLinecap="round" strokeLinejoin="round" className="icon">
@@ -190,14 +192,12 @@ export default function PreviewPage({ dados, onBack }) {
         </div>
       </header>
 
-      {/* ── Template ── */}
       <main style={{ position: "relative", zIndex: 1 }}>
-        <PortfolioTemplate
+        <TemplateComponent
           dados={dadosAtuais}
           onCampoEditado={handleCampoEditado}
         />
       </main>
-
     </div>
   );
 }

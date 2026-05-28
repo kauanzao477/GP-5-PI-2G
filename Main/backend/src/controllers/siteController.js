@@ -209,17 +209,43 @@ async function deletarSite(req, res, next) {
 async function acessarSitePublico(req, res, next) {
   try {
     const { slug } = req.params;
+    const templateRenderer = require("../services/templateRenderer");
 
     const site = await hostingService.buscarSitePublico(slug);
 
     if (!site) {
-      throw criarErro("site nao encontrado ou nao está publicado", 404);
+      return res.status(404).send(`
+        <!DOCTYPE html>
+        <html><head><title>Site não encontrado</title>
+        <style>
+          body{font-family:Inter,sans-serif;display:flex;align-items:center;
+          justify-content:center;min-height:100vh;background:#f8f9fa;
+          color:#333;text-align:center}
+          .box{max-width:400px;padding:40px}
+          h1{font-size:3rem;margin-bottom:16px}
+          p{color:#666;margin-bottom:24px}
+          a{color:#6366f1;font-weight:700}
+        </style>
+        </head>
+        <body>
+          <div class="box">
+            <h1>404</h1>
+            <p>Este site não existe ou não está publicado.</p>
+            <a href="/">← Voltar ao início</a>
+          </div>
+        </body>
+        </html>
+      `);
     }
 
-    return res.status(200).json({
-      sucesso: true,
-      dados: site,
-    });
+    const html = templateRenderer.renderizarSitePublico(
+      site.tipoTemplate,
+      site.dadosSite
+    );
+
+    res.setHeader("Content-Type", "text/html; charset=utf-8");
+    return res.send(html);
+
   } catch (erro) {
     next(erro);
   }

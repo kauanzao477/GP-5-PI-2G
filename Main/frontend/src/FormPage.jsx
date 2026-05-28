@@ -1345,7 +1345,9 @@ export default function FormPage({ onBack, onPreview }) {
     }
   };
 
-  const handleSubmit = async () => {
+  // Dentro de FormPage.jsx — função handleSubmit (já existente, sem mudanças)
+
+const handleSubmit = async () => {
   if (!validateStep()) return;
   setIsProcessingIA(true);
 
@@ -1359,7 +1361,14 @@ export default function FormPage({ onBack, onPreview }) {
       service: "prestador-servicos"
     };
 
-    // 1. CRIA O RASCUNHO NO FIRESTORE
+    const tipoTemplate = templateMap[formData.template];
+
+    console.log("═══════════════════════════════════════");
+    console.log("🚀 SUBMIT - template escolhido:", formData.template);
+    console.log("🚀 SUBMIT - tipoTemplate mapeado:", tipoTemplate);
+    console.log("═══════════════════════════════════════");
+
+    // 1. CRIA O RASCUNHO
     const siteRes = await fetch(`${API_URL}/api/sites`, {
       method: "POST",
       headers: {
@@ -1367,38 +1376,65 @@ export default function FormPage({ onBack, onPreview }) {
         "Authorization": `Bearer ${token}`
       },
       body: JSON.stringify({
-        tipoTemplate: templateMap[formData.template],
+        tipoTemplate,
         dadosOriginais: formData,
         dadosProcessados: formData
       })
     });
 
     const siteData = await siteRes.json();
+    console.log("📦 Resposta criar site:", siteData);
+
     if (!siteRes.ok) throw new Error(siteData.mensagem || "Erro ao criar site");
     const siteId = siteData.dados.siteId;
 
-    // 2. CHAMA A IA PARA MELHORAR OS TEXTOS
+    // 2. CHAMA A IA
+    const corpoIA = {
+      tipoTemplate,
+      ...formData
+    };
+
+    console.log("🤖 Enviando para IA. tipoTemplate:", corpoIA.tipoTemplate);
+    console.log("🤖 Campos enviados:", Object.keys(corpoIA));
+
     const iaRes = await fetch(`${API_URL}/api/ia/processar-formulario`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${token}`
       },
-      body: JSON.stringify({
-        tipoTemplate: templateMap[formData.template],
-        ...formData
-      })
+      body: JSON.stringify(corpoIA)
     });
 
+    console.log("🤖 Status resposta IA:", iaRes.status);
+
     const iaData = await iaRes.json();
+    console.log("🤖 Resposta IA sucesso:", iaData.sucesso);
 
-    // Se a IA falhar, usa os dados originais sem quebrar o fluxo
-    const dadosProcessados = iaRes.ok
-      ? iaData.dados.dadosProcessados
-      : formData;
+    let dadosProcessados;
 
-    // 3. ATUALIZA O SITE COM OS DADOS MELHORADOS PELA IA
-    await fetch(`${API_URL}/api/sites/${siteId}`, {
+    if (iaRes.ok && iaData.dados?.dadosProcessados) {
+      dadosProcessados = iaData.dados.dadosProcessados;
+      console.log("✅ Usando dados melhorados pela IA");
+      
+      // Log dos campos que foram melhorados
+      if (tipoTemplate === "portfolio") {
+        console.log("📝 aboutMe original:", formData.aboutMe?.substring(0, 50));
+        console.log("📝 aboutMe IA:", dadosProcessados.aboutMe?.substring(0, 50));
+      } else if (tipoTemplate === "negocio-local") {
+        console.log("📝 history original:", formData.history?.substring(0, 50));
+        console.log("📝 history IA:", dadosProcessados.history?.substring(0, 50));
+      } else if (tipoTemplate === "prestador-servicos") {
+        console.log("📝 trustParagraph original:", formData.trustParagraph?.substring(0, 50));
+        console.log("📝 trustParagraph IA:", dadosProcessados.trustParagraph?.substring(0, 50));
+      }
+    } else {
+      dadosProcessados = formData;
+      console.warn("⚠️ IA falhou, usando dados originais. Resposta:", iaData);
+    }
+
+    // 3. ATUALIZA COM DADOS DA IA
+    const updateRes = await fetch(`${API_URL}/api/sites/${siteId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -1407,20 +1443,32 @@ export default function FormPage({ onBack, onPreview }) {
       body: JSON.stringify({ dadosProcessados })
     });
 
+    console.log("💾 Update status:", updateRes.status);
+
     setIsProcessingIA(false);
 
-    // 4. REDIRECIONA PARA A PREVIEW (sem alert)
-    onPreview({
+    // 4. REDIRECIONA — garante que template vai junto
+    const dadosParaPreview = {
       siteId,
-      dadosProcessados,
+      dadosProcessados: {
+        ...dadosProcessados,
+        template: formData.template,         // "portfolio", "business", "service"
+        tipoTemplate: tipoTemplate,          // "portfolio", "negocio-local", "prestador-servicos"
+      },
       token,
       slug: formData.subdomain
-    });
+    };
+
+    console.log("🖥️ Enviando para PreviewPage:");
+    console.log("  template:", dadosParaPreview.dadosProcessados.template);
+    console.log("  tipoTemplate:", dadosParaPreview.dadosProcessados.tipoTemplate);
+
+    onPreview(dadosParaPreview);
 
   } catch (error) {
     setIsProcessingIA(false);
+    console.error("❌ ERRO no submit:", error);
     window.alert("Erro: " + error.message);
-    console.error(error);
   }
 };
 
@@ -1720,12 +1768,12 @@ export default function FormPage({ onBack, onPreview }) {
             fields={[
               { name: "institution", label: "Instituição", placeholder: "Nome da universidade/escola" },
               { name: "type", label: "Tipo de formação", type: "select", options: [
-                { value: "graduation", label: "Graduação" },
-                { value: "postgrad", label: "Pós-graduação" },
-                { value: "masters", label: "Mestrado" },
-                { value: "doctorate", label: "Doutorado" },
-                { value: "technical", label: "Técnico" },
-                { value: "course", label: "Curso Livre" },
+                { value: "Graduação", label: "Graduação" },
+                { value: "Pós-graduação", label: "Pós-graduação" },
+                { value: "Mestrado", label: "Mestrado" },
+                { value: "Doutorado", label: "Doutorado" },
+                { value: "Técnico", label: "Técnico" },
+                { value: "Curso Livre", label: "Curso Livre" },
               ]},
               { name: "date", label: "Ano de conclusão", placeholder: "2020", required: false },
               { name: "current", label: "", type: "checkbox", checkboxLabel: "Cursando atualmente", fullWidth: true, required: false },

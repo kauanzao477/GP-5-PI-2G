@@ -1,3 +1,5 @@
+// backend/services/groqService.js
+
 const Groq = require("groq-sdk");
 
 const groq = new Groq({
@@ -32,16 +34,32 @@ Retorne APENAS: {"sugestoes": ["slug1", "slug2", "slug3", "slug4", "slug5"]}`;
   }
 }
 
+// ══════════════════════════════════════════════
+// PROCESSADOR PRINCIPAL — roteia por template
+// ══════════════════════════════════════════════
 async function processarDadosSite(dadosFormulario) {
   const { tipoTemplate } = dadosFormulario;
 
-  if (tipoTemplate !== "portfolio") {
-    return dadosFormulario;
+  switch (tipoTemplate) {
+    case "portfolio":
+      return processarPortfolio(dadosFormulario);
+    case "negocio-local":
+      return processarNegocioLocal(dadosFormulario);
+    case "prestador-servicos":
+      return processarPrestadorServicos(dadosFormulario);
+    default:
+      console.warn(`Tipo de template desconhecido: ${tipoTemplate}. Retornando dados originais.`);
+      return dadosFormulario;
   }
+}
 
+// ══════════════════════════════════════════════
+// PORTFOLIO — aboutMe + companies.description
+// ══════════════════════════════════════════════
+async function processarPortfolio(dados) {
   const camposParaIA = {
-    aboutMe: dadosFormulario.aboutMe || "",
-    companies: (dadosFormulario.companies || []).map(emp => ({
+    aboutMe: dados.aboutMe || "",
+    companies: (dados.companies || []).map(emp => ({
       name: emp.name || "",
       role: emp.role || "",
       description: emp.description || "",
@@ -68,48 +86,177 @@ REGRAS:
 }`;
 
   try {
-    const resposta = await groq.chat.completions.create({
-      model: MODELO,
-      messages: [
-        {
-          role: "system",
-          content: "Você melhora textos de portfólios. Retorne JSON válido sem markdown."
-        },
-        {
-          role: "user",
-          content: prompt
-        }
-      ],
-      temperature: 0.3,
-      max_tokens: 800,
-    });
+    const melhorias = await chamarIA(prompt);
 
-    const textoResposta = resposta.choices[0].message.content;
-    const textoLimpo = textoResposta
-      .replace(/```json\n?/g, "")
-      .replace(/```\n?/g, "")
-      .trim();
-
-    const melhorias = JSON.parse(textoLimpo);
-    console.log("✅ IA processou os dados com sucesso");
-
-    const dadosFinais = {
-      ...dadosFormulario,
-      aboutMe: melhorias.aboutMe || dadosFormulario.aboutMe,
-      companies: (dadosFormulario.companies || []).map((emp, i) => ({
+    return {
+      ...dados,
+      aboutMe: melhorias.aboutMe || dados.aboutMe,
+      companies: (dados.companies || []).map((emp, i) => ({
         ...emp,
         description: melhorias.companies?.[i]?.description ?? emp.description,
       })),
     };
 
-    return dadosFinais;
-
   } catch (erro) {
-    console.error("Erro ao processar com IA:", erro.message);
-    return dadosFormulario;
+    console.error("Erro ao processar portfolio com IA:", erro.message);
+    return dados;
   }
 }
 
+// ══════════════════════════════════════════════
+// NEGÓCIO LOCAL — history + services.description
+// ══════════════════════════════════════════════
+async function processarNegocioLocal(dados) {
+  const camposParaIA = {
+    businessName: dados.businessName || "",
+    history: dados.history || "",
+    services: (dados.services || []).map(s => ({
+      name: s.name || "",
+      description: s.description || "",
+      price: s.price || "",
+    })),
+  };
+
+  const prompt = `Melhore estes textos de um site de negócio local em português brasileiro.
+
+DADOS:
+Nome do negócio: "${camposParaIA.businessName}"
+História: "${camposParaIA.history}"
+Serviços: ${JSON.stringify(camposParaIA.services)}
+
+TAREFAS:
+1. "history": reescreva de forma envolvente e profissional em 2-3 parágrafos. Transmita tradição, qualidade e paixão pelo que faz. Corrija gramática.
+2. Cada "description" dos serviços: formalize e torne mais atrativa para o cliente. Se estiver vazio, crie uma descrição curta (1-2 frases) baseada no nome do serviço.
+
+REGRAS:
+- Não invente informações sobre o negócio que não estejam implícitas nos dados
+- Não altere name, price ou outros campos
+- Mantenha o tom acolhedor e confiável
+- Retorne APENAS este JSON sem markdown:
+{
+  "history": "texto melhorado",
+  "services": [{"name": "...", "description": "...", "price": "..."}]
+}`;
+
+  try {
+    const melhorias = await chamarIA(prompt);
+
+    return {
+      ...dados,
+      history: melhorias.history || dados.history,
+      services: (dados.services || []).map((serv, i) => ({
+        ...serv,
+        description: melhorias.services?.[i]?.description ?? serv.description,
+      })),
+    };
+
+  } catch (erro) {
+    console.error("Erro ao processar negócio local com IA:", erro.message);
+    return dados;
+  }
+}
+
+// ══════════════════════════════════════════════
+// PRESTADOR DE SERVIÇOS — trustParagraph + providerServices.description
+// ══════════════════════════════════════════════
+async function processarPrestadorServicos(dados) {
+  const camposParaIA = {
+    name: dados.name || "",
+    profession: dados.profession || "",
+    experience: dados.experience || "",
+    clientsServed: dados.clientsServed || "",
+    trustParagraph: dados.trustParagraph || "",
+    providerServices: (dados.providerServices || []).map(s => ({
+      name: s.name || "",
+      description: s.description || "",
+    })),
+  };
+
+  const prompt = `Melhore estes textos de um site de prestador de serviços em português brasileiro.
+
+DADOS:
+Nome: "${camposParaIA.name}"
+Profissão: "${camposParaIA.profession}"
+Experiência: "${camposParaIA.experience}"
+Clientes atendidos: "${camposParaIA.clientsServed}"
+Parágrafo de confiança: "${camposParaIA.trustParagraph}"
+Serviços: ${JSON.stringify(camposParaIA.providerServices)}
+
+TAREFAS:
+1. "trustParagraph": reescreva de forma persuasiva e profissional em 2-3 parágrafos. O objetivo é convencer potenciais clientes a contratar este profissional. Destaque experiência, compromisso com qualidade, garantia e diferenciais. Corrija gramática.
+2. Cada "description" dos serviços: formalize e torne mais profissional. Se estiver vazio, crie uma descrição curta (1-2 frases) baseada no nome do serviço e na profissão.
+
+REGRAS:
+- Não invente informações que não estejam implícitas nos dados
+- Não altere name ou outros campos
+- Use os dados reais (experiência, clientes atendidos) no trustParagraph quando possível
+- Mantenha tom confiável e profissional
+- Retorne APENAS este JSON sem markdown:
+{
+  "trustParagraph": "texto melhorado",
+  "providerServices": [{"name": "...", "description": "..."}]
+}`;
+
+  try {
+    const melhorias = await chamarIA(prompt);
+
+    return {
+      ...dados,
+      trustParagraph: melhorias.trustParagraph || dados.trustParagraph,
+      providerServices: (dados.providerServices || []).map((serv, i) => ({
+        ...serv,
+        description: melhorias.providerServices?.[i]?.description ?? serv.description,
+      })),
+    };
+
+  } catch (erro) {
+    console.error("Erro ao processar prestador de serviços com IA:", erro.message);
+    return dados;
+  }
+}
+
+// ══════════════════════════════════════════════
+// HELPER — chamada genérica à IA com limpeza
+// ══════════════════════════════════════════════
+// backend/services/groqService.js — SUBSTITUA a função chamarIA
+
+async function chamarIA(prompt) {
+  console.log("🔄 Enviando prompt para Groq...");
+  console.log("📝 Tamanho do prompt:", prompt.length, "caracteres");
+
+  const resposta = await groq.chat.completions.create({
+    model: MODELO,
+    messages: [
+      {
+        role: "system",
+        content: "Você é um redator profissional que melhora textos para sites. Retorne APENAS JSON válido sem markdown, sem ```json, sem explicações."
+      },
+      {
+        role: "user",
+        content: prompt
+      }
+    ],
+    temperature: 0.3,
+    max_tokens: 1200,
+  });
+
+  const textoResposta = resposta.choices[0].message.content;
+  console.log("📨 Resposta bruta da IA:", textoResposta.substring(0, 200) + "...");
+
+  const textoLimpo = textoResposta
+    .replace(/```json\n?/g, "")
+    .replace(/```\n?/g, "")
+    .trim();
+
+  const resultado = JSON.parse(textoLimpo);
+  console.log("✅ JSON parseado com sucesso. Chaves:", Object.keys(resultado));
+
+  return resultado;
+}
+
+// ══════════════════════════════════════════════
+// FALLBACK de slugs
+// ══════════════════════════════════════════════
 function gerarSugestoesBasicas(nome) {
   if (!nome) return ["meu-site", "meu-portfolio", "minha-pagina"];
 
