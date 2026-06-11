@@ -707,7 +707,7 @@ function AboutUsSection() {
       description: "Me chamo Miguel, curso informática para internet no Instituto Federal Catarinense, sou bom em design, criação de ideias, e comunicação",
       skills: ["Comunicação", "Geração de Ideias", "Design"],
       social: {
-        Instagram: "https://www.instagram.com/miguel_.mgk/",
+        Instagram: "https://www.instagram.com/miguel_.gasp?igsh=cGpjdml5azRldm52",
         github: " https://github.com/miguelklidzio1-lang",
         email: "miguelklidzio1@gmail.com"
       }
